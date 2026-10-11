@@ -40,6 +40,13 @@ function Messages() {
         setMobileChat(true);
     };
 
+    const handleRead = (convoId) => {
+        setConversations((prev) =>
+            prev.map((c) => (c._id === convoId ? { ...c, unreadCount: 0 } : c))
+        );
+        setActive((prev) => (prev && prev._id === convoId ? { ...prev, unreadCount: 0 } : prev));
+    };
+
     return (
         <div className="page page-wide">
             <div className="page-header">
@@ -67,6 +74,7 @@ function Messages() {
                     <ChatWindow
                         conversation={active}
                         onBack={() => setMobileChat(false)}
+                        onRead={handleRead}
                     />
                 </section>
             </div>

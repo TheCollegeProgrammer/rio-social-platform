@@ -29,7 +29,7 @@ function ConversationList({ conversations, activeId, currentUserId, onSelect }) 
                 return (
                     <button
                         key={c._id}
-                        className={`convo-item ${activeId === c._id ? "active" : ""}`}
+                        className={`convo-item ${activeId === c._id ? "active" : ""} ${c.unreadCount > 0 ? "unseen" : ""}`}
                         onClick={() => onSelect(c)}
                     >
                         <Avatar user={other} />
@@ -44,6 +44,9 @@ function ConversationList({ conversations, activeId, currentUserId, onSelect }) 
                                 <span className="convo-preview">
                                     {c.lastMessage?.content || "Say hi!"}
                                 </span>
+                                {c.unreadCount > 0 && (
+                                    <span className="convo-unread">{c.unreadCount > 9 ? "9+" : c.unreadCount}</span>
+                                )}
                             </div>
                         </div>
                     </button>

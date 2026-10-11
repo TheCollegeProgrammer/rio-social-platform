@@ -6,12 +6,18 @@ const {
     getMessages,
     sendMessage
 } = require("../controllers/message.controller");
+const {
+    markConversationRead,
+    getUnreadCount
+} = require("../controllers/message-read.controller");
 
 const router = express.Router();
 
 router.get("/", protect, getConversations);
+router.get("/unread-count", protect, getUnreadCount);
 router.get("/user/:userId", protect, getOrCreateConversation);
 router.get("/:id/messages", protect, getMessages);
 router.post("/:id/messages", protect, sendMessage);
+router.patch("/:id/read", protect, markConversationRead);
 
 module.exports = router;

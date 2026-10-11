@@ -163,6 +163,34 @@ async function run() {
     r = await req("GET", "/api/messages", null, bCookie);
     check("Bob sees conversation", JSON.parse(r.data).conversations.length, 1);
 
+    console.log("=== MESSAGING: unread tracking ===");
+    r = await req("GET", "/api/messages/unread-count", null, bCookie);
+    check("Bob unread count", JSON.parse(r.data).unreadCount, 1);
+
+    r = await req("GET", "/api/messages", null, bCookie);
+    check("Convo unreadCount field", JSON.parse(r.data).conversations[0].unreadCount, 1);
+
+    r = await req("GET", "/api/messages/unread-count", null, aCookie);
+    check("Alice unread count", JSON.parse(r.data).unreadCount, 1);
+
+    r = await req("PATCH", `/api/messages/${convoId}/read`, null, bCookie);
+    check("Mark conversation read", r.status, 200);
+
+    r = await req("GET", "/api/messages/unread-count", null, bCookie);
+    check("Bob unread now 0", JSON.parse(r.data).unreadCount, 0);
+
+    r = await req("GET", "/api/messages", null, bCookie);
+    check("Convo unread now 0", JSON.parse(r.data).conversations[0].unreadCount, 0);
+
+    r = await req("POST", `/api/messages/${convoId}/messages`, { content: "one more" }, aCookie);
+    check("Alice sends again", r.status, 201);
+
+    r = await req("GET", "/api/messages/unread-count", null, bCookie);
+    check("Bob unread incremented", JSON.parse(r.data).unreadCount, 1);
+
+    r = await req("PATCH", "/api/messages/507f1f77bcf86cd799439011/read", null, bCookie);
+    check("Read nonexistent convo", r.status, 404);
+
     console.log("=== MESSAGING: other user not in convo ===");
     r = await req("POST", "/api/auth/register", {
         username: `nc${ts}`, name: "Eve", age: 25, email: `nc${ts}@t.com`, password: "pass1234"
@@ -172,6 +200,10 @@ async function run() {
     check("Stranger cannot read convo", r.status, 403);
     r = await req("POST", `/api/messages/${convoId}/messages`, { content: "hi" }, cCookie);
     check("Stranger cannot send", r.status, 403);
+    r = await req("PATCH", `/api/messages/${convoId}/read`, null, cCookie);
+    check("Stranger cannot mark read", r.status, 403);
+    r = await req("GET", "/api/messages/unread-count", null, cCookie);
+    check("Stranger unread count 0", JSON.parse(r.data).unreadCount, 0);
 
     console.log("=== IMAGE UPLOADS (validation) ===");
     r = await req("POST", "/api/upload/avatar", null, aCookie);

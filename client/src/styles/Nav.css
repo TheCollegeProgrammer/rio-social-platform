@@ -89,6 +89,15 @@ nav {
     line-height: 1;
 }
 
+.nav-badge-inline {
+    position: static;
+    display: inline-flex;
+    margin-left: 6px;
+    min-width: 16px;
+    height: 16px;
+    vertical-align: middle;
+}
+
 .nav-icon-link {
     position: relative;
     padding: 8px;

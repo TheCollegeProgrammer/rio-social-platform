@@ -103,21 +103,15 @@ function PostDetail() {
 
                 <div className="post-footer">
                     <button className={post.liked ? "action-btn liked" : "action-btn"} onClick={handleLike}>
-                        <Heart size={16} fill={post.liked ? "currentColor" : "none"} />
-                        {post.likesCount}
+                        <Heart size={16} fill={post.liked ? "currentColor" : "none"} />{post.likesCount}
                     </button>
                     <button className={bookmarked ? "action-btn liked" : "action-btn"} onClick={handleBookmark}>
-                        <Bookmark size={16} fill={bookmarked ? "currentColor" : "none"} />
-                        {bookmarked ? "Saved" : "Save"}
+                        <Bookmark size={16} fill={bookmarked ? "currentColor" : "none"} />{bookmarked ? "Saved" : "Save"}
                     </button>
                     {isOwner && (
                         <>
-                            <button className="action-btn" onClick={() => navigate(`/posts/${id}/edit`)}>
-                                <Pencil size={16} />Edit
-                            </button>
-                            <button className="action-btn danger" onClick={handleDelete}>
-                                <Trash2 size={16} />Delete
-                            </button>
+                            <button className="action-btn" onClick={() => navigate(`/posts/${id}/edit`)}><Pencil size={16} />Edit</button>
+                            <button className="action-btn danger" onClick={handleDelete}><Trash2 size={16} />Delete</button>
                         </>
                     )}
                 </div>
@@ -127,12 +121,7 @@ function PostDetail() {
                 <h2>Comments ({comments.reduce((s, c) => s + 1 + (c.replies?.length || 0), 0)})</h2>
 
                 <form onSubmit={handleComment} className="create-post">
-                    <textarea
-                        placeholder="Write a comment..."
-                        value={commentText}
-                        onChange={(e) => setCommentText(e.target.value)}
-                        rows={2}
-                    />
+                    <textarea placeholder="Write a comment..." value={commentText} onChange={(e) => setCommentText(e.target.value)} rows={2} />
                     <div className="post-actions">
                         <span />
                         <button type="submit" className="btn btn-sm" disabled={submitting || !commentText.trim()}>

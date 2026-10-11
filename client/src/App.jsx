@@ -8,6 +8,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Home from "./pages/Home";
 import Navbar from "./components/Navbar";
 import Profile from "./pages/Profile";
+import EditProfile from "./pages/EditProfile";
 import PostDetail from "./pages/PostDetail";
 import PostEdit from "./pages/PostEdit";
 import UserProfile from "./pages/UserProfile";
@@ -30,6 +31,7 @@ function App() {
           <Route element={<ProtectedRoute />}>
             <Route path="/" element={<Home />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/profile/edit" element={<EditProfile />} />
             <Route path="/posts/:id" element={<PostDetail />} />
             <Route path="/posts/:id/edit" element={<PostEdit />} />
             <Route path="/users/:id" element={<UserProfile />} />

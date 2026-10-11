@@ -1,10 +1,11 @@
 import { useEffect, useState, useRef } from "react";
 import { ArrowLeft, Send, Mail } from "lucide-react";
 import { useAuth } from "../context/useAuth";
-import { getMessages, sendMessage } from "../services/api";
+import { getMessages, sendMessage, markConversationRead } from "../services/api";
 import Avatar from "./Avatar";
+import "../pages/MessagesChat.css";
 
-function ChatWindow({ conversation, onBack }) {
+function ChatWindow({ conversation, onBack, onRead }) {
     const { user } = useAuth();
     const [messages, setMessages] = useState([]);
     const [text, setText] = useState("");
@@ -22,7 +23,14 @@ function ChatWindow({ conversation, onBack }) {
         getMessages(conversation._id)
             .then((d) => { if (!cancelled) { setMessages(d.messages); setLoadedFor(conversation._id); } })
             .catch((e) => { if (!cancelled) setError(e.message); });
+        // Opening the chat marks it read
+        if (conversation.unreadCount > 0) {
+            markConversationRead(conversation._id)
+                .then(() => onRead?.(conversation._id))
+                .catch(() => { });
+        }
         return () => { cancelled = true; };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [conversation?._id]);
 
     useEffect(() => {

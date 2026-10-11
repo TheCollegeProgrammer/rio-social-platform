@@ -18,7 +18,12 @@ const getConversations = async (req, res) => {
         const convos = await Conversation.find({ participants: req.user.id })
             .sort({ updatedAt: -1 })
             .populate("participants", "username name avatar");
-        res.json({ conversations: convos });
+        const conversations = convos.map((c) => {
+            const obj = c.toObject();
+            obj.unreadCount = (c.unreadCounts && c.unreadCounts.get(req.user.id)) || 0;
+            return obj;
+        });
+        res.json({ conversations });
     } catch (error) {
         res.status(500).json({ errors: ["Server error"] });
     }
@@ -105,6 +110,15 @@ const sendMessage = async (req, res) => {
             sender: req.user.id,
             createdAt: message.createdAt
         };
+
+        // Increment unread counter for every other participant
+        convo.unreadCounts = convo.unreadCounts || new Map();
+        for (const p of convo.participants) {
+            const pid = p.toString();
+            if (pid !== req.user.id) {
+                convo.unreadCounts.set(pid, (convo.unreadCounts.get(pid) || 0) + 1);
+            }
+        }
         await convo.save();
         await message.populate("sender", "username name avatar");
 

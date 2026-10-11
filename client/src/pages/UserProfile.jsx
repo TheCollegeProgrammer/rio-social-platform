@@ -4,6 +4,7 @@ import { useAuth } from "../context/useAuth";
 import { useToast } from "../context/useToast.js";
 import { getProfile, toggleFollow, getOrCreateConversation, mediaUrl } from "../services/api";
 import PostCard from "../components/PostCard";
+import FollowListPopover from "../components/FollowListPopover";
 import "../styles/Home.css";
 import "../styles/Profile.css";
 
@@ -82,8 +83,8 @@ function UserProfile() {
                         {profile.bio && <p className="bio">{profile.bio}</p>}
                         <div className="profile-stats">
                             <span><strong>{profile.postsCount}</strong> posts</span>
-                            <span><strong>{profile.followersCount}</strong> followers</span>
-                            <span><strong>{profile.followingCount}</strong> following</span>
+                            <FollowListPopover userId={profile._id} type="followers" count={profile.followersCount} />
+                            <FollowListPopover userId={profile._id} type="following" count={profile.followingCount} />
                         </div>
                     </div>
                     <div className="profile-actions">

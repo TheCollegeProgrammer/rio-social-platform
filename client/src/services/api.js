@@ -119,6 +119,9 @@ export const deleteNotification = (id) =>
     apiRequest(`/notifications/${id}`, { method: "DELETE" });
 
 export const getConversations = () => apiRequest("/messages");
+export const getUnreadMessageCount = () => apiRequest("/messages/unread-count");
+export const markConversationRead = (convoId) =>
+    apiRequest(`/messages/${convoId}/read`, { method: "PATCH" });
 export const getOrCreateConversation = (userId) =>
     apiRequest(`/messages/user/${userId}`);
 export const getMessages = (convoId, page = 1) =>

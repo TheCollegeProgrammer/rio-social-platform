@@ -118,3 +118,14 @@
 }
 
 .image-chip button:hover { color: var(--danger); }
+
+.edit-profile-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.edit-profile-header h1 {
+    margin: 0;
+}
+
