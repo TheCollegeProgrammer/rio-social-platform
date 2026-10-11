@@ -1,0 +1,101 @@
+const Post = require("../models/post");
+
+const extractHashtags = (content) => {
+    const matches = content.match(/#\w+/g);
+    return matches ? [...new Set(matches.map((h) => h.toLowerCase()))] : [];
+};
+
+const createPost = async (req, res) => {
+    try {
+        const { content } = req.body;
+
+        if (!content || !content.trim()) {
+            return res.status(400).json({ errors: ["Post content is required"] });
+        }
+        if (content.length > 5000) {
+            return res.status(400).json({ errors: ["Post must be under 5000 characters"] });
+        }
+
+        const post = await Post.create({
+            content: content.trim(),
+            author: req.user.id,
+            hashtags: extractHashtags(content)
+        });
+
+        await post.populate("author", "username name avatar");
+        res.status(201).json({ message: "Post created", post });
+    } catch (error) {
+        res.status(500).json({ errors: ["Server error"] });
+    }
+};
+
+const getPostById = async (req, res) => {
+    try {
+        const post = await Post.findById(req.params.id)
+            .populate("author", "username name avatar");
+
+        if (!post) return res.status(404).json({ errors: ["Post not found"] });
+
+        const userId = req.user ? req.user.id : null;
+        const liked = userId ? post.likes.some((id) => id.toString() === userId) : false;
+
+        res.json({
+            post: {
+                _id: post._id,
+                content: post.content,
+                author: post.author,
+                likesCount: post.likes.length,
+                liked,
+                hashtags: post.hashtags,
+                image: post.image,
+                editedAt: post.editedAt,
+                createdAt: post.createdAt
+            }
+        });
+    } catch (error) {
+        if (error.name === "CastError") {
+            return res.status(400).json({ errors: ["Invalid post ID"] });
+        }
+        res.status(500).json({ errors: ["Server error"] });
+    }
+};
+
+const getPosts = async (req, res) => {
+    try {
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const skip = (page - 1) * limit;
+
+        const posts = await Post.find()
+            .populate("author", "username name avatar")
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit);
+
+        const total = await Post.countDocuments();
+        const userId = req.user ? req.user.id : null;
+
+        const enriched = posts.map((post) => ({
+            _id: post._id,
+            content: post.content,
+            author: post.author,
+            likesCount: post.likes.length,
+            liked: userId ? post.likes.some((id) => id.toString() === userId) : false,
+            hashtags: post.hashtags,
+            image: post.image,
+            editedAt: post.editedAt,
+            createdAt: post.createdAt
+        }));
+
+        res.json({
+            posts: enriched,
+            page,
+            totalPages: Math.ceil(total / limit),
+            total
+        });
+    } catch (error) {
+        res.status(500).json({ errors: ["Server error"] });
+    }
+};
+
+module.exports = { createPost, getPostById, getPosts, extractHashtags };

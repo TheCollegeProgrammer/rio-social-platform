@@ -1,0 +1,119 @@
+.post-card {
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 18px 20px;
+    margin-bottom: 14px;
+    transition: border-color 0.15s;
+}
+
+.post-card:hover { border-color: var(--border-strong); }
+
+.post-user {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.post-user h3 { margin: 0; font-size: 15px; }
+
+.post-user span {
+    color: var(--text-faint);
+    font-size: 13px;
+}
+
+.post-content {
+    font-size: 16px;
+    line-height: 1.6;
+    margin: 14px 0;
+    color: var(--text);
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.post-image {
+    width: 100%;
+    max-height: 480px;
+    object-fit: cover;
+    border-radius: var(--radius);
+    margin-bottom: 14px;
+    border: 1px solid var(--border);
+}
+
+.post-footer {
+    display: flex;
+    gap: 8px;
+    color: var(--text-muted);
+    border-top: 1px solid var(--border);
+    padding-top: 10px;
+    font-size: 14px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 14px;
+    padding: 6px 10px;
+    border-radius: 8px;
+    transition: background 0.12s, color 0.12s;
+}
+
+.action-btn:hover {
+    background: var(--bg-hover);
+    color: var(--text);
+}
+
+.action-btn.liked { color: var(--danger); }
+.action-btn.danger:hover { color: var(--danger); }
+
+.post-content-link { display: block; color: inherit; }
+.post-author-link { color: var(--text); }
+.post-author-link:hover { text-decoration: underline; }
+
+.hashtags {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+}
+
+.hashtag {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    cursor: pointer;
+    border: none;
+    padding: 3px 9px;
+    color: var(--accent);
+    font-size: 13px;
+    background: rgba(96, 165, 250, 0.1);
+    border-radius: 999px;
+    transition: background 0.12s;
+}
+
+.hashtag:hover { background: rgba(96, 165, 250, 0.22); }
+
+.small-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-hover);
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.small-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}

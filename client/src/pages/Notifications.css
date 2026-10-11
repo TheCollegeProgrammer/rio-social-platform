@@ -1,0 +1,103 @@
+.unread-pill {
+    display: inline-block;
+    min-width: 24px;
+    padding: 2px 8px;
+    margin-left: 8px;
+    border-radius: 999px;
+    background: var(--danger);
+    color: white;
+    font-size: 13px;
+    font-weight: 700;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.notif-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.notif-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 16px;
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    transition: background 0.15s;
+    position: relative;
+}
+
+.notif-item:hover { background: var(--bg-hover); }
+
+.notif-item.unread {
+    background: rgba(59, 130, 246, 0.07);
+    border-color: rgba(59, 130, 246, 0.3);
+}
+
+.notif-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    background: var(--bg-hover);
+    color: var(--text-muted);
+}
+
+.notif-icon.like { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
+.notif-icon.comment,
+.notif-icon.reply { background: rgba(96, 165, 250, 0.15); color: var(--accent); }
+.notif-icon.follow { background: rgba(74, 222, 128, 0.15); color: var(--success); }
+
+.notif-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+    background: var(--bg-hover);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 14px;
+}
+
+.notif-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.notif-body { flex: 1; min-width: 0; }
+
+.notif-text {
+    font-size: 15px;
+    color: var(--text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.notif-time {
+    font-size: 13px;
+    color: var(--text-faint);
+}
+
+.notif-delete {
+    background: none;
+    border: none;
+    color: var(--text-faint);
+    font-size: 13px;
+    padding: 4px 6px;
+    border-radius: 6px;
+    opacity: 0;
+    transition: opacity 0.15s, background 0.15s, color 0.15s;
+}
+
+.notif-item:hover .notif-delete { opacity: 1; }
+.notif-delete:hover { background: var(--danger); color: white; }
