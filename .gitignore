@@ -3,3 +3,8 @@ node_modules/
 *.log
 dist/
 server/uploads/
+
+# Local test & scratch scripts (not part of the app)
+check_lines.js
+run_tests.js
+test_*.js
