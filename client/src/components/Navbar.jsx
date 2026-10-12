@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { Bell, LogOut } from "lucide-react";
 import { useAuth } from "../context/useAuth";
-import { logoutUser, getNotifications, getUnreadMessageCount, mediaUrl } from "../services/api";
+import { getNotifications, getUnreadMessageCount, mediaUrl } from "../services/api";
 
 function NavAvatar({ user }) {
     const src = mediaUrl(user.avatar);
@@ -11,7 +11,7 @@ function NavAvatar({ user }) {
 }
 
 function Navbar() {
-    const { user, setUser } = useAuth();
+    const { user, logout } = useAuth();
     const navigate = useNavigate();
     const [unread, setUnread] = useState(0);
     const [unreadMsgs, setUnreadMsgs] = useState(0);
@@ -33,8 +33,7 @@ function Navbar() {
     }, [user]);
 
     const handleLogout = async () => {
-        await logoutUser();
-        setUser(null);
+        await logout();
         setUnread(0);
         setUnreadMsgs(0);
         navigate("/login");

@@ -4,6 +4,7 @@ import { UserCog } from "lucide-react";
 import { useAuth } from "../context/useAuth";
 import { useToast } from "../context/useToast.js";
 import { changePassword, deleteAccount } from "../services/api";
+import { notifyAuthChange } from "../services/sessionSync";
 import "../styles/Settings.css";
 
 function Settings() {
@@ -35,6 +36,7 @@ function Settings() {
             setDeleteError("");
             await deleteAccount(deletePw);
             setUser(null);
+            notifyAuthChange("logout");
             navigate("/login");
         } catch (err) { setDeleteError(err.message); }
     };
