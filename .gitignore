@@ -12,3 +12,4 @@ test_*.js
 
 # Credentials & local-only notes (never commit)
 LOGIN_DETAILS.txt
+profiles_posts.json
