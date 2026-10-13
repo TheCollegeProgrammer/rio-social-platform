@@ -33,7 +33,7 @@ function Profile() {
         Promise.all([getProfile(user._id), getBookmarks()])
             .then(([profileData, bookmarkData]) => {
                 if (!cancelled) {
-                    setProfile(profileData);
+                    setProfile(profileData.profile);
                     setPosts(profileData.posts || []);
                     setBookmarks(bookmarkData.posts || []);
                 }

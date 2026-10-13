@@ -15,9 +15,10 @@ const getProfile = async (req, res) => {
             .sort({ createdAt: -1 })
             .limit(50);
 
-        const postsCount = posts.length;
+        const postsCount = await Post.countDocuments({ author: user._id });
         const followersCount = user.followers.length;
         const followingCount = user.following.length;
+        const isFollowing = user.followers.some((f) => f && String(f._id) === req.user.id);
 
         res.json({
             profile: {
@@ -29,6 +30,7 @@ const getProfile = async (req, res) => {
                 avatar: user.avatar,
                 coverImage: user.coverImage,
                 isPrivate: user.isPrivate,
+                isFollowing,
                 followersCount,
                 followingCount,
                 postsCount,

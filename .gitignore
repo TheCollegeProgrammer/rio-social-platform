@@ -8,3 +8,7 @@ server/uploads/
 check_lines.js
 run_tests.js
 test_*.js
+*_tmp.js
+
+# Credentials & local-only notes (never commit)
+LOGIN_DETAILS.txt

@@ -81,11 +81,15 @@ JWT_SECRET=your-secret-here
 
 ```bash
 cd server
+node fetch-seed-images.js   # downloads 135 CC images for profiles/posts (~3 min)
 npm run seed
 ```
 
-Creates 10 demo users with a follow graph. Log in with `<username>@demo.com` / `pass1234`
-(e.g. `aria_strings@demo.com`).
+Creates 15 profiles with 120 posts (from `profiles_posts.json`), local images in
+`server/uploads/`, and a follow graph. Log in with `<username>@demo.com` / `pass1234`
+(e.g. `arjun_lens@demo.com`). Skipping the fetch step seeds everything except images.
+Images come from Openverse (CC-licensed); attribution is saved in
+`server/uploads/seed-manifest.json`.
 
 ### 4. Run
 

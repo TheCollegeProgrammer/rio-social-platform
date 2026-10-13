@@ -1,0 +1,1798 @@
+[
+  {
+    "id": 1,
+    "username": "arjun_lens",
+    "name": "Arjun Mehta",
+    "profession": "Photographer",
+    "bio": "Chasing light, one frame at a time.",
+    "profile_hashtags": [
+      "#photography",
+      "#lens",
+      "#goldenhour"
+    ],
+    "profile_image_pinterest": "https://www.pinterest.com/search/pins/?q=photographer+portrait+camera",
+    "profile_image_unsplash": "https://unsplash.com/s/photos/photographer-portrait-camera",
+    "posts": [
+      {
+        "post_no": 1,
+        "heading": "Golden Hour Magic",
+        "caption": "Sunsets are nature's way of showing off.",
+        "hashtags": [
+          "#goldenhour",
+          "#sunset",
+          "#naturephotography"
+        ],
+        "image_search_query": "golden hour landscape photography",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=golden+hour+landscape+photography",
+        "unsplash_link": "https://unsplash.com/s/photos/golden-hour-landscape-photography"
+      },
+      {
+        "post_no": 2,
+        "heading": "Street Stories",
+        "caption": "Every street corner has a story waiting to be framed.",
+        "hashtags": [
+          "#streetphotography",
+          "#urban",
+          "#candid"
+        ],
+        "image_search_query": "street photography candid",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=street+photography+candid",
+        "unsplash_link": "https://unsplash.com/s/photos/street-photography-candid"
+      },
+      {
+        "post_no": 3,
+        "heading": "Monochrome Mood",
+        "caption": "No colors needed when emotions speak loud.",
+        "hashtags": [
+          "#blackandwhite",
+          "#portrait",
+          "#moody"
+        ],
+        "image_search_query": "black and white portrait photography",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=black+and+white+portrait+photography",
+        "unsplash_link": "https://unsplash.com/s/photos/black-and-white-portrait-photography"
+      },
+      {
+        "post_no": 4,
+        "heading": "Macro World",
+        "caption": "Tiny details, giant beauty.",
+        "hashtags": [
+          "#macro",
+          "#closeup",
+          "#detail"
+        ],
+        "image_search_query": "macro photography dew drops",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=macro+photography+dew+drops",
+        "unsplash_link": "https://unsplash.com/s/photos/macro-photography-dew-drops"
+      },
+      {
+        "post_no": 5,
+        "heading": "Night Sky Dreams",
+        "caption": "Long exposure, longer dreams.",
+        "hashtags": [
+          "#astrophotography",
+          "#milkyway",
+          "#stars"
+        ],
+        "image_search_query": "milky way night photography",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=milky+way+night+photography",
+        "unsplash_link": "https://unsplash.com/s/photos/milky-way-night-photography"
+      },
+      {
+        "post_no": 6,
+        "heading": "Reflections",
+        "caption": "Sometimes the best view is upside down.",
+        "hashtags": [
+          "#reflection",
+          "#symmetry",
+          "#mirror"
+        ],
+        "image_search_query": "water reflection photography",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=water+reflection+photography",
+        "unsplash_link": "https://unsplash.com/s/photos/water-reflection-photography"
+      },
+      {
+        "post_no": 7,
+        "heading": "Portrait Session",
+        "caption": "Capturing the soul behind the smile.",
+        "hashtags": [
+          "#portrait",
+          "#naturallight",
+          "#people"
+        ],
+        "image_search_query": "portrait photography natural light",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=portrait+photography+natural+light",
+        "unsplash_link": "https://unsplash.com/s/photos/portrait-photography-natural-light"
+      },
+      {
+        "post_no": 8,
+        "heading": "Gear Check",
+        "caption": "Camera, lens, coffee. Ready for the shoot.",
+        "hashtags": [
+          "#camera",
+          "#gear",
+          "#photographerlife"
+        ],
+        "image_search_query": "camera gear flat lay",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=camera+gear+flat+lay",
+        "unsplash_link": "https://unsplash.com/s/photos/camera-gear-flat-lay"
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "username": "wanderlust_riya",
+    "name": "Riya Kapoor",
+    "profession": "Travel Blogger",
+    "bio": "50 countries to go. Backpack always packed.",
+    "profile_hashtags": [
+      "#travel",
+      "#wanderlust",
+      "#explore"
+    ],
+    "profile_image_pinterest": "https://www.pinterest.com/search/pins/?q=woman+traveler+backpack+mountains",
+    "profile_image_unsplash": "https://unsplash.com/s/photos/woman-traveler-backpack-mountains",
+    "posts": [
+      {
+        "post_no": 1,
+        "heading": "Taj Mahal at Sunrise",
+        "caption": "Love in marble, and it looks even better at dawn.",
+        "hashtags": [
+          "#tajmahal",
+          "#india",
+          "#travel"
+        ],
+        "image_search_query": "taj mahal sunrise",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=taj+mahal+sunrise",
+        "unsplash_link": "https://unsplash.com/s/photos/taj-mahal-sunrise"
+      },
+      {
+        "post_no": 2,
+        "heading": "Santorini Blues",
+        "caption": "White walls, blue domes, endless sea views.",
+        "hashtags": [
+          "#santorini",
+          "#greece",
+          "#traveldiaries"
+        ],
+        "image_search_query": "santorini greece sunset",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=santorini+greece+sunset",
+        "unsplash_link": "https://unsplash.com/s/photos/santorini-greece-sunset"
+      },
+      {
+        "post_no": 3,
+        "heading": "Bali Rice Terraces",
+        "caption": "Green layers of peace in Ubud.",
+        "hashtags": [
+          "#bali",
+          "#ubud",
+          "#travel"
+        ],
+        "image_search_query": "bali rice terrace",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=bali+rice+terrace",
+        "unsplash_link": "https://unsplash.com/s/photos/bali-rice-terrace"
+      },
+      {
+        "post_no": 4,
+        "heading": "Paris in the Morning",
+        "caption": "Croissant in hand, Eiffel in sight.",
+        "hashtags": [
+          "#paris",
+          "#eiffeltower",
+          "#citytrip"
+        ],
+        "image_search_query": "paris eiffel tower morning",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=paris+eiffel+tower+morning",
+        "unsplash_link": "https://unsplash.com/s/photos/paris-eiffel-tower-morning"
+      },
+      {
+        "post_no": 5,
+        "heading": "Swiss Alps Escape",
+        "caption": "Fresh air, snow peaks, zero stress.",
+        "hashtags": [
+          "#switzerland",
+          "#alps",
+          "#mountains"
+        ],
+        "image_search_query": "swiss alps scenic",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=swiss+alps+scenic",
+        "unsplash_link": "https://unsplash.com/s/photos/swiss-alps-scenic"
+      },
+      {
+        "post_no": 6,
+        "heading": "Kerala Backwaters",
+        "caption": "Slow boat rides and coconut breezes.",
+        "hashtags": [
+          "#kerala",
+          "#backwaters",
+          "#godsowncountry"
+        ],
+        "image_search_query": "kerala backwaters houseboat",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=kerala+backwaters+houseboat",
+        "unsplash_link": "https://unsplash.com/s/photos/kerala-backwaters-houseboat"
+      },
+      {
+        "post_no": 7,
+        "heading": "Desert Camp, Jaisalmer",
+        "caption": "Stars above, dunes below.",
+        "hashtags": [
+          "#rajasthan",
+          "#desert",
+          "#camping"
+        ],
+        "image_search_query": "jaisalmer desert camp",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=jaisalmer+desert+camp",
+        "unsplash_link": "https://unsplash.com/s/photos/jaisalmer-desert-camp"
+      },
+      {
+        "post_no": 8,
+        "heading": "Packing Light",
+        "caption": "My carry-on rules for a 2-week trip.",
+        "hashtags": [
+          "#packinglist",
+          "#travelhacks",
+          "#backpacking"
+        ],
+        "image_search_query": "travel packing flat lay",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=travel+packing+flat+lay",
+        "unsplash_link": "https://unsplash.com/s/photos/travel-packing-flat-lay"
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "username": "pixel_vikram",
+    "name": "Vikram Singh",
+    "profession": "Gamer / Streamer",
+    "bio": "Level up daily. Streaming at 8 PM.",
+    "profile_hashtags": [
+      "#gaming",
+      "#streamer",
+      "#esports"
+    ],
+    "profile_image_pinterest": "https://www.pinterest.com/search/pins/?q=gaming+setup+rgb",
+    "profile_image_unsplash": "https://unsplash.com/s/photos/gaming-setup-rgb",
+    "posts": [
+      {
+        "post_no": 1,
+        "heading": "New Setup Unlocked",
+        "caption": "RGB everything. Frame rate goes brrr.",
+        "hashtags": [
+          "#gamingsetup",
+          "#rgb",
+          "#battlestation"
+        ],
+        "image_search_query": "gaming setup rgb desk",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=gaming+setup+rgb+desk",
+        "unsplash_link": "https://unsplash.com/s/photos/gaming-setup-rgb-desk"
+      },
+      {
+        "post_no": 2,
+        "heading": "Victory Royale",
+        "caption": "Last squad standing. GG!",
+        "hashtags": [
+          "#battleroyale",
+          "#win",
+          "#gg"
+        ],
+        "image_search_query": "battle royale gaming screenshot",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=battle+royale+gaming+screenshot",
+        "unsplash_link": "https://unsplash.com/s/photos/battle-royale-gaming-screenshot"
+      },
+      {
+        "post_no": 3,
+        "heading": "Retro Corner",
+        "caption": "Where it all began, 8-bit memories.",
+        "hashtags": [
+          "#retrogaming",
+          "#arcade",
+          "#nostalgia"
+        ],
+        "image_search_query": "retro gaming arcade",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=retro+gaming+arcade",
+        "unsplash_link": "https://unsplash.com/s/photos/retro-gaming-arcade"
+      },
+      {
+        "post_no": 4,
+        "heading": "Controller Collection",
+        "caption": "Which one is your favourite?",
+        "hashtags": [
+          "#controller",
+          "#console",
+          "#gamer"
+        ],
+        "image_search_query": "game controllers collection",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=game+controllers+collection",
+        "unsplash_link": "https://unsplash.com/s/photos/game-controllers-collection"
+      },
+      {
+        "post_no": 5,
+        "heading": "Tournament Day",
+        "caption": "Nervous but ready for the finals.",
+        "hashtags": [
+          "#esports",
+          "#tournament",
+          "#lan"
+        ],
+        "image_search_query": "esports tournament arena",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=esports+tournament+arena",
+        "unsplash_link": "https://unsplash.com/s/photos/esports-tournament-arena"
+      },
+      {
+        "post_no": 6,
+        "heading": "Open World Views",
+        "caption": "Sometimes I just stop to admire the scenery.",
+        "hashtags": [
+          "#gamingscreenshot",
+          "#openworld",
+          "#scenic"
+        ],
+        "image_search_query": "open world game landscape",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=open+world+game+landscape",
+        "unsplash_link": "https://unsplash.com/s/photos/open-world-game-landscape"
+      },
+      {
+        "post_no": 7,
+        "heading": "Streaming Starts Soon",
+        "caption": "Come hang out, chat is open!",
+        "hashtags": [
+          "#twitch",
+          "#streamer",
+          "#livestream"
+        ],
+        "image_search_query": "streamer desk microphone",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=streamer+desk+microphone",
+        "unsplash_link": "https://unsplash.com/s/photos/streamer-desk-microphone"
+      },
+      {
+        "post_no": 8,
+        "heading": "Gaming Snacks",
+        "caption": "Fuel for the all-nighter.",
+        "hashtags": [
+          "#gamernight",
+          "#snacks",
+          "#latenight"
+        ],
+        "image_search_query": "gamer snacks energy drink",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=gamer+snacks+energy+drink",
+        "unsplash_link": "https://unsplash.com/s/photos/gamer-snacks-energy-drink"
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "username": "art_by_ananya",
+    "name": "Ananya Rao",
+    "profession": "Digital & Traditional Artist",
+    "bio": "Colors are my language.",
+    "profile_hashtags": [
+      "#art",
+      "#painting",
+      "#illustration"
+    ],
+    "profile_image_pinterest": "https://www.pinterest.com/search/pins/?q=artist+painting+studio",
+    "profile_image_unsplash": "https://unsplash.com/s/photos/artist-painting-studio",
+    "posts": [
+      {
+        "post_no": 1,
+        "heading": "Watercolor Sunrise",
+        "caption": "Let the water do the talking.",
+        "hashtags": [
+          "#watercolor",
+          "#painting",
+          "#landscape"
+        ],
+        "image_search_query": "watercolor landscape painting",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=watercolor+landscape+painting",
+        "unsplash_link": "https://unsplash.com/s/photos/watercolor-landscape-painting"
+      },
+      {
+        "post_no": 2,
+        "heading": "Sketchbook Diaries",
+        "caption": "Pages full of quick ideas.",
+        "hashtags": [
+          "#sketchbook",
+          "#drawing",
+          "#doodle"
+        ],
+        "image_search_query": "sketchbook drawing pencil",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=sketchbook+drawing+pencil",
+        "unsplash_link": "https://unsplash.com/s/photos/sketchbook-drawing-pencil"
+      },
+      {
+        "post_no": 3,
+        "heading": "Digital Portrait",
+        "caption": "Procreate and a lot of layers.",
+        "hashtags": [
+          "#digitalart",
+          "#portrait",
+          "#procreate"
+        ],
+        "image_search_query": "digital portrait illustration",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=digital+portrait+illustration",
+        "unsplash_link": "https://unsplash.com/s/photos/digital-portrait-illustration"
+      },
+      {
+        "post_no": 4,
+        "heading": "Madhubani Magic",
+        "caption": "Folk art that never gets old.",
+        "hashtags": [
+          "#madhubani",
+          "#folkart",
+          "#indianart"
+        ],
+        "image_search_query": "madhubani painting",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=madhubani+painting",
+        "unsplash_link": "https://unsplash.com/s/photos/madhubani-painting"
+      },
+      {
+        "post_no": 5,
+        "heading": "Studio Mess",
+        "caption": "Creativity is messy, and I love it.",
+        "hashtags": [
+          "#artiststudio",
+          "#messy",
+          "#creative"
+        ],
+        "image_search_query": "artist studio paint",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=artist+studio+paint",
+        "unsplash_link": "https://unsplash.com/s/photos/artist-studio-paint"
+      },
+      {
+        "post_no": 6,
+        "heading": "Oil Painting Progress",
+        "caption": "Day 5. Still not done, but getting there.",
+        "hashtags": [
+          "#oilpainting",
+          "#canvas",
+          "#process"
+        ],
+        "image_search_query": "oil painting canvas",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=oil+painting+canvas",
+        "unsplash_link": "https://unsplash.com/s/photos/oil-painting-canvas"
+      },
+      {
+        "post_no": 7,
+        "heading": "Mandala Meditation",
+        "caption": "Patterns that calm the mind.",
+        "hashtags": [
+          "#mandala",
+          "#zentangle",
+          "#calm"
+        ],
+        "image_search_query": "mandala art drawing",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=mandala+art+drawing",
+        "unsplash_link": "https://unsplash.com/s/photos/mandala-art-drawing"
+      },
+      {
+        "post_no": 8,
+        "heading": "Art Supplies Haul",
+        "caption": "New brushes, new possibilities.",
+        "hashtags": [
+          "#artsupplies",
+          "#brushes",
+          "#haul"
+        ],
+        "image_search_query": "art supplies haul brushes",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=art+supplies+haul+brushes",
+        "unsplash_link": "https://unsplash.com/s/photos/art-supplies-haul-brushes"
+      }
+    ]
+  },
+  {
+    "id": 5,
+    "username": "beats_by_kabir",
+    "name": "Kabir Joshi",
+    "profession": "Musician / Guitarist",
+    "bio": "Strings, songs and sunsets.",
+    "profile_hashtags": [
+      "#music",
+      "#guitar",
+      "#livemusic"
+    ],
+    "profile_image_pinterest": "https://www.pinterest.com/search/pins/?q=guitarist+playing+guitar",
+    "profile_image_unsplash": "https://unsplash.com/s/photos/guitarist-playing-guitar",
+    "posts": [
+      {
+        "post_no": 1,
+        "heading": "Acoustic Evening",
+        "caption": "Just me, my guitar and the golden light.",
+        "hashtags": [
+          "#acousticguitar",
+          "#sunset",
+          "#music"
+        ],
+        "image_search_query": "acoustic guitar sunset",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=acoustic+guitar+sunset",
+        "unsplash_link": "https://unsplash.com/s/photos/acoustic-guitar-sunset"
+      },
+      {
+        "post_no": 2,
+        "heading": "Live at the Cafe",
+        "caption": "Thank you for the love last night!",
+        "hashtags": [
+          "#livemusic",
+          "#cafe",
+          "#gig"
+        ],
+        "image_search_query": "live music cafe performance",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=live+music+cafe+performance",
+        "unsplash_link": "https://unsplash.com/s/photos/live-music-cafe-performance"
+      },
+      {
+        "post_no": 3,
+        "heading": "Studio Sessions",
+        "caption": "Recording the new single.",
+        "hashtags": [
+          "#musicstudio",
+          "#recording",
+          "#mixing"
+        ],
+        "image_search_query": "music studio recording",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=music+studio+recording",
+        "unsplash_link": "https://unsplash.com/s/photos/music-studio-recording"
+      },
+      {
+        "post_no": 4,
+        "heading": "Vinyl Love",
+        "caption": "Warm crackle, rich sound.",
+        "hashtags": [
+          "#vinyl",
+          "#records",
+          "#turntable"
+        ],
+        "image_search_query": "vinyl records collection",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=vinyl+records+collection",
+        "unsplash_link": "https://unsplash.com/s/photos/vinyl-records-collection"
+      },
+      {
+        "post_no": 5,
+        "heading": "Songwriting Notes",
+        "caption": "Lyrics start as messy notes.",
+        "hashtags": [
+          "#songwriting",
+          "#lyrics",
+          "#notebook"
+        ],
+        "image_search_query": "songwriting notebook guitar",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=songwriting+notebook+guitar",
+        "unsplash_link": "https://unsplash.com/s/photos/songwriting-notebook-guitar"
+      },
+      {
+        "post_no": 6,
+        "heading": "Jam Night",
+        "caption": "Good vibes and better riffs.",
+        "hashtags": [
+          "#band",
+          "#jam",
+          "#session"
+        ],
+        "image_search_query": "band jam session",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=band+jam+session",
+        "unsplash_link": "https://unsplash.com/s/photos/band-jam-session"
+      },
+      {
+        "post_no": 7,
+        "heading": "Concert Energy",
+        "caption": "The crowd made it unforgettable.",
+        "hashtags": [
+          "#concert",
+          "#crowd",
+          "#livemusic"
+        ],
+        "image_search_query": "concert crowd lights",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=concert+crowd+lights",
+        "unsplash_link": "https://unsplash.com/s/photos/concert-crowd-lights"
+      },
+      {
+        "post_no": 8,
+        "heading": "Guitar Collection",
+        "caption": "Each one has a different voice.",
+        "hashtags": [
+          "#guitars",
+          "#collection",
+          "#music"
+        ],
+        "image_search_query": "guitar collection wall",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=guitar+collection+wall",
+        "unsplash_link": "https://unsplash.com/s/photos/guitar-collection-wall"
+      }
+    ]
+  },
+  {
+    "id": 6,
+    "username": "study_with_sneha",
+    "name": "Sneha Patil",
+    "profession": "College Student",
+    "bio": "Engineering student. Coffee-powered. Always one deadline away.",
+    "profile_hashtags": [
+      "#student",
+      "#studygram",
+      "#college"
+    ],
+    "profile_image_pinterest": "https://www.pinterest.com/search/pins/?q=student+studying+library",
+    "profile_image_unsplash": "https://unsplash.com/s/photos/student-studying-library",
+    "posts": [
+      {
+        "post_no": 1,
+        "heading": "Library Hours",
+        "caption": "Finals mode: on.",
+        "hashtags": [
+          "#library",
+          "#studying",
+          "#exams"
+        ],
+        "image_search_query": "library study desk",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=library+study+desk",
+        "unsplash_link": "https://unsplash.com/s/photos/library-study-desk"
+      },
+      {
+        "post_no": 2,
+        "heading": "Aesthetic Notes",
+        "caption": "Colour-coded notes make me feel productive.",
+        "hashtags": [
+          "#studygram",
+          "#notes",
+          "#aesthetic"
+        ],
+        "image_search_query": "aesthetic study notes",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=aesthetic+study+notes",
+        "unsplash_link": "https://unsplash.com/s/photos/aesthetic-study-notes"
+      },
+      {
+        "post_no": 3,
+        "heading": "Campus Vibes",
+        "caption": "Walking to class like the main character.",
+        "hashtags": [
+          "#college",
+          "#campus",
+          "#life"
+        ],
+        "image_search_query": "college campus walking",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=college+campus+walking",
+        "unsplash_link": "https://unsplash.com/s/photos/college-campus-walking"
+      },
+      {
+        "post_no": 4,
+        "heading": "Study Playlist",
+        "caption": "Lo-fi on, distractions off.",
+        "hashtags": [
+          "#lofi",
+          "#study",
+          "#music"
+        ],
+        "image_search_query": "lofi study desk",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=lofi+study+desk",
+        "unsplash_link": "https://unsplash.com/s/photos/lofi-study-desk"
+      },
+      {
+        "post_no": 5,
+        "heading": "Group Project Night",
+        "caption": "Pizza, laptops and chaos.",
+        "hashtags": [
+          "#groupstudy",
+          "#friends",
+          "#college"
+        ],
+        "image_search_query": "group study friends laptop",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=group+study+friends+laptop",
+        "unsplash_link": "https://unsplash.com/s/photos/group-study-friends-laptop"
+      },
+      {
+        "post_no": 6,
+        "heading": "Desk Setup",
+        "caption": "Cozy desk, productive mind.",
+        "hashtags": [
+          "#desksetup",
+          "#study",
+          "#cozy"
+        ],
+        "image_search_query": "study desk setup cozy",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=study+desk+setup+cozy",
+        "unsplash_link": "https://unsplash.com/s/photos/study-desk-setup-cozy"
+      },
+      {
+        "post_no": 7,
+        "heading": "Exam Survival Kit",
+        "caption": "Highlighters, snacks and hope.",
+        "hashtags": [
+          "#exams",
+          "#stationery",
+          "#study"
+        ],
+        "image_search_query": "exam preparation stationery",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=exam+preparation+stationery",
+        "unsplash_link": "https://unsplash.com/s/photos/exam-preparation-stationery"
+      },
+      {
+        "post_no": 8,
+        "heading": "Graduation Goals",
+        "caption": "One semester at a time.",
+        "hashtags": [
+          "#graduation",
+          "#college",
+          "#goals"
+        ],
+        "image_search_query": "graduation cap college",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=graduation+cap+college",
+        "unsplash_link": "https://unsplash.com/s/photos/graduation-cap-college"
+      }
+    ]
+  },
+  {
+    "id": 7,
+    "username": "chef_rohan",
+    "name": "Rohan Desai",
+    "profession": "Chef / Food Blogger",
+    "bio": "Cooking stories from my kitchen to yours.",
+    "profile_hashtags": [
+      "#food",
+      "#chef",
+      "#recipe"
+    ],
+    "profile_image_pinterest": "https://www.pinterest.com/search/pins/?q=chef+cooking+kitchen",
+    "profile_image_unsplash": "https://unsplash.com/s/photos/chef-cooking-kitchen",
+    "posts": [
+      {
+        "post_no": 1,
+        "heading": "Butter Chicken Love",
+        "caption": "Creamy, rich and perfect with naan.",
+        "hashtags": [
+          "#butterchicken",
+          "#indianfood",
+          "#foodie"
+        ],
+        "image_search_query": "butter chicken",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=butter+chicken",
+        "unsplash_link": "https://unsplash.com/s/photos/butter-chicken"
+      },
+      {
+        "post_no": 2,
+        "heading": "Pasta Night",
+        "caption": "Fresh pasta, homemade sauce.",
+        "hashtags": [
+          "#pasta",
+          "#homemade",
+          "#italian"
+        ],
+        "image_search_query": "homemade pasta",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=homemade+pasta",
+        "unsplash_link": "https://unsplash.com/s/photos/homemade-pasta"
+      },
+      {
+        "post_no": 3,
+        "heading": "Street Food Series",
+        "caption": "Pani puri is a feeling, not just a snack.",
+        "hashtags": [
+          "#streetfood",
+          "#panipuri",
+          "#indianstreetfood"
+        ],
+        "image_search_query": "pani puri street food",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=pani+puri+street+food",
+        "unsplash_link": "https://unsplash.com/s/photos/pani-puri-street-food"
+      },
+      {
+        "post_no": 4,
+        "heading": "Baking Day",
+        "caption": "The smell of fresh bread fixes everything.",
+        "hashtags": [
+          "#baking",
+          "#bread",
+          "#homemade"
+        ],
+        "image_search_query": "fresh baked bread",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=fresh+baked+bread",
+        "unsplash_link": "https://unsplash.com/s/photos/fresh-baked-bread"
+      },
+      {
+        "post_no": 5,
+        "heading": "Plating Art",
+        "caption": "We eat with our eyes first.",
+        "hashtags": [
+          "#plating",
+          "#finedining",
+          "#chef"
+        ],
+        "image_search_query": "fine dining plating",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=fine+dining+plating",
+        "unsplash_link": "https://unsplash.com/s/photos/fine-dining-plating"
+      },
+      {
+        "post_no": 6,
+        "heading": "Sunday Brunch",
+        "caption": "Pancakes, berries and zero rush.",
+        "hashtags": [
+          "#brunch",
+          "#pancakes",
+          "#sunday"
+        ],
+        "image_search_query": "brunch pancakes berries",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=brunch+pancakes+berries",
+        "unsplash_link": "https://unsplash.com/s/photos/brunch-pancakes-berries"
+      },
+      {
+        "post_no": 7,
+        "heading": "Spice Box",
+        "caption": "The secret behind every Indian kitchen.",
+        "hashtags": [
+          "#spices",
+          "#masala",
+          "#indiankitchen"
+        ],
+        "image_search_query": "indian spices masala dabba",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=indian+spices+masala+dabba",
+        "unsplash_link": "https://unsplash.com/s/photos/indian-spices-masala-dabba"
+      },
+      {
+        "post_no": 8,
+        "heading": "Dessert Time",
+        "caption": "Because life needs gulab jamun.",
+        "hashtags": [
+          "#gulabjamun",
+          "#dessert",
+          "#indiansweets"
+        ],
+        "image_search_query": "gulab jamun dessert",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=gulab+jamun+dessert",
+        "unsplash_link": "https://unsplash.com/s/photos/gulab-jamun-dessert"
+      }
+    ]
+  },
+  {
+    "id": 8,
+    "username": "fit_with_aman",
+    "name": "Aman Shaikh",
+    "profession": "Fitness Trainer",
+    "bio": "Train hard. Eat clean. Stay consistent.",
+    "profile_hashtags": [
+      "#fitness",
+      "#gym",
+      "#workout"
+    ],
+    "profile_image_pinterest": "https://www.pinterest.com/search/pins/?q=fitness+trainer+gym",
+    "profile_image_unsplash": "https://unsplash.com/s/photos/fitness-trainer-gym",
+    "posts": [
+      {
+        "post_no": 1,
+        "heading": "Monday Motivation",
+        "caption": "Show up even when you don't feel like it.",
+        "hashtags": [
+          "#gymmotivation",
+          "#workout",
+          "#monday"
+        ],
+        "image_search_query": "gym motivation workout",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=gym+motivation+workout",
+        "unsplash_link": "https://unsplash.com/s/photos/gym-motivation-workout"
+      },
+      {
+        "post_no": 2,
+        "heading": "Meal Prep Sunday",
+        "caption": "Healthy week starts with prepped boxes.",
+        "hashtags": [
+          "#mealprep",
+          "#healthyfood",
+          "#fitfood"
+        ],
+        "image_search_query": "meal prep healthy",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=meal+prep+healthy",
+        "unsplash_link": "https://unsplash.com/s/photos/meal-prep-healthy"
+      },
+      {
+        "post_no": 3,
+        "heading": "Leg Day",
+        "caption": "Never skip it.",
+        "hashtags": [
+          "#legday",
+          "#squats",
+          "#gym"
+        ],
+        "image_search_query": "leg day gym squats",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=leg+day+gym+squats",
+        "unsplash_link": "https://unsplash.com/s/photos/leg-day-gym-squats"
+      },
+      {
+        "post_no": 4,
+        "heading": "Morning Run",
+        "caption": "5 km before sunrise.",
+        "hashtags": [
+          "#running",
+          "#morning",
+          "#cardio"
+        ],
+        "image_search_query": "morning run outdoor",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=morning+run+outdoor",
+        "unsplash_link": "https://unsplash.com/s/photos/morning-run-outdoor"
+      },
+      {
+        "post_no": 5,
+        "heading": "Yoga Flow",
+        "caption": "Strength needs flexibility.",
+        "hashtags": [
+          "#yoga",
+          "#stretching",
+          "#wellness"
+        ],
+        "image_search_query": "yoga sunrise pose",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=yoga+sunrise+pose",
+        "unsplash_link": "https://unsplash.com/s/photos/yoga-sunrise-pose"
+      },
+      {
+        "post_no": 6,
+        "heading": "Gym Essentials",
+        "caption": "What's in my gym bag.",
+        "hashtags": [
+          "#gymbag",
+          "#essentials",
+          "#fitness"
+        ],
+        "image_search_query": "gym bag essentials",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=gym+bag+essentials",
+        "unsplash_link": "https://unsplash.com/s/photos/gym-bag-essentials"
+      },
+      {
+        "post_no": 7,
+        "heading": "Protein Smoothie",
+        "caption": "Quick, tasty, and 30g protein.",
+        "hashtags": [
+          "#smoothie",
+          "#protein",
+          "#healthy"
+        ],
+        "image_search_query": "protein smoothie bowl",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=protein+smoothie+bowl",
+        "unsplash_link": "https://unsplash.com/s/photos/protein-smoothie-bowl"
+      },
+      {
+        "post_no": 8,
+        "heading": "Transformation Tuesday",
+        "caption": "12 weeks of consistency pays off.",
+        "hashtags": [
+          "#transformation",
+          "#fitnessjourney"
+        ],
+        "image_search_query": "fitness transformation",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=fitness+transformation",
+        "unsplash_link": "https://unsplash.com/s/photos/fitness-transformation"
+      }
+    ]
+  },
+  {
+    "id": 9,
+    "username": "style_by_meera",
+    "name": "Meera Nair",
+    "profession": "Fashion Designer",
+    "bio": "Designing outfits that tell your story.",
+    "profile_hashtags": [
+      "#fashion",
+      "#style",
+      "#ootd"
+    ],
+    "profile_image_pinterest": "https://www.pinterest.com/search/pins/?q=fashion+designer+sketching",
+    "profile_image_unsplash": "https://unsplash.com/s/photos/fashion-designer-sketching",
+    "posts": [
+      {
+        "post_no": 1,
+        "heading": "Saree Reimagined",
+        "caption": "Tradition with a modern twist.",
+        "hashtags": [
+          "#saree",
+          "#fashion",
+          "#indianwear"
+        ],
+        "image_search_query": "modern saree fashion",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=modern+saree+fashion",
+        "unsplash_link": "https://unsplash.com/s/photos/modern-saree-fashion"
+      },
+      {
+        "post_no": 2,
+        "heading": "Fabric Swatches",
+        "caption": "Texture inspires my designs.",
+        "hashtags": [
+          "#fabric",
+          "#textile",
+          "#designer"
+        ],
+        "image_search_query": "fabric swatches colors",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=fabric+swatches+colors",
+        "unsplash_link": "https://unsplash.com/s/photos/fabric-swatches-colors"
+      },
+      {
+        "post_no": 3,
+        "heading": "Sketch to Stitch",
+        "caption": "From paper to runway.",
+        "hashtags": [
+          "#fashionsketch",
+          "#design",
+          "#illustration"
+        ],
+        "image_search_query": "fashion sketch illustration",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=fashion+sketch+illustration",
+        "unsplash_link": "https://unsplash.com/s/photos/fashion-sketch-illustration"
+      },
+      {
+        "post_no": 4,
+        "heading": "Street Style",
+        "caption": "Everyday outfits, everyday confidence.",
+        "hashtags": [
+          "#streetstyle",
+          "#ootd",
+          "#fashion"
+        ],
+        "image_search_query": "street style outfit",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=street+style+outfit",
+        "unsplash_link": "https://unsplash.com/s/photos/street-style-outfit"
+      },
+      {
+        "post_no": 5,
+        "heading": "Mood Board",
+        "caption": "This season's palette is earthy.",
+        "hashtags": [
+          "#moodboard",
+          "#fashion",
+          "#palette"
+        ],
+        "image_search_query": "fashion mood board",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=fashion+mood+board",
+        "unsplash_link": "https://unsplash.com/s/photos/fashion-mood-board"
+      },
+      {
+        "post_no": 6,
+        "heading": "Studio Life",
+        "caption": "Pins, threads and late nights.",
+        "hashtags": [
+          "#fashionstudio",
+          "#sewing",
+          "#atelier"
+        ],
+        "image_search_query": "fashion studio sewing",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=fashion+studio+sewing",
+        "unsplash_link": "https://unsplash.com/s/photos/fashion-studio-sewing"
+      },
+      {
+        "post_no": 7,
+        "heading": "Lehenga Details",
+        "caption": "Embroidery that takes weeks.",
+        "hashtags": [
+          "#lehenga",
+          "#embroidery",
+          "#bridal"
+        ],
+        "image_search_query": "lehenga embroidery",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=lehenga+embroidery",
+        "unsplash_link": "https://unsplash.com/s/photos/lehenga-embroidery"
+      },
+      {
+        "post_no": 8,
+        "heading": "Accessories Edit",
+        "caption": "The finishing touch matters.",
+        "hashtags": [
+          "#accessories",
+          "#jewelry",
+          "#style"
+        ],
+        "image_search_query": "jewelry accessories flat lay",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=jewelry+accessories+flat+lay",
+        "unsplash_link": "https://unsplash.com/s/photos/jewelry-accessories-flat-lay"
+      }
+    ]
+  },
+  {
+    "id": 10,
+    "username": "bookworm_isha",
+    "name": "Isha Kulkarni",
+    "profession": "Writer / Book Lover",
+    "bio": "Words, tea and rainy days.",
+    "profile_hashtags": [
+      "#books",
+      "#reading",
+      "#booklover"
+    ],
+    "profile_image_pinterest": "https://www.pinterest.com/search/pins/?q=woman+reading+book+cozy",
+    "profile_image_unsplash": "https://unsplash.com/s/photos/woman-reading-book-cozy",
+    "posts": [
+      {
+        "post_no": 1,
+        "heading": "Currently Reading",
+        "caption": "Can't put this one down.",
+        "hashtags": [
+          "#bookstagram",
+          "#reading",
+          "#cozy"
+        ],
+        "image_search_query": "reading book cozy",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=reading+book+cozy",
+        "unsplash_link": "https://unsplash.com/s/photos/reading-book-cozy"
+      },
+      {
+        "post_no": 2,
+        "heading": "Bookshelf Goals",
+        "caption": "My shelf is my happy place.",
+        "hashtags": [
+          "#bookshelf",
+          "#bookstagram",
+          "#home"
+        ],
+        "image_search_query": "bookshelf aesthetic",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=bookshelf+aesthetic",
+        "unsplash_link": "https://unsplash.com/s/photos/bookshelf-aesthetic"
+      },
+      {
+        "post_no": 3,
+        "heading": "Rainy Day Reads",
+        "caption": "Chai plus book plus rain equals bliss.",
+        "hashtags": [
+          "#rainyday",
+          "#reading",
+          "#chai"
+        ],
+        "image_search_query": "book tea rainy window",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=book+tea+rainy+window",
+        "unsplash_link": "https://unsplash.com/s/photos/book-tea-rainy-window"
+      },
+      {
+        "post_no": 4,
+        "heading": "Writing Desk",
+        "caption": "Where the stories begin.",
+        "hashtags": [
+          "#writer",
+          "#desk",
+          "#writing"
+        ],
+        "image_search_query": "writer desk typewriter",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=writer+desk+typewriter",
+        "unsplash_link": "https://unsplash.com/s/photos/writer-desk-typewriter"
+      },
+      {
+        "post_no": 5,
+        "heading": "Poetry Corner",
+        "caption": "Little lines, big feelings.",
+        "hashtags": [
+          "#poetry",
+          "#writing",
+          "#notebook"
+        ],
+        "image_search_query": "poetry notebook aesthetic",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=poetry+notebook+aesthetic",
+        "unsplash_link": "https://unsplash.com/s/photos/poetry-notebook-aesthetic"
+      },
+      {
+        "post_no": 6,
+        "heading": "Bookstore Haul",
+        "caption": "Went for one book, came back with six.",
+        "hashtags": [
+          "#bookhaul",
+          "#bookstore",
+          "#tbr"
+        ],
+        "image_search_query": "bookstore haul",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=bookstore+haul",
+        "unsplash_link": "https://unsplash.com/s/photos/bookstore-haul"
+      },
+      {
+        "post_no": 7,
+        "heading": "Journal Spread",
+        "caption": "Thoughts on paper make life lighter.",
+        "hashtags": [
+          "#journaling",
+          "#bulletjournal",
+          "#planner"
+        ],
+        "image_search_query": "journal spread aesthetic",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=journal+spread+aesthetic",
+        "unsplash_link": "https://unsplash.com/s/photos/journal-spread-aesthetic"
+      },
+      {
+        "post_no": 8,
+        "heading": "Reading Nook",
+        "caption": "Found my favourite corner.",
+        "hashtags": [
+          "#readingnook",
+          "#cozy",
+          "#home"
+        ],
+        "image_search_query": "reading nook window",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=reading+nook+window",
+        "unsplash_link": "https://unsplash.com/s/photos/reading-nook-window"
+      }
+    ]
+  },
+  {
+    "id": 11,
+    "username": "code_with_dev",
+    "name": "Dev Malhotra",
+    "profession": "Software Developer",
+    "bio": "Building things with code. Coffee is my debugger.",
+    "profile_hashtags": [
+      "#coding",
+      "#developer",
+      "#tech"
+    ],
+    "profile_image_pinterest": "https://www.pinterest.com/search/pins/?q=developer+coding+laptop",
+    "profile_image_unsplash": "https://unsplash.com/s/photos/developer-coding-laptop",
+    "posts": [
+      {
+        "post_no": 1,
+        "heading": "Dark Mode Forever",
+        "caption": "Light mode is a crime.",
+        "hashtags": [
+          "#coding",
+          "#darkmode",
+          "#vscode"
+        ],
+        "image_search_query": "code editor dark theme",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=code+editor+dark+theme",
+        "unsplash_link": "https://unsplash.com/s/photos/code-editor-dark-theme"
+      },
+      {
+        "post_no": 2,
+        "heading": "Desk Setup 2026",
+        "caption": "Dual monitors, mechanical keyboard.",
+        "hashtags": [
+          "#desksetup",
+          "#developer",
+          "#workspace"
+        ],
+        "image_search_query": "developer desk setup",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=developer+desk+setup",
+        "unsplash_link": "https://unsplash.com/s/photos/developer-desk-setup"
+      },
+      {
+        "post_no": 3,
+        "heading": "Bug Fixed at 3 AM",
+        "caption": "It was a missing semicolon.",
+        "hashtags": [
+          "#programming",
+          "#latenight",
+          "#debugging"
+        ],
+        "image_search_query": "programmer late night coding",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=programmer+late+night+coding",
+        "unsplash_link": "https://unsplash.com/s/photos/programmer-late-night-coding"
+      },
+      {
+        "post_no": 4,
+        "heading": "Hackathon Weekend",
+        "caption": "36 hours, one idea, zero sleep.",
+        "hashtags": [
+          "#hackathon",
+          "#coding",
+          "#team"
+        ],
+        "image_search_query": "hackathon team coding",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=hackathon+team+coding",
+        "unsplash_link": "https://unsplash.com/s/photos/hackathon-team-coding"
+      },
+      {
+        "post_no": 5,
+        "heading": "Mechanical Keyboard",
+        "caption": "The sound is therapy.",
+        "hashtags": [
+          "#mechanicalkeyboard",
+          "#custom",
+          "#keycaps"
+        ],
+        "image_search_query": "mechanical keyboard custom",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=mechanical+keyboard+custom",
+        "unsplash_link": "https://unsplash.com/s/photos/mechanical-keyboard-custom"
+      },
+      {
+        "post_no": 6,
+        "heading": "Learning Roadmap",
+        "caption": "Step by step to full-stack.",
+        "hashtags": [
+          "#webdev",
+          "#roadmap",
+          "#fullstack"
+        ],
+        "image_search_query": "web developer roadmap",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=web+developer+roadmap",
+        "unsplash_link": "https://unsplash.com/s/photos/web-developer-roadmap"
+      },
+      {
+        "post_no": 7,
+        "heading": "Open Source Day",
+        "caption": "My first merged pull request!",
+        "hashtags": [
+          "#opensource",
+          "#github",
+          "#coding"
+        ],
+        "image_search_query": "open source github",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=open+source+github",
+        "unsplash_link": "https://unsplash.com/s/photos/open-source-github"
+      },
+      {
+        "post_no": 8,
+        "heading": "Tech Meetup",
+        "caption": "Great talks and better people.",
+        "hashtags": [
+          "#techmeetup",
+          "#conference",
+          "#developers"
+        ],
+        "image_search_query": "tech conference meetup",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=tech+conference+meetup",
+        "unsplash_link": "https://unsplash.com/s/photos/tech-conference-meetup"
+      }
+    ]
+  },
+  {
+    "id": 12,
+    "username": "wild_nisha",
+    "name": "Nisha Verma",
+    "profession": "Wildlife & Nature Lover",
+    "bio": "Exploring forests, one safari at a time.",
+    "profile_hashtags": [
+      "#wildlife",
+      "#nature",
+      "#safari"
+    ],
+    "profile_image_pinterest": "https://www.pinterest.com/search/pins/?q=wildlife+safari+woman",
+    "profile_image_unsplash": "https://unsplash.com/s/photos/wildlife-safari-woman",
+    "posts": [
+      {
+        "post_no": 1,
+        "heading": "Tiger at Tadoba",
+        "caption": "The stare that stops your heartbeat.",
+        "hashtags": [
+          "#tiger",
+          "#wildlife",
+          "#india",
+          "#safari"
+        ],
+        "image_search_query": "bengal tiger wildlife",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=bengal+tiger+wildlife",
+        "unsplash_link": "https://unsplash.com/s/photos/bengal-tiger-wildlife"
+      },
+      {
+        "post_no": 2,
+        "heading": "Birdwatching",
+        "caption": "Early mornings are worth it.",
+        "hashtags": [
+          "#birdwatching",
+          "#birds",
+          "#nature"
+        ],
+        "image_search_query": "colorful bird photography",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=colorful+bird+photography",
+        "unsplash_link": "https://unsplash.com/s/photos/colorful-bird-photography"
+      },
+      {
+        "post_no": 3,
+        "heading": "Misty Forest",
+        "caption": "Where the air feels alive.",
+        "hashtags": [
+          "#forest",
+          "#mist",
+          "#nature"
+        ],
+        "image_search_query": "misty forest morning",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=misty+forest+morning",
+        "unsplash_link": "https://unsplash.com/s/photos/misty-forest-morning"
+      },
+      {
+        "post_no": 4,
+        "heading": "Elephant Family",
+        "caption": "Gentle giants on the move.",
+        "hashtags": [
+          "#elephants",
+          "#wildlife",
+          "#family"
+        ],
+        "image_search_query": "elephant family wildlife",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=elephant+family+wildlife",
+        "unsplash_link": "https://unsplash.com/s/photos/elephant-family-wildlife"
+      },
+      {
+        "post_no": 5,
+        "heading": "Jungle Trails",
+        "caption": "Walking where the wild things live.",
+        "hashtags": [
+          "#jungle",
+          "#trekking",
+          "#nature"
+        ],
+        "image_search_query": "jungle trail trekking",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=jungle+trail+trekking",
+        "unsplash_link": "https://unsplash.com/s/photos/jungle-trail-trekking"
+      },
+      {
+        "post_no": 6,
+        "heading": "Butterfly Garden",
+        "caption": "Tiny wings, huge beauty.",
+        "hashtags": [
+          "#butterfly",
+          "#macro",
+          "#nature"
+        ],
+        "image_search_query": "butterfly garden macro",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=butterfly+garden+macro",
+        "unsplash_link": "https://unsplash.com/s/photos/butterfly-garden-macro"
+      },
+      {
+        "post_no": 7,
+        "heading": "Sunset Savannah",
+        "caption": "Golden light on the grasslands.",
+        "hashtags": [
+          "#savannah",
+          "#sunset",
+          "#safari"
+        ],
+        "image_search_query": "savannah sunset wildlife",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=savannah+sunset+wildlife",
+        "unsplash_link": "https://unsplash.com/s/photos/savannah-sunset-wildlife"
+      },
+      {
+        "post_no": 8,
+        "heading": "Save the Planet",
+        "caption": "Protect what we can't replace.",
+        "hashtags": [
+          "#conservation",
+          "#sustainability",
+          "#wildlife"
+        ],
+        "image_search_query": "nature conservation forest",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=nature+conservation+forest",
+        "unsplash_link": "https://unsplash.com/s/photos/nature-conservation-forest"
+      }
+    ]
+  },
+  {
+    "id": 13,
+    "username": "rider_kunal",
+    "name": "Kunal Bhosale",
+    "profession": "Biker / Road Tripper",
+    "bio": "Life is a long road. Ride it.",
+    "profile_hashtags": [
+      "#biker",
+      "#motorcycle",
+      "#roadtrip"
+    ],
+    "profile_image_pinterest": "https://www.pinterest.com/search/pins/?q=biker+motorcycle+helmet",
+    "profile_image_unsplash": "https://unsplash.com/s/photos/biker-motorcycle-helmet",
+    "posts": [
+      {
+        "post_no": 1,
+        "heading": "Leh-Ladakh Ride",
+        "caption": "Highest roads, deepest memories.",
+        "hashtags": [
+          "#lehladakh",
+          "#bikeride",
+          "#himalayas"
+        ],
+        "image_search_query": "leh ladakh bike trip",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=leh+ladakh+bike+trip",
+        "unsplash_link": "https://unsplash.com/s/photos/leh-ladakh-bike-trip"
+      },
+      {
+        "post_no": 2,
+        "heading": "Garage Time",
+        "caption": "Maintenance is love.",
+        "hashtags": [
+          "#motorcycle",
+          "#garage",
+          "#bikelife"
+        ],
+        "image_search_query": "motorcycle garage",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=motorcycle+garage",
+        "unsplash_link": "https://unsplash.com/s/photos/motorcycle-garage"
+      },
+      {
+        "post_no": 3,
+        "heading": "Sunrise Ride",
+        "caption": "Empty roads and cool breeze.",
+        "hashtags": [
+          "#sunrise",
+          "#ride",
+          "#motorcycle"
+        ],
+        "image_search_query": "motorcycle sunrise road",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=motorcycle+sunrise+road",
+        "unsplash_link": "https://unsplash.com/s/photos/motorcycle-sunrise-road"
+      },
+      {
+        "post_no": 4,
+        "heading": "Riding Gear",
+        "caption": "Safety first, style second.",
+        "hashtags": [
+          "#ridinggear",
+          "#helmet",
+          "#biker"
+        ],
+        "image_search_query": "motorcycle riding gear",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=motorcycle+riding+gear",
+        "unsplash_link": "https://unsplash.com/s/photos/motorcycle-riding-gear"
+      },
+      {
+        "post_no": 5,
+        "heading": "Royal Enfield Love",
+        "caption": "Thump that hits the soul.",
+        "hashtags": [
+          "#royalenfield",
+          "#himalayan",
+          "#bikelife"
+        ],
+        "image_search_query": "royal enfield himalayan",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=royal+enfield+himalayan",
+        "unsplash_link": "https://unsplash.com/s/photos/royal-enfield-himalayan"
+      },
+      {
+        "post_no": 6,
+        "heading": "Mountain Pass",
+        "caption": "Nothing beats a twisty road.",
+        "hashtags": [
+          "#mountainroad",
+          "#ride",
+          "#twisty"
+        ],
+        "image_search_query": "mountain road motorcycle",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=mountain+road+motorcycle",
+        "unsplash_link": "https://unsplash.com/s/photos/mountain-road-motorcycle"
+      },
+      {
+        "post_no": 7,
+        "heading": "Campfire Night",
+        "caption": "Stories shared after 400 km.",
+        "hashtags": [
+          "#campfire",
+          "#camping",
+          "#roadtrip"
+        ],
+        "image_search_query": "campfire camping night",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=campfire+camping+night",
+        "unsplash_link": "https://unsplash.com/s/photos/campfire-camping-night"
+      },
+      {
+        "post_no": 8,
+        "heading": "Ride Squad",
+        "caption": "Brothers on two wheels.",
+        "hashtags": [
+          "#groupride",
+          "#bikers",
+          "#squad"
+        ],
+        "image_search_query": "motorcycle group ride",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=motorcycle+group+ride",
+        "unsplash_link": "https://unsplash.com/s/photos/motorcycle-group-ride"
+      }
+    ]
+  },
+  {
+    "id": 14,
+    "username": "dance_with_priya",
+    "name": "Priya Iyer",
+    "profession": "Dancer / Choreographer",
+    "bio": "Bharatanatyam by roots, freestyle by heart.",
+    "profile_hashtags": [
+      "#dance",
+      "#dancer",
+      "#choreography"
+    ],
+    "profile_image_pinterest": "https://www.pinterest.com/search/pins/?q=dancer+classical+dance",
+    "profile_image_unsplash": "https://unsplash.com/s/photos/dancer-classical-dance",
+    "posts": [
+      {
+        "post_no": 1,
+        "heading": "Bharatanatyam Mudras",
+        "caption": "Every gesture tells a story.",
+        "hashtags": [
+          "#bharatanatyam",
+          "#classicaldance",
+          "#mudra"
+        ],
+        "image_search_query": "bharatanatyam mudra dance",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=bharatanatyam+mudra+dance",
+        "unsplash_link": "https://unsplash.com/s/photos/bharatanatyam-mudra-dance"
+      },
+      {
+        "post_no": 2,
+        "heading": "Stage Lights",
+        "caption": "The best feeling in the world.",
+        "hashtags": [
+          "#dancer",
+          "#stage",
+          "#performance"
+        ],
+        "image_search_query": "dancer on stage",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=dancer+on+stage",
+        "unsplash_link": "https://unsplash.com/s/photos/dancer-on-stage"
+      },
+      {
+        "post_no": 3,
+        "heading": "Contemporary Flow",
+        "caption": "Movement is emotion.",
+        "hashtags": [
+          "#contemporarydance",
+          "#movement"
+        ],
+        "image_search_query": "contemporary dance silhouette",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=contemporary+dance+silhouette",
+        "unsplash_link": "https://unsplash.com/s/photos/contemporary-dance-silhouette"
+      },
+      {
+        "post_no": 4,
+        "heading": "Rehearsal Room",
+        "caption": "Sweat, mirrors and repeat.",
+        "hashtags": [
+          "#dancestudio",
+          "#rehearsal",
+          "#practice"
+        ],
+        "image_search_query": "dance studio rehearsal",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=dance+studio+rehearsal",
+        "unsplash_link": "https://unsplash.com/s/photos/dance-studio-rehearsal"
+      },
+      {
+        "post_no": 5,
+        "heading": "Ghungroo Love",
+        "caption": "Sound of tradition.",
+        "hashtags": [
+          "#ghungroo",
+          "#classicaldance"
+        ],
+        "image_search_query": "ghungroo anklet bells",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=ghungroo+anklet+bells",
+        "unsplash_link": "https://unsplash.com/s/photos/ghungroo-anklet-bells"
+      },
+      {
+        "post_no": 6,
+        "heading": "Hip-Hop Session",
+        "caption": "Switching the vibe today.",
+        "hashtags": [
+          "#hiphop",
+          "#dance",
+          "#streetdance"
+        ],
+        "image_search_query": "hip hop dance crew",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=hip+hop+dance+crew",
+        "unsplash_link": "https://unsplash.com/s/photos/hip-hop-dance-crew"
+      },
+      {
+        "post_no": 7,
+        "heading": "Costume Prep",
+        "caption": "Getting ready for tonight's show.",
+        "hashtags": [
+          "#dancecostume",
+          "#backstage"
+        ],
+        "image_search_query": "dance costume makeup",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=dance+costume+makeup",
+        "unsplash_link": "https://unsplash.com/s/photos/dance-costume-makeup"
+      },
+      {
+        "post_no": 8,
+        "heading": "Teaching Little Ones",
+        "caption": "Seeing kids dance is pure joy.",
+        "hashtags": [
+          "#kidsdance",
+          "#class",
+          "#teaching"
+        ],
+        "image_search_query": "kids dance class",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=kids+dance+class",
+        "unsplash_link": "https://unsplash.com/s/photos/kids-dance-class"
+      }
+    ]
+  },
+  {
+    "id": 15,
+    "username": "home_by_tanvi",
+    "name": "Tanvi Gupta",
+    "profession": "Interior Designer",
+    "bio": "Turning houses into homes.",
+    "profile_hashtags": [
+      "#interior",
+      "#design",
+      "#homedecor"
+    ],
+    "profile_image_pinterest": "https://www.pinterest.com/search/pins/?q=interior+designer+woman",
+    "profile_image_unsplash": "https://unsplash.com/s/photos/interior-designer-woman",
+    "posts": [
+      {
+        "post_no": 1,
+        "heading": "Minimal Living Room",
+        "caption": "Less clutter, more calm.",
+        "hashtags": [
+          "#minimalist",
+          "#livingroom",
+          "#interiordesign"
+        ],
+        "image_search_query": "minimalist living room",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=minimalist+living+room",
+        "unsplash_link": "https://unsplash.com/s/photos/minimalist-living-room"
+      },
+      {
+        "post_no": 2,
+        "heading": "Cozy Bedroom",
+        "caption": "Neutral tones for a better sleep.",
+        "hashtags": [
+          "#cozybedroom",
+          "#neutral",
+          "#decor"
+        ],
+        "image_search_query": "cozy bedroom neutral",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=cozy+bedroom+neutral",
+        "unsplash_link": "https://unsplash.com/s/photos/cozy-bedroom-neutral"
+      },
+      {
+        "post_no": 3,
+        "heading": "Balcony Makeover",
+        "caption": "Small space, big vibes.",
+        "hashtags": [
+          "#balcony",
+          "#decor",
+          "#plants"
+        ],
+        "image_search_query": "small balcony decor",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=small+balcony+decor",
+        "unsplash_link": "https://unsplash.com/s/photos/small-balcony-decor"
+      },
+      {
+        "post_no": 4,
+        "heading": "Kitchen Reveal",
+        "caption": "Before and after, what a change.",
+        "hashtags": [
+          "#modernkitchen",
+          "#interiordesign"
+        ],
+        "image_search_query": "modern kitchen design",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=modern+kitchen+design",
+        "unsplash_link": "https://unsplash.com/s/photos/modern-kitchen-design"
+      },
+      {
+        "post_no": 5,
+        "heading": "Plant Corner",
+        "caption": "Greens make every room better.",
+        "hashtags": [
+          "#indoorplants",
+          "#corner",
+          "#decor"
+        ],
+        "image_search_query": "indoor plants corner",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=indoor+plants+corner",
+        "unsplash_link": "https://unsplash.com/s/photos/indoor-plants-corner"
+      },
+      {
+        "post_no": 6,
+        "heading": "Colour Palette",
+        "caption": "Earthy tones for this season.",
+        "hashtags": [
+          "#colorpalette",
+          "#interior",
+          "#earthy"
+        ],
+        "image_search_query": "interior color palette",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=interior+color+palette",
+        "unsplash_link": "https://unsplash.com/s/photos/interior-color-palette"
+      },
+      {
+        "post_no": 7,
+        "heading": "Lighting Matters",
+        "caption": "The right light changes everything.",
+        "hashtags": [
+          "#lighting",
+          "#interior",
+          "#pendant"
+        ],
+        "image_search_query": "pendant lighting interior",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=pendant+lighting+interior",
+        "unsplash_link": "https://unsplash.com/s/photos/pendant-lighting-interior"
+      },
+      {
+        "post_no": 8,
+        "heading": "Mood Board",
+        "caption": "Where every project starts.",
+        "hashtags": [
+          "#moodboard",
+          "#interior",
+          "#design"
+        ],
+        "image_search_query": "interior design mood board",
+        "pinterest_link": "https://www.pinterest.com/search/pins/?q=interior+design+mood+board",
+        "unsplash_link": "https://unsplash.com/s/photos/interior-design-mood-board"
+      }
+    ]
+  }
+]

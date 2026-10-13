@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
-import { Heart, MessageCircle, Bookmark, Hash } from "lucide-react";
+import { Heart, MessageCircle, Bookmark, Hash, Pencil } from "lucide-react";
 import { mediaUrl } from "../services/api";
+import { useAuth } from "../context/useAuth";
 import "../styles/Post.css";
 
 function AuthorAvatar({ author, size = 42 }) {
@@ -18,7 +19,9 @@ function AuthorAvatar({ author, size = 42 }) {
 
 function PostCard({ post, onLike }) {
     const navigate = useNavigate();
+    const { user } = useAuth();
     const image = mediaUrl(post.image);
+    const isOwner = user?._id === post.author?._id;
 
     return (
         <article className="post-card">
@@ -71,6 +74,12 @@ function PostCard({ post, onLike }) {
                     <Bookmark size={16} />
                     Save
                 </span>
+                {isOwner && (
+                    <button className="action-btn" onClick={() => navigate(`/posts/${post._id}/edit`)}>
+                        <Pencil size={16} />
+                        Edit
+                    </button>
+                )}
             </div>
         </article>
     );

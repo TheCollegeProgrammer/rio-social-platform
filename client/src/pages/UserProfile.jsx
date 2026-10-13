@@ -25,8 +25,8 @@ function UserProfile() {
         getProfile(id)
             .then((data) => {
                 if (!cancelled) {
-                    setProfile(data);
-                    setFollowing(data.isFollowing || false);
+                    setProfile(data.profile);
+                    setFollowing(data.profile?.isFollowing || false);
                     setPosts(data.posts || []);
                 }
             })
