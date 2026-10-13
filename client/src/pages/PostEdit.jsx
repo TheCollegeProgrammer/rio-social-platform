@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { X } from "lucide-react";
 import { useToast } from "../context/useToast.js";
-import { getPost, editPost } from "../services/api";
+import { getPost, editPost, replacePostImage, removePostImage } from "../services/api";
+import ImageUpload from "../components/ImageUpload";
 import "../styles/Home.css";
 
 const MAX = 500;
@@ -12,6 +13,7 @@ function PostEdit() {
     const navigate = useNavigate();
     const toast = useToast();
     const [content, setContent] = useState("");
+    const [image, setImage] = useState(null);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState("");
@@ -19,13 +21,30 @@ function PostEdit() {
     useEffect(() => {
         let cancelled = false;
         getPost(id)
-            .then((data) => { if (!cancelled) setContent(data.post.content); })
+            .then((data) => {
+                if (!cancelled) {
+                    setContent(data.post.content);
+                    setImage(data.post.image);
+                }
+            })
             .catch((err) => { if (!cancelled) setError(err.message); })
             .finally(() => { if (!cancelled) setLoading(false); });
         return () => { cancelled = true; };
     }, [id]);
 
     const trimmed = content.trim();
+
+    const handleImageUpload = async (file) => {
+        const updated = await replacePostImage(id, file);
+        setImage(updated.image);
+        toast.success("Image updated");
+    };
+
+    const handleImageRemove = async () => {
+        await removePostImage(id);
+        setImage(null);
+        toast.success("Image removed");
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -58,6 +77,12 @@ function PostEdit() {
                     rows={5}
                     maxLength={MAX}
                     autoFocus
+                />
+                <ImageUpload
+                    label="Post image"
+                    current={image}
+                    onUpload={handleImageUpload}
+                    onDelete={handleImageRemove}
                 />
                 <div className="post-actions">
                     <span className={content.length > MAX ? "error-message" : "char-count"}>

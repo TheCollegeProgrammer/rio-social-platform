@@ -1,50 +1,4 @@
-const API_URL = "http://localhost:3000/api";
-
-const handleError = (data) => {
-    if (data.errors && Array.isArray(data.errors)) {
-        throw new Error(data.errors.join(", "));
-    }
-    throw new Error(data.message || "Something went wrong");
-};
-
-const apiRequest = async (path, options = {}) => {
-    try {
-        const response = await fetch(`${API_URL}${path}`, {
-            credentials: "include",
-            ...options,
-            headers: {
-                "Content-Type": "application/json",
-                ...(options.headers || {})
-            }
-        });
-        const data = await response.json();
-        if (!response.ok) handleError(data);
-        return data;
-    } catch (error) {
-        if (error.message === "Failed to fetch") {
-            throw new Error("Cannot connect to server");
-        }
-        throw error;
-    }
-};
-
-const uploadRequest = async (path, formData) => {
-    try {
-        const response = await fetch(`${API_URL}${path}`, {
-            method: "POST",
-            credentials: "include",
-            body: formData
-        });
-        const data = await response.json();
-        if (!response.ok) handleError(data);
-        return data;
-    } catch (error) {
-        if (error.message === "Failed to fetch") {
-            throw new Error("Cannot connect to server");
-        }
-        throw error;
-    }
-};
+import { apiRequest, uploadRequest } from "./http";
 
 export const registerUser = (userData) =>
     apiRequest("/auth/register", { method: "POST", body: JSON.stringify(userData) });
@@ -108,6 +62,12 @@ export const createPostWithImage = (content, file) => {
 };
 export const removePostImage = (id) =>
     apiRequest(`/posts/${id}/image`, { method: "DELETE" });
+
+export const replacePostImage = (id, file) => {
+    const fd = new FormData();
+    fd.append("image", file);
+    return uploadRequest(`/posts/${id}/image`, fd).then((d) => d.post);
+};
 
 export const getNotifications = (page = 1) =>
     apiRequest(`/notifications?page=${page}`);

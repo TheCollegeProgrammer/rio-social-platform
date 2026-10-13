@@ -32,6 +32,10 @@ const errorHandler = (err, req, res, next) => {
         return res.status(400).json({ errors: [msg] });
     }
 
+    if (err.message === "Unexpected end of form") {
+        return res.status(400).json({ errors: ["Malformed upload request"] });
+    }
+
     if (err.message && err.message.includes("images are allowed")) {
         return res.status(400).json({ errors: [err.message] });
     }

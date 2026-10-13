@@ -56,4 +56,33 @@ const removePostImage = async (req, res) => {
     }
 };
 
-module.exports = { createPostWithImage, removePostImage };
+const replacePostImage = async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ errors: ["Image file is required"] });
+        }
+        const post = await Post.findById(req.params.id);
+        if (!post) return res.status(404).json({ errors: ["Post not found"] });
+        if (post.author.toString() !== req.user.id) {
+            return res.status(403).json({ errors: ["Not authorized"] });
+        }
+
+        if (post.image) {
+            const oldPath = path.join(uploadDir, path.basename(post.image));
+            if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
+        }
+        post.image = `/uploads/${req.file.filename}`;
+        post.editedAt = new Date();
+        await post.save();
+        await post.populate("author", "username name avatar");
+
+        res.json({ message: "Image updated", post });
+    } catch (error) {
+        if (error.name === "CastError") {
+            return res.status(400).json({ errors: ["Invalid post ID"] });
+        }
+        res.status(500).json({ errors: ["Server error"] });
+    }
+};
+
+module.exports = { createPostWithImage, removePostImage, replacePostImage };

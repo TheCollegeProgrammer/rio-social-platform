@@ -82,9 +82,11 @@ function PostDetail() {
                     <AuthorAvatar author={post.author} />
                     <div>
                         <h3>{post.author?.name}</h3>
-                        <span>@{post.author?.username}{post.editedAt ? " · edited" : ""}</span>
+                        <span>@{post.author?.username}</span>
                     </div>
                 </div>
+
+                {post.editedAt && <span className="edited-badge">Edited</span>}
 
                 <p className="post-content">{post.content}</p>
 

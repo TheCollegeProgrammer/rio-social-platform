@@ -6,7 +6,7 @@ const commentRoutes = require("./comment.routes");
 const { createPost, getPostById, getPosts } = require("../controllers/post.controller");
 const { editPost, deletePost, toggleLike } = require("../controllers/post-action.controller");
 const { toggleBookmark, getBookmarks, searchPosts } = require("../controllers/bookmark.controller");
-const { createPostWithImage, removePostImage } = require("../controllers/post-image.controller");
+const { createPostWithImage, removePostImage, replacePostImage } = require("../controllers/post-image.controller");
 
 const router = express.Router();
 
@@ -19,6 +19,7 @@ router.get("/:id", optionalAuth, getPostById);
 router.put("/:id", protect, editPost);
 router.delete("/:id", protect, deletePost);
 router.delete("/:id/image", protect, removePostImage);
+router.post("/:id/image", protect, upload.single("image"), replacePostImage);
 router.post("/:id/like", protect, toggleLike);
 router.post("/:id/bookmark", protect, toggleBookmark);
 router.use("/:postId/comments", commentRoutes);

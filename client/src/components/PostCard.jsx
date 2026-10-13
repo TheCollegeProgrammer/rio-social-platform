@@ -33,9 +33,11 @@ function PostCard({ post, onLike }) {
                             {post.author?.name}
                         </Link>
                     </h3>
-                    <span>@{post.author?.username}{post.editedAt ? " · edited" : ""}</span>
+                    <span>@{post.author?.username}</span>
                 </div>
             </div>
+
+            {post.editedAt && <span className="edited-badge">Edited</span>}
 
             <Link to={`/posts/${post._id}`} className="post-content-link">
                 <p className="post-content">{post.content}</p>
