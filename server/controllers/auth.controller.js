@@ -13,7 +13,7 @@ const setAuthCookie = (res, token) => {
     });
 };
 
-const register = async (req, res) => {
+const register = async (req, res, next) => {
     try {
         const { username, name, age, email, password } = req.body;
         const errors = [];
@@ -35,11 +35,11 @@ const register = async (req, res) => {
         setAuthCookie(res, generateToken(user._id));
         res.status(201).json({ message: "User registered successfully" });
     } catch (error) {
-        res.status(500).json({ errors: ["Server error"] });
+        return next(error);
     }
 };
 
-const login = async (req, res) => {
+const login = async (req, res, next) => {
     try {
         const { email, password } = req.body;
         const errors = [];
@@ -57,7 +57,7 @@ const login = async (req, res) => {
         setAuthCookie(res, generateToken(user._id));
         res.json({ message: "Login successful" });
     } catch (error) {
-        res.status(500).json({ errors: ["Server error"] });
+        return next(error);
     }
 };
 
@@ -66,7 +66,7 @@ const logout = (req, res) => {
     res.json({ message: "Logout successful" });
 };
 
-const me = async (req, res) => {
+const me = async (req, res, next) => {
     try {
         const user = await User.findById(req.user.id).select("-password");
         if (!user) {
@@ -74,17 +74,17 @@ const me = async (req, res) => {
         }
         res.json({ user });
     } catch (error) {
-        res.status(500).json({ errors: ["Server error"] });
+        return next(error);
     }
 };
 
-const getProfile = async (req, res) => {
+const getProfile = async (req, res, next) => {
     try {
         const user = await User.findById(req.params.id).select("-password");
         if (!user) return res.status(404).json({ errors: ["User not found"] });
         res.json({ user });
     } catch (error) {
-        res.status(500).json({ errors: ["Server error"] });
+        return next(error);
     }
 };
 

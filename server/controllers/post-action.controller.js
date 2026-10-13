@@ -3,7 +3,7 @@ const User = require("../models/User");
 const { extractHashtags } = require("./post.controller");
 const { createNotification } = require("./notification.controller");
 
-const editPost = async (req, res) => {
+const editPost = async (req, res, next) => {
     try {
         const { content } = req.body;
 
@@ -31,11 +31,11 @@ const editPost = async (req, res) => {
         if (error.name === "CastError") {
             return res.status(400).json({ errors: ["Invalid post ID"] });
         }
-        res.status(500).json({ errors: ["Server error"] });
+        return next(error);
     }
 };
 
-const deletePost = async (req, res) => {
+const deletePost = async (req, res, next) => {
     try {
         const post = await Post.findById(req.params.id);
         if (!post) return res.status(404).json({ errors: ["Post not found"] });
@@ -62,11 +62,11 @@ const deletePost = async (req, res) => {
         if (error.name === "CastError") {
             return res.status(400).json({ errors: ["Invalid post ID"] });
         }
-        res.status(500).json({ errors: ["Server error"] });
+        return next(error);
     }
 };
 
-const toggleLike = async (req, res) => {
+const toggleLike = async (req, res, next) => {
     try {
         const post = await Post.findById(req.params.id);
         if (!post) return res.status(404).json({ errors: ["Post not found"] });
@@ -74,9 +74,13 @@ const toggleLike = async (req, res) => {
         const userId = req.user.id;
         const alreadyLiked = post.likes.some((id) => id.toString() === userId);
 
-        if (alreadyLiked) post.likes.pull(userId);
-        else {
-            post.likes.push(userId);
+        const updated = await Post.findByIdAndUpdate(
+            req.params.id,
+            alreadyLiked ? { $pull: { likes: userId } } : { $addToSet: { likes: userId } },
+            { new: true }
+        );
+
+        if (!alreadyLiked) {
             createNotification({
                 recipient: post.author,
                 sender: userId,
@@ -85,13 +89,12 @@ const toggleLike = async (req, res) => {
             });
         }
 
-        await post.save();
-        res.json({ liked: !alreadyLiked, likesCount: post.likes.length });
+        res.json({ liked: !alreadyLiked, likesCount: updated.likes.length });
     } catch (error) {
         if (error.name === "CastError") {
             return res.status(400).json({ errors: ["Invalid post ID"] });
         }
-        res.status(500).json({ errors: ["Server error"] });
+        return next(error);
     }
 };
 

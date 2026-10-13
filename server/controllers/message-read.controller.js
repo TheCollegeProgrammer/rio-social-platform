@@ -2,7 +2,7 @@ const Conversation = require("../models/Conversation");
 const Message = require("../models/Message");
 
 // Mark every unread message in a conversation as read by this user
-const markConversationRead = async (req, res) => {
+const markConversationRead = async (req, res, next) => {
     try {
         const convo = await Conversation.findById(req.params.id);
         if (!convo) return res.status(404).json({ errors: ["Conversation not found"] });
@@ -25,12 +25,12 @@ const markConversationRead = async (req, res) => {
         if (error.name === "CastError") {
             return res.status(400).json({ errors: ["Invalid conversation ID"] });
         }
-        res.status(500).json({ errors: ["Server error"] });
+        return next(error);
     }
 };
 
 // Total unread messages across all conversations (for the nav badge)
-const getUnreadCount = async (req, res) => {
+const getUnreadCount = async (req, res, next) => {
     try {
         const convos = await Conversation.find({ participants: req.user.id }).select("_id");
         const ids = convos.map((c) => c._id);
@@ -41,7 +41,7 @@ const getUnreadCount = async (req, res) => {
         });
         res.json({ unreadCount });
     } catch (error) {
-        res.status(500).json({ errors: ["Server error"] });
+        return next(error);
     }
 };
 

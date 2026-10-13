@@ -3,7 +3,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { generateToken } = require("./auth.controller");
 
-const forgotPassword = async (req, res) => {
+const forgotPassword = async (req, res, next) => {
     try {
         const { email } = req.body;
         if (!email) return res.status(400).json({ errors: ["Email is required"] });
@@ -26,11 +26,11 @@ const forgotPassword = async (req, res) => {
             message: "Reset token generated (demo mode - normally sent via email)"
         });
     } catch (error) {
-        res.status(500).json({ errors: ["Server error"] });
+        return next(error);
     }
 };
 
-const resetPassword = async (req, res) => {
+const resetPassword = async (req, res, next) => {
     try {
         const { token, newPassword } = req.body;
         if (!token || !newPassword) {
@@ -58,11 +58,11 @@ const resetPassword = async (req, res) => {
             res.status(400).json({ errors: ["Invalid or expired token"] });
         }
     } catch (error) {
-        res.status(500).json({ errors: ["Server error"] });
+        return next(error);
     }
 };
 
-const changePassword = async (req, res) => {
+const changePassword = async (req, res, next) => {
     try {
         const { currentPassword, newPassword } = req.body;
         if (!currentPassword || !newPassword) {
@@ -81,7 +81,7 @@ const changePassword = async (req, res) => {
 
         res.json({ message: "Password has been changed successfully." });
     } catch (error) {
-        res.status(500).json({ errors: ["Server error"] });
+        return next(error);
     }
 };
 

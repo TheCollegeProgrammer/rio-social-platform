@@ -1,7 +1,7 @@
 const User = require("../models/User");
 const { createNotification } = require("./notification.controller");
 
-const toggleFollow = async (req, res) => {
+const toggleFollow = async (req, res, next) => {
     try {
         const { id } = req.params;
         const userId = req.user.id;
@@ -45,11 +45,11 @@ const toggleFollow = async (req, res) => {
         if (error.name === "CastError") {
             return res.status(400).json({ errors: ["Invalid user ID"] });
         }
-        res.status(500).json({ errors: ["Server error"] });
+        return next(error);
     }
 };
 
-const getFollowers = async (req, res) => {
+const getFollowers = async (req, res, next) => {
     try {
         const user = await User.findById(req.params.id)
             .select("followers")
@@ -62,11 +62,11 @@ const getFollowers = async (req, res) => {
         if (error.name === "CastError") {
             return res.status(400).json({ errors: ["Invalid user ID"] });
         }
-        res.status(500).json({ errors: ["Server error"] });
+        return next(error);
     }
 };
 
-const getFollowing = async (req, res) => {
+const getFollowing = async (req, res, next) => {
     try {
         const user = await User.findById(req.params.id)
             .select("following")
@@ -79,7 +79,7 @@ const getFollowing = async (req, res) => {
         if (error.name === "CastError") {
             return res.status(400).json({ errors: ["Invalid user ID"] });
         }
-        res.status(500).json({ errors: ["Server error"] });
+        return next(error);
     }
 };
 

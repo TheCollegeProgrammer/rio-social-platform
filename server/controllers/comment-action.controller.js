@@ -1,7 +1,7 @@
 const Comment = require("../models/Comment");
 const { createNotification } = require("./notification.controller");
 
-const editComment = async (req, res) => {
+const editComment = async (req, res, next) => {
     try {
         const { content } = req.body;
 
@@ -28,11 +28,11 @@ const editComment = async (req, res) => {
         if (error.name === "CastError") {
             return res.status(400).json({ errors: ["Invalid comment ID"] });
         }
-        res.status(500).json({ errors: ["Server error"] });
+        return next(error);
     }
 };
 
-const deleteComment = async (req, res) => {
+const deleteComment = async (req, res, next) => {
     try {
         const comment = await Comment.findById(req.params.id);
         if (!comment) return res.status(404).json({ errors: ["Comment not found"] });
@@ -54,11 +54,11 @@ const deleteComment = async (req, res) => {
         if (error.name === "CastError") {
             return res.status(400).json({ errors: ["Invalid comment ID"] });
         }
-        res.status(500).json({ errors: ["Server error"] });
+        return next(error);
     }
 };
 
-const toggleCommentLike = async (req, res) => {
+const toggleCommentLike = async (req, res, next) => {
     try {
         const comment = await Comment.findById(req.params.id);
         if (!comment) return res.status(404).json({ errors: ["Comment not found"] });
@@ -66,9 +66,13 @@ const toggleCommentLike = async (req, res) => {
         const userId = req.user.id;
         const alreadyLiked = comment.likes.some((id) => id.toString() === userId);
 
-        if (alreadyLiked) comment.likes.pull(userId);
-        else {
-            comment.likes.push(userId);
+        const updated = await Comment.findByIdAndUpdate(
+            req.params.id,
+            alreadyLiked ? { $pull: { likes: userId } } : { $addToSet: { likes: userId } },
+            { new: true }
+        );
+
+        if (!alreadyLiked) {
             createNotification({
                 recipient: comment.author,
                 sender: userId,
@@ -78,13 +82,12 @@ const toggleCommentLike = async (req, res) => {
             });
         }
 
-        await comment.save();
-        res.json({ liked: !alreadyLiked, likesCount: comment.likes.length });
+        res.json({ liked: !alreadyLiked, likesCount: updated.likes.length });
     } catch (error) {
         if (error.name === "CastError") {
             return res.status(400).json({ errors: ["Invalid comment ID"] });
         }
-        res.status(500).json({ errors: ["Server error"] });
+        return next(error);
     }
 };
 

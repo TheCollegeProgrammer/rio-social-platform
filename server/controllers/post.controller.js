@@ -5,7 +5,7 @@ const extractHashtags = (content) => {
     return matches ? [...new Set(matches.map((h) => h.toLowerCase()))] : [];
 };
 
-const createPost = async (req, res) => {
+const createPost = async (req, res, next) => {
     try {
         const { content } = req.body;
 
@@ -25,11 +25,11 @@ const createPost = async (req, res) => {
         await post.populate("author", "username name avatar");
         res.status(201).json({ message: "Post created", post });
     } catch (error) {
-        res.status(500).json({ errors: ["Server error"] });
+        return next(error);
     }
 };
 
-const getPostById = async (req, res) => {
+const getPostById = async (req, res, next) => {
     try {
         const post = await Post.findById(req.params.id)
             .populate("author", "username name avatar");
@@ -56,11 +56,11 @@ const getPostById = async (req, res) => {
         if (error.name === "CastError") {
             return res.status(400).json({ errors: ["Invalid post ID"] });
         }
-        res.status(500).json({ errors: ["Server error"] });
+        return next(error);
     }
 };
 
-const getPosts = async (req, res) => {
+const getPosts = async (req, res, next) => {
     try {
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 10;
@@ -94,7 +94,7 @@ const getPosts = async (req, res) => {
             total
         });
     } catch (error) {
-        res.status(500).json({ errors: ["Server error"] });
+        return next(error);
     }
 };
 

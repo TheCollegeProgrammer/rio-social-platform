@@ -9,7 +9,7 @@ const createNotification = async (data) => {
     }
 };
 
-const getNotifications = async (req, res) => {
+const getNotifications = async (req, res, next) => {
     try {
         const page = parseInt(req.query.page) || 1;
         const limit = 20;
@@ -35,11 +35,11 @@ const getNotifications = async (req, res) => {
             unreadCount
         });
     } catch (error) {
-        res.status(500).json({ errors: ["Server error"] });
+        return next(error);
     }
 };
 
-const markAsRead = async (req, res) => {
+const markAsRead = async (req, res, next) => {
     try {
         const notification = await Notification.findOneAndUpdate(
             { _id: req.params.id, recipient: req.user.id },
@@ -51,11 +51,11 @@ const markAsRead = async (req, res) => {
         }
         res.json({ notification });
     } catch (error) {
-        res.status(500).json({ errors: ["Server error"] });
+        return next(error);
     }
 };
 
-const markAllAsRead = async (req, res) => {
+const markAllAsRead = async (req, res, next) => {
     try {
         await Notification.updateMany(
             { recipient: req.user.id, read: false },
@@ -63,11 +63,11 @@ const markAllAsRead = async (req, res) => {
         );
         res.json({ message: "All notifications marked as read" });
     } catch (error) {
-        res.status(500).json({ errors: ["Server error"] });
+        return next(error);
     }
 };
 
-const deleteNotification = async (req, res) => {
+const deleteNotification = async (req, res, next) => {
     try {
         const notification = await Notification.findOneAndDelete({
             _id: req.params.id,
@@ -78,7 +78,7 @@ const deleteNotification = async (req, res) => {
         }
         res.json({ message: "Notification deleted" });
     } catch (error) {
-        res.status(500).json({ errors: ["Server error"] });
+        return next(error);
     }
 };
 

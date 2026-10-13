@@ -2,7 +2,7 @@ const Comment = require("../models/Comment");
 const Post = require("../models/post");
 const { createNotification } = require("./notification.controller");
 
-const createComment = async (req, res) => {
+const createComment = async (req, res, next) => {
     try {
         const { content, parentComment } = req.body;
         const postId = req.params.postId;
@@ -62,11 +62,11 @@ const createComment = async (req, res) => {
 
         res.status(201).json({ message: "Comment created", comment, totalComments });
     } catch (error) {
-        res.status(500).json({ errors: ["Server error"] });
+        return next(error);
     }
 };
 
-const getComments = async (req, res) => {
+const getComments = async (req, res, next) => {
     try {
         const postId = req.params.postId;
         const page = parseInt(req.query.page) || 1;
@@ -106,7 +106,7 @@ const getComments = async (req, res) => {
         if (error.name === "CastError") {
             return res.status(400).json({ errors: ["Invalid post ID"] });
         }
-        res.status(500).json({ errors: ["Server error"] });
+        return next(error);
     }
 };
 

@@ -1,7 +1,7 @@
 const User = require("../models/User");
 const Post = require("../models/post");
 
-const getProfile = async (req, res) => {
+const getProfile = async (req, res, next) => {
     try {
         const user = await User.findById(req.params.id)
             .select("-password -email -resetPasswordToken")
@@ -42,11 +42,11 @@ const getProfile = async (req, res) => {
         if (error.name === "CastError") {
             return res.status(400).json({ errors: ["Invalid user ID"] });
         }
-        res.status(500).json({ errors: ["Server error"] });
+        return next(error);
     }
 };
 
-const updateProfile = async (req, res) => {
+const updateProfile = async (req, res, next) => {
     try {
         const { name, username, bio, avatar, isPrivate } = req.body;
         const errors = [];
@@ -92,11 +92,11 @@ const updateProfile = async (req, res) => {
         if (error.code === 11000) {
             return res.status(409).json({ errors: ["Username already taken"] });
         }
-        res.status(500).json({ errors: ["Server error"] });
+        return next(error);
     }
 };
 
-const deleteAccount = async (req, res) => {
+const deleteAccount = async (req, res, next) => {
     try {
         const password = req.body?.password || req.query?.password;
 
@@ -128,7 +128,7 @@ const deleteAccount = async (req, res) => {
         res.clearCookie("token");
         res.json({ message: "Account deleted successfully" });
     } catch (error) {
-        res.status(500).json({ errors: ["Server error"] });
+        return next(error);
     }
 };
 

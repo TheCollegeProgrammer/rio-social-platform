@@ -5,7 +5,7 @@ const { extractHashtags } = require("./post.controller");
 
 const uploadDir = path.join(__dirname, "..", "uploads");
 
-const createPostWithImage = async (req, res) => {
+const createPostWithImage = async (req, res, next) => {
     try {
         const { content } = req.body;
 
@@ -26,11 +26,11 @@ const createPostWithImage = async (req, res) => {
         await post.populate("author", "username name avatar");
         res.status(201).json({ message: "Post created", post });
     } catch (error) {
-        res.status(500).json({ errors: ["Server error"] });
+        return next(error);
     }
 };
 
-const removePostImage = async (req, res) => {
+const removePostImage = async (req, res, next) => {
     try {
         const post = await Post.findById(req.params.id);
         if (!post) return res.status(404).json({ errors: ["Post not found"] });
@@ -52,11 +52,11 @@ const removePostImage = async (req, res) => {
         if (error.name === "CastError") {
             return res.status(400).json({ errors: ["Invalid post ID"] });
         }
-        res.status(500).json({ errors: ["Server error"] });
+        return next(error);
     }
 };
 
-const replacePostImage = async (req, res) => {
+const replacePostImage = async (req, res, next) => {
     try {
         if (!req.file) {
             return res.status(400).json({ errors: ["Image file is required"] });
@@ -81,7 +81,7 @@ const replacePostImage = async (req, res) => {
         if (error.name === "CastError") {
             return res.status(400).json({ errors: ["Invalid post ID"] });
         }
-        res.status(500).json({ errors: ["Server error"] });
+        return next(error);
     }
 };
 

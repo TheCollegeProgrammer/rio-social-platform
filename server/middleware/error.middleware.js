@@ -40,7 +40,7 @@ const errorHandler = (err, req, res, next) => {
         return res.status(400).json({ errors: [err.message] });
     }
 
-    console.error("Unhandled error:", err.message);
+    console.error("Unhandled error:", err);
 
     res.status(500).json({ errors: ["Server error"] });
 };

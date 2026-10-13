@@ -12,7 +12,7 @@ const serveFile = (req, res) => {
     res.sendFile(filePath);
 };
 
-const uploadAvatar = async (req, res) => {
+const uploadAvatar = async (req, res, next) => {
     try {
         if (!req.file) {
             return res.status(400).json({ errors: ["Image file is required"] });
@@ -26,11 +26,11 @@ const uploadAvatar = async (req, res) => {
         await user.save();
         res.json({ message: "Avatar uploaded", avatar: user.avatar });
     } catch (error) {
-        res.status(500).json({ errors: ["Server error"] });
+        return next(error);
     }
 };
 
-const uploadCover = async (req, res) => {
+const uploadCover = async (req, res, next) => {
     try {
         if (!req.file) {
             return res.status(400).json({ errors: ["Image file is required"] });
@@ -44,11 +44,11 @@ const uploadCover = async (req, res) => {
         await user.save();
         res.json({ message: "Cover uploaded", coverImage: user.coverImage });
     } catch (error) {
-        res.status(500).json({ errors: ["Server error"] });
+        return next(error);
     }
 };
 
-const deleteImage = async (req, res) => {
+const deleteImage = async (req, res, next) => {
     try {
         const { field } = req.params;
         if (!["avatar", "coverImage"].includes(field)) {
@@ -65,7 +65,7 @@ const deleteImage = async (req, res) => {
         await user.save();
         res.json({ message: `${field} deleted` });
     } catch (error) {
-        res.status(500).json({ errors: ["Server error"] });
+        return next(error);
     }
 };
 

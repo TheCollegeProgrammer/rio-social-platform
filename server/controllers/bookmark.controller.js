@@ -1,7 +1,7 @@
 const Post = require("../models/post");
 const User = require("../models/User");
 
-const toggleBookmark = async (req, res) => {
+const toggleBookmark = async (req, res, next) => {
     try {
         const post = await Post.findById(req.params.id);
         if (!post) return res.status(404).json({ errors: ["Post not found"] });
@@ -20,11 +20,11 @@ const toggleBookmark = async (req, res) => {
         if (error.name === "CastError") {
             return res.status(400).json({ errors: ["Invalid post ID"] });
         }
-        res.status(500).json({ errors: ["Server error"] });
+        return next(error);
     }
 };
 
-const getBookmarks = async (req, res) => {
+const getBookmarks = async (req, res, next) => {
     try {
         const user = await User.findById(req.user.id)
             .select("bookmarks")
@@ -36,11 +36,11 @@ const getBookmarks = async (req, res) => {
 
         res.json({ posts: user.bookmarks });
     } catch (error) {
-        res.status(500).json({ errors: ["Server error"] });
+        return next(error);
     }
 };
 
-const searchPosts = async (req, res) => {
+const searchPosts = async (req, res, next) => {
     try {
         let hashtag = (req.query.hashtag || "").trim().toLowerCase();
         if (hashtag && !hashtag.startsWith("#")) hashtag = `#${hashtag}`;
@@ -70,11 +70,11 @@ const searchPosts = async (req, res) => {
 
         res.json({ posts: enriched });
     } catch (error) {
-        res.status(500).json({ errors: ["Server error"] });
+        return next(error);
     }
 };
 
-const searchUsers = async (req, res) => {
+const searchUsers = async (req, res, next) => {
     try {
         const query = (req.query.q || "").trim();
         if (!query) return res.json({ users: [] });
@@ -90,7 +90,7 @@ const searchUsers = async (req, res) => {
 
         res.json({ users });
     } catch (error) {
-        res.status(500).json({ errors: ["Server error"] });
+        return next(error);
     }
 };
 
