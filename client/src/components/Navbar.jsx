@@ -46,7 +46,7 @@ function Navbar() {
             {user && (
                 <>
                     <NavLink to="/" className="nav-link" end>Home</NavLink>
-                    <NavLink to="/search" className="nav-link">Search</NavLink>
+                    <NavLink to="/search" className="nav-link">Explore</NavLink>
                     <NavLink to="/messages" className="nav-link">
                         Messages
                         {unreadMsgs > 0 && <span className="nav-badge nav-badge-inline">{unreadMsgs > 99 ? "99+" : unreadMsgs}</span>}

@@ -98,4 +98,28 @@ const getPosts = async (req, res, next) => {
     }
 };
 
-module.exports = { createPost, getPostById, getPosts, extractHashtags };
+let trendingCache = { at: 0, tags: null };
+
+const getTrendingHashtags = async (req, res, next) => {
+    try {
+        if (trendingCache.tags && Date.now() - trendingCache.at < 60000) {
+            return res.json({ hashtags: trendingCache.tags });
+        }
+
+        const rows = await Post.aggregate([
+            { $project: { hashtags: 1 } },
+            { $unwind: "$hashtags" },
+            { $group: { _id: "$hashtags", count: { $sum: 1 } } },
+            { $sort: { count: -1 } },
+            { $limit: 12 }
+        ]);
+
+        const hashtags = rows.map((r) => ({ tag: r._id, count: r.count }));
+        trendingCache = { at: Date.now(), tags: hashtags };
+        res.json({ hashtags });
+    } catch (error) {
+        return next(error);
+    }
+};
+
+module.exports = { createPost, getPostById, getPosts, getTrendingHashtags, extractHashtags };

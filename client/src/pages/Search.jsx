@@ -1,9 +1,19 @@
 import { useState, useEffect } from "react";
-import { Link, useSearchParams } from "react-router-dom";
-import { searchUsers, searchPosts, searchHashtag, mediaUrl } from "../services/api";
-import PostCard from "../components/PostCard";
+import { useSearchParams } from "react-router-dom";
+import { Search as SearchIcon, X } from "lucide-react";
+import { searchUsers, searchPosts, searchHashtag, getTrendingHashtags } from "../services/api";
+import TrendingTags from "../components/search/TrendingTags";
+import RecentSearches from "../components/search/RecentSearches";
+import SearchResults from "../components/search/SearchResults";
+import SearchSkeleton from "../components/search/SearchSkeleton";
 import "../styles/Home.css";
 import "../styles/Profile.css";
+import "../styles/Search.css";
+
+const RECENT_KEY = "rio-recent-searches";
+const loadRecent = () => {
+    try { return JSON.parse(localStorage.getItem(RECENT_KEY)) || []; } catch { return []; }
+};
 
 function Search() {
     const [params, setParams] = useSearchParams();
@@ -13,6 +23,9 @@ function Search() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const [searched, setSearched] = useState(false);
+    const [trending, setTrending] = useState([]);
+    const [trendLoading, setTrendLoading] = useState(true);
+    const [recent, setRecent] = useState(loadRecent);
 
     const runSearch = async (raw) => {
         const q = raw.trim();
@@ -29,6 +42,9 @@ function Search() {
             ]);
             setUsers(userResult.users);
             setPosts(postResult.posts);
+            const list = [q, ...recent.filter((x) => x !== q)].slice(0, 6);
+            setRecent(list);
+            localStorage.setItem(RECENT_KEY, JSON.stringify(list));
         } catch (err) {
             setError(err.message);
         } finally {
@@ -37,71 +53,82 @@ function Search() {
     };
 
     useEffect(() => {
+        let cancelled = false;
+        getTrendingHashtags()
+            .then((d) => { if (!cancelled) setTrending(d.hashtags || []); })
+            .catch(() => { /* explore still works without trending */ })
+            .finally(() => { if (!cancelled) setTrendLoading(false); });
+        return () => { cancelled = true; };
+    }, []);
+
+    useEffect(() => {
         const q = params.get("q");
         if (q) runSearch(q);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [params]);
 
-    const handleSearch = (e) => {
-        e.preventDefault();
-        const q = query.trim();
-        if (!q) return;
-        if (params.get("q") === q) runSearch(q);
-        else setParams({ q });
+    const go = (q) => {
+        const term = q.trim();
+        if (!term) return;
+        setQuery(term);
+        if (params.get("q") === term) runSearch(term);
+        else setParams({ q: term });
+    };
+
+    const clearAll = () => {
+        setQuery("");
+        setParams({});
+        setSearched(false);
+        setUsers([]);
+        setPosts([]);
+    };
+
+    const removeRecent = (s) => {
+        const list = recent.filter((x) => x !== s);
+        setRecent(list);
+        localStorage.setItem(RECENT_KEY, JSON.stringify(list));
     };
 
     return (
         <div className="page">
-            <div className="page-header"><h1>Search</h1></div>
+            <div className="page-header"><h1>Explore</h1></div>
 
-            <form onSubmit={handleSearch} className="create-post">
+            <form onSubmit={(e) => { e.preventDefault(); go(query); }} className="search-bar">
+                <SearchIcon size={18} className="search-bar-icon" />
                 <input
                     type="text"
-                    placeholder="Search users, posts, or #hashtags..."
+                    placeholder="Search people, posts, or #hashtags..."
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                 />
-                <div className="post-actions">
-                    <span className="faint">Try #react, usernames, or keywords</span>
-                    <button type="submit" className="btn btn-sm" disabled={loading || !query.trim()}>
-                        {loading ? "Searching..." : "Search"}
+                {query && (
+                    <button type="button" className="search-clear" aria-label="Clear search" onClick={clearAll}>
+                        <X size={16} />
                     </button>
-                </div>
+                )}
+                <button type="submit" className="btn btn-sm" disabled={loading || !query.trim()}>
+                    {loading ? "..." : "Search"}
+                </button>
             </form>
 
             {error && <p className="error-message" style={{ marginTop: 16 }}>{error}</p>}
+            {loading && <SearchSkeleton />}
 
-            {searched && !loading && (
+            {!loading && !searched && (
                 <>
-                    <section className="search-group" style={{ marginTop: 28 }}>
-                        <h2>Users ({users.length})</h2>
-                        {users.length === 0 ? (
-                            <div className="empty-state"><p>No users found.</p></div>
-                        ) : users.map((u) => {
-                            const avatar = mediaUrl(u.avatar);
-                            return (
-                                <Link key={u._id} to={`/users/${u._id}`} className="user-result">
-                                    <div className="small-avatar" style={{ width: 44, height: 44 }}>
-                                        {avatar ? <img src={avatar} alt="" /> : u.name?.charAt(0).toUpperCase()}
-                                    </div>
-                                    <div className="user-result-info">
-                                        <strong>{u.name}</strong>
-                                        <span>@{u.username}{u.bio ? ` — ${u.bio.slice(0, 50)}` : ""}</span>
-                                    </div>
-                                </Link>
-                            );
-                        })}
-                    </section>
-
-                    <section className="search-group">
-                        <h2>Posts ({posts.length})</h2>
-                        {posts.length === 0 ? (
-                            <div className="empty-state"><p>No posts found.</p></div>
-                        ) : posts.map((post) => (
-                            <PostCard key={post._id} post={post} onLike={() => {}} />
-                        ))}
-                    </section>
+                    <RecentSearches searches={recent} onPick={go} onRemove={removeRecent} />
+                    <TrendingTags tags={trending} loading={trendLoading} onSelect={go} />
                 </>
+            )}
+
+            {!loading && searched && (
+                <SearchResults
+                    key={query}
+                    users={users}
+                    posts={posts}
+                    query={query}
+                    defaultTab={query.startsWith("#") ? "posts" : "users"}
+                />
             )}
         </div>
     );

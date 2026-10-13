@@ -3,7 +3,7 @@ const protect = require("../middleware/auth.middleware");
 const optionalAuth = require("../middleware/optionalAuth.middleware");
 const upload = require("../config/upload");
 const commentRoutes = require("./comment.routes");
-const { createPost, getPostById, getPosts } = require("../controllers/post.controller");
+const { createPost, getPostById, getPosts, getTrendingHashtags } = require("../controllers/post.controller");
 const { editPost, deletePost, toggleLike } = require("../controllers/post-action.controller");
 const { toggleBookmark, getBookmarks, searchPosts } = require("../controllers/bookmark.controller");
 const { createPostWithImage, removePostImage, replacePostImage } = require("../controllers/post-image.controller");
@@ -12,6 +12,7 @@ const router = express.Router();
 
 router.get("/", optionalAuth, getPosts);
 router.get("/search", optionalAuth, searchPosts);
+router.get("/trending", optionalAuth, getTrendingHashtags);
 router.get("/bookmarks", protect, getBookmarks);
 router.post("/", protect, createPost);
 router.post("/image", protect, upload.single("image"), createPostWithImage);

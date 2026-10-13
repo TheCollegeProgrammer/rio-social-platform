@@ -25,6 +25,7 @@ export const toggleBookmark = (id) => apiRequest(`/posts/${id}/bookmark`, { meth
 export const getBookmarks = () => apiRequest("/posts/bookmarks");
 export const searchPosts = (q) => apiRequest(`/posts/search?q=${encodeURIComponent(q)}`);
 export const searchHashtag = (hashtag) => apiRequest(`/posts/search?hashtag=${encodeURIComponent(hashtag)}`);
+export const getTrendingHashtags = () => apiRequest("/posts/trending");
 
 export const getProfile = (id) => apiRequest(`/profile/${id}`);
 export const updateProfile = (data) =>
