@@ -5,7 +5,14 @@ import { getPosts, toggleLike, mediaUrl } from "../services/api";
 import PostCard from "../components/PostCard";
 import FeedSkeleton from "../components/FeedSkeleton";
 import CreatePostForm from "../components/CreatePostForm";
+import { TextEffect } from "@/components/motion-primitives/text-effect";
+import { InView } from "@/components/motion-primitives/in-view";
 import "../styles/Home.css";
+
+const fadeUp = {
+    hidden: { opacity: 0, y: 18 },
+    visible: { opacity: 1, y: 0 }
+};
 
 function Home() {
     const { user } = useAuth();
@@ -68,7 +75,9 @@ function Home() {
                     </div>
                     <div>
                         <p className="welcome">Welcome back</p>
-                        <h1>{user?.name}</h1>
+                        <TextEffect as="h1" per="char" preset="fade-in-blur">
+                            {user?.name || "there"}
+                        </TextEffect>
                     </div>
                 </div>
             </div>
@@ -88,7 +97,9 @@ function Home() {
                 ) : (
                     <>
                         {posts.map((post) => (
-                            <PostCard key={post._id} post={post} onLike={handleLike} />
+                            <InView key={post._id} once variants={fadeUp}>
+                                <PostCard post={post} onLike={handleLike} />
+                            </InView>
                         ))}
                         {hasMore && (
                             <button className="load-more" onClick={loadMore} disabled={loading}>

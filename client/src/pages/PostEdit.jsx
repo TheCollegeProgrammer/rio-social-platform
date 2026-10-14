@@ -1,19 +1,22 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { X } from "lucide-react";
+import { ImagePlus, X } from "lucide-react";
 import { useToast } from "../context/useToast.js";
-import { getPost, editPost, replacePostImage, removePostImage } from "../services/api";
-import ImageUpload from "../components/ImageUpload";
+import { getPost, editPost, addPostImages, removePostImage, mediaUrl } from "../services/api";
 import "../styles/Home.css";
+import "../styles/Media.css";
 
 const MAX = 500;
+const MAX_IMAGES = 8;
+const listImages = (p) => (p.images?.length ? p.images : p.image ? [p.image] : []);
 
 function PostEdit() {
     const { id } = useParams();
     const navigate = useNavigate();
     const toast = useToast();
+    const fileRef = useRef(null);
     const [content, setContent] = useState("");
-    const [image, setImage] = useState(null);
+    const [images, setImages] = useState([]);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState("");
@@ -24,7 +27,7 @@ function PostEdit() {
             .then((data) => {
                 if (!cancelled) {
                     setContent(data.post.content);
-                    setImage(data.post.image);
+                    setImages(listImages(data.post));
                 }
             })
             .catch((err) => { if (!cancelled) setError(err.message); })
@@ -34,18 +37,27 @@ function PostEdit() {
 
     const trimmed = content.trim();
 
-    const handleImageUpload = async (file) => {
-        const updated = await replacePostImage(id, file);
-        setImage(updated.image);
-        toast.success("Image updated");
+    const handleAdd = async (files) => {
+        try {
+            const post = await addPostImages(id, files);
+            setImages(listImages(post));
+            toast.success(files.length > 1 ? "Images added" : "Image added");
+        } catch (err) { toast.error(err.message); }
     };
 
-    const handleImageRemove = async () => {
-        await removePostImage(id);
-        setImage(null);
-        toast.success("Image removed");
+    const handleFiles = (e) => {
+        const picked = Array.from(e.target.files || []);
+        e.target.value = "";
+        if (picked.length) handleAdd(picked.slice(0, MAX_IMAGES - images.length));
     };
 
+    const handleRemove = async (index) => {
+        try {
+            const data = await removePostImage(id, index);
+            setImages(listImages(data.post));
+            toast.success("Image removed");
+        } catch (err) { toast.error(err.message); }
+    };
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!trimmed || trimmed.length > MAX) return;
@@ -78,12 +90,41 @@ function PostEdit() {
                     maxLength={MAX}
                     autoFocus
                 />
-                <ImageUpload
-                    label="Post image"
-                    current={image}
-                    onUpload={handleImageUpload}
-                    onDelete={handleImageRemove}
-                />
+                <div className="field">
+                    <label>Post images <span className="faint">({images.length}/{MAX_IMAGES})</span></label>
+                    <div className="edit-images">
+                        {images.map((img, i) => (
+                            <div className="edit-image" key={img}>
+                                <img src={mediaUrl(img)} alt="" />
+                                <button
+                                    type="button"
+                                    className="edit-image-x"
+                                    onClick={() => handleRemove(i)}
+                                    aria-label="Remove image"
+                                >
+                                    <X size={13} />
+                                </button>
+                            </div>
+                        ))}
+                        {images.length < MAX_IMAGES && (
+                            <button
+                                type="button"
+                                className="edit-image edit-image-add"
+                                onClick={() => fileRef.current?.click()}
+                            >
+                                <ImagePlus size={18} /> Add
+                            </button>
+                        )}
+                    </div>
+                    <input
+                        ref={fileRef}
+                        type="file"
+                        accept="image/jpeg,image/png,image/gif,image/webp"
+                        multiple
+                        hidden
+                        onChange={handleFiles}
+                    />
+                </div>
                 <div className="post-actions">
                     <span className={content.length > MAX ? "error-message" : "char-count"}>
                         {content.length}/{MAX}

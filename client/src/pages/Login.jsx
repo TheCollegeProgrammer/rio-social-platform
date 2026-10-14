@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { loginUser } from "../services/api";
 import { useAuth } from "../context/useAuth";
+import { TextEffect } from "@/components/motion-primitives/text-effect";
 import "../styles/Auth.css";
 
 function Login() {
@@ -37,7 +38,7 @@ function Login() {
         <div className="auth-page">
             <div className="auth-card">
                 <div className="auth-brand"><img className="brand-logo brand-logo-light" src="/Rio-logo-Light-theme.png" alt="RIO" /><img className="brand-logo brand-logo-dark" src="/Rio-logo-Dark-theme.png" alt="RIO" /></div>
-                <h1>Welcome back</h1>
+                <TextEffect as="h1" preset="fade-in-blur" per="word">Welcome back</TextEffect>
                 <p className="auth-subtitle">Log in to your account</p>
 
                 <form className="auth-form" onSubmit={handleSubmit}>

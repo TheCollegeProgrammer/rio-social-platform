@@ -2,10 +2,11 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Heart, Bookmark, Trash2, Pencil, Hash } from "lucide-react";
 import { useAuth } from "../context/useAuth";
-import { getPost, toggleLike, toggleBookmark, deletePost, getComments, createComment, mediaUrl } from "../services/api";
+import { getPost, toggleLike, toggleBookmark, deletePost, getComments, createComment } from "../services/api";
 import CommentList from "../components/CommentList";
 import ShareMenu from "../components/ShareMenu";
 import PostAuthor from "../components/PostAuthor";
+import PostMedia from "../components/PostMedia";
 import "../styles/Home.css";
 import "../styles/Post.css";
 import "../styles/Comments.css";
@@ -85,7 +86,7 @@ function PostDetail() {
 
                 <p className="post-content">{post.content}</p>
 
-                {post.image && <img className="post-image" src={mediaUrl(post.image)} alt="" />}
+                <PostMedia post={post} />
 
                 {post.hashtags?.length > 0 && (
                     <div className="hashtags">

@@ -37,6 +37,12 @@ nav {
     color: var(--text);
 }
 
+.nav-cat-label { display: inline; }
+
+@media (max-width: 1360px) {
+    .nav-cat-label { display: none; }
+}
+
 .nav-spacer { flex: 1; }
 
 .nav-user {
@@ -114,6 +120,7 @@ nav {
 
 @media (max-width: 720px) {
     .nav-username { display: none; }
+    .nav-cat { display: none; }
     nav { padding: 0 12px; gap: 2px; }
     .nav-link { padding: 7px 9px; font-size: 14px; }
 }

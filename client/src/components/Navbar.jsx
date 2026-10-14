@@ -3,6 +3,9 @@ import { Link, NavLink, useNavigate } from "react-router-dom";
 import { Bell, LogOut } from "lucide-react";
 import { useAuth } from "../context/useAuth";
 import ThemeToggle from "./ThemeToggle";
+import { CATEGORIES } from "../lib/categories";
+import { ScrollProgress } from "@/components/motion-primitives/scroll-progress";
+import { Magnetic } from "@/components/motion-primitives/magnetic";
 import { getNotifications, getUnreadMessageCount, mediaUrl } from "../services/api";
 
 function NavAvatar({ user }) {
@@ -51,6 +54,12 @@ function Navbar() {
                 <>
                     <NavLink to="/" className="nav-link" end>Home</NavLink>
                     <NavLink to="/search" className="nav-link">Explore</NavLink>
+                    {Object.entries(CATEGORIES).map(([slug, c]) => (
+                        <NavLink key={slug} to={`/${slug}`} className="nav-link nav-cat" title={c.title}>
+                            <c.icon size={16} />
+                            <span className="nav-cat-label">{c.label}</span>
+                        </NavLink>
+                    ))}
                     <NavLink to="/messages" className="nav-link">
                         Messages
                         {unreadMsgs > 0 && <span className="nav-badge nav-badge-inline">{unreadMsgs > 99 ? "99+" : unreadMsgs}</span>}
@@ -69,7 +78,9 @@ function Navbar() {
             {!user && (
                 <>
                     <Link to="/login" className="nav-link">Login</Link>
-                    <Link to="/register" className="btn btn-sm">Sign up</Link>
+                    <Magnetic>
+                        <Link to="/register" className="btn btn-sm">Sign up</Link>
+                    </Magnetic>
                 </>
             )}
 
@@ -84,6 +95,7 @@ function Navbar() {
                     </button>
                 </div>
             )}
+            <ScrollProgress className="bg-[var(--accent-strong)]" />
         </nav>
     );
 }

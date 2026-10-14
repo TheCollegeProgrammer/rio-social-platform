@@ -13,11 +13,11 @@ export const resetPassword = (token, newPassword) =>
 export const changePassword = (currentPassword, newPassword) =>
     apiRequest("/auth/change-password", { method: "POST", body: JSON.stringify({ currentPassword, newPassword }) });
 
-export const getPosts = (page = 1, limit = 10, imageOnly = false) =>
-    apiRequest(`/posts?page=${page}&limit=${limit}${imageOnly ? "&imageOnly=1" : ""}`);
+export const getPosts = (page = 1, limit = 10, imageOnly = false, category = "") =>
+    apiRequest(`/posts?page=${page}&limit=${limit}${imageOnly ? "&imageOnly=1" : ""}${category ? `&category=${encodeURIComponent(category)}` : ""}`);
 export const getPost = (id) => apiRequest(`/posts/${id}`);
-export const createPost = (content) =>
-    apiRequest("/posts", { method: "POST", body: JSON.stringify({ content }) }).then((d) => d.post);
+export const createPost = (content, category = null) =>
+    apiRequest("/posts", { method: "POST", body: JSON.stringify({ content, category }) }).then((d) => d.post);
 export const editPost = (id, content) =>
     apiRequest(`/posts/${id}`, { method: "PUT", body: JSON.stringify({ content }) });
 export const deletePost = (id) => apiRequest(`/posts/${id}`, { method: "DELETE" });
@@ -56,18 +56,19 @@ export const deleteComment = (postId, id) =>
 export const toggleCommentLike = (postId, id) =>
     apiRequest(`/posts/${postId}/comments/${id}/like`, { method: "POST" });
 
-export const createPostWithImage = (content, file) => {
+export const createPostWithImages = (content, files = [], category = null) => {
     const fd = new FormData();
     fd.append("content", content);
-    if (file) fd.append("image", file);
+    if (category) fd.append("category", category);
+    (files || []).forEach((f) => fd.append("image", f));
     return uploadRequest("/posts/image", fd).then((d) => d.post);
 };
-export const removePostImage = (id) =>
-    apiRequest(`/posts/${id}/image`, { method: "DELETE" });
+export const removePostImage = (id, index = null) =>
+    apiRequest(`/posts/${id}/image${index === null ? "" : `?index=${index}`}`, { method: "DELETE" });
 
-export const replacePostImage = (id, file) => {
+export const addPostImages = (id, files) => {
     const fd = new FormData();
-    fd.append("image", file);
+    (files || []).forEach((f) => fd.append("image", f));
     return uploadRequest(`/posts/${id}/image`, fd).then((d) => d.post);
 };
 

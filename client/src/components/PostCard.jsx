@@ -1,16 +1,15 @@
 import { Link, useNavigate } from "react-router-dom";
 import { Heart, MessageCircle, Bookmark, Hash, Pencil } from "lucide-react";
-import { mediaUrl } from "../services/api";
 import { useAuth } from "../context/useAuth";
 import ShareMenu from "./ShareMenu";
 import PostAuthor from "./PostAuthor";
+import PostMedia from "./PostMedia";
 import { AuthorAvatar } from "./AuthorAvatar";
 import "../styles/Post.css";
 
 function PostCard({ post, onLike }) {
     const navigate = useNavigate();
     const { user } = useAuth();
-    const image = mediaUrl(post.image);
     const isOwner = user?._id === post.author?._id;
 
     return (
@@ -23,11 +22,7 @@ function PostCard({ post, onLike }) {
                 <p className="post-content">{post.content}</p>
             </Link>
 
-            {image && (
-                <Link to={`/posts/${post._id}`}>
-                    <img className="post-image" src={image} alt="" loading="lazy" />
-                </Link>
-            )}
+            <PostMedia post={post} linked />
 
             {post.hashtags?.length > 0 && (
                 <div className="hashtags">

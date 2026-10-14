@@ -49,11 +49,14 @@ const deletePost = async (req, res, next) => {
             { bookmarks: post._id },
             { $pull: { bookmarks: post._id } }
         );
-        if (post.image) {
+        const imgs = post.images?.length ? post.images : post.image ? [post.image] : [];
+        if (imgs.length) {
             const fs = require("fs");
             const path = require("path");
-            const imgPath = path.join(__dirname, "..", "uploads", path.basename(post.image));
-            if (fs.existsSync(imgPath)) fs.unlinkSync(imgPath);
+            imgs.forEach((p) => {
+                const imgPath = path.join(__dirname, "..", "uploads", path.basename(p));
+                if (fs.existsSync(imgPath)) fs.unlinkSync(imgPath);
+            });
         }
         await post.deleteOne();
 

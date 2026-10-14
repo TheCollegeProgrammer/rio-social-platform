@@ -14,7 +14,7 @@ export const apiRequest = async (path, options = {}) => {
             ...options,
             headers: {
                 "Content-Type": "application/json",
-                ...(options.headers || {})
+                ...options.headers
             }
         });
         const data = await response.json();

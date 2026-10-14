@@ -1,9 +1,13 @@
 const Post = require("../models/post");
+const { normalizeCategory } = require("../config/categories");
 
 const extractHashtags = (content) => {
     const matches = content.match(/#\w+/g);
     return matches ? [...new Set(matches.map((h) => h.toLowerCase()))] : [];
 };
+
+const postImages = (post) =>
+    post.images?.length ? post.images : post.image ? [post.image] : [];
 
 const createPost = async (req, res, next) => {
     try {
@@ -19,7 +23,8 @@ const createPost = async (req, res, next) => {
         const post = await Post.create({
             content: content.trim(),
             author: req.user.id,
-            hashtags: extractHashtags(content)
+            hashtags: extractHashtags(content),
+            category: normalizeCategory(req.body.category)
         });
 
         await post.populate("author", "username name avatar");
@@ -48,6 +53,8 @@ const getPostById = async (req, res, next) => {
                 liked,
                 hashtags: post.hashtags,
                 image: post.image,
+                images: postImages(post),
+                category: post.category,
                 editedAt: post.editedAt,
                 createdAt: post.createdAt
             }
@@ -66,7 +73,10 @@ const getPosts = async (req, res, next) => {
         const limit = parseInt(req.query.limit) || 10;
         const skip = (page - 1) * limit;
         const imageOnly = req.query.imageOnly === "1" || req.query.imageOnly === "true";
-        const filter = imageOnly ? { image: { $ne: null } } : {};
+        const filter = {};
+        if (imageOnly) filter.image = { $ne: null };
+        const category = normalizeCategory(req.query.category);
+        if (category) filter.category = category;
 
         const posts = await Post.find(filter)
             .populate("author", "username name avatar")
@@ -85,6 +95,8 @@ const getPosts = async (req, res, next) => {
             liked: userId ? post.likes.some((id) => id.toString() === userId) : false,
             hashtags: post.hashtags,
             image: post.image,
+            images: postImages(post),
+            category: post.category,
             editedAt: post.editedAt,
             createdAt: post.createdAt
         }));
@@ -124,4 +136,4 @@ const getTrendingHashtags = async (req, res, next) => {
     }
 };
 
-module.exports = { createPost, getPostById, getPosts, getTrendingHashtags, extractHashtags };
+module.exports = { createPost, getPostById, getPosts, getTrendingHashtags, extractHashtags, postImages };

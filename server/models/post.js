@@ -35,6 +35,16 @@ const postSchema = new mongoose.Schema(
             default: null
         },
 
+        images: {
+            type: [String],
+            default: []
+        },
+
+        category: {
+            type: String,
+            default: null
+        },
+
         editedAt: {
             type: Date,
             default: null
@@ -45,5 +55,6 @@ const postSchema = new mongoose.Schema(
 
 postSchema.index({ content: "text", hashtags: "text" });
 postSchema.index({ author: 1, createdAt: -1 });
+postSchema.index({ category: 1, createdAt: -1 });
 
 module.exports = mongoose.model("Post", postSchema);

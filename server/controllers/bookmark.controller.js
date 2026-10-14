@@ -1,5 +1,6 @@
 const Post = require("../models/post");
 const User = require("../models/User");
+const { postImages } = require("./post.controller");
 
 const toggleBookmark = async (req, res, next) => {
     try {
@@ -65,6 +66,8 @@ const searchPosts = async (req, res, next) => {
             likesCount: post.likes.length,
             liked: userId ? post.likes.some((id) => id.toString() === userId) : false,
             hashtags: post.hashtags,
+            image: post.image,
+            images: postImages(post),
             createdAt: post.createdAt
         }));
 
