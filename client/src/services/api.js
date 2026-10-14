@@ -13,7 +13,7 @@ export const resetPassword = (token, newPassword) =>
 export const changePassword = (currentPassword, newPassword) =>
     apiRequest("/auth/change-password", { method: "POST", body: JSON.stringify({ currentPassword, newPassword }) });
 
-export const getPosts = (page = 1) => apiRequest(`/posts?page=${page}`);
+export const getPosts = (page = 1, limit = 10) => apiRequest(`/posts?page=${page}&limit=${limit}`);
 export const getPost = (id) => apiRequest(`/posts/${id}`);
 export const createPost = (content) =>
     apiRequest("/posts", { method: "POST", body: JSON.stringify({ content }) }).then((d) => d.post);

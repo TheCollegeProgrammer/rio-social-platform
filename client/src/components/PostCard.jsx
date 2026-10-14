@@ -2,6 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Heart, MessageCircle, Bookmark, Hash, Pencil } from "lucide-react";
 import { mediaUrl } from "../services/api";
 import { useAuth } from "../context/useAuth";
+import ShareMenu from "./ShareMenu";
 import "../styles/Post.css";
 
 function AuthorAvatar({ author, size = 42 }) {
@@ -76,6 +77,7 @@ function PostCard({ post, onLike }) {
                     <Bookmark size={16} />
                     Save
                 </span>
+                <ShareMenu postId={post._id} title={post.content.slice(0, 80)} />
                 {isOwner && (
                     <button className="action-btn" onClick={() => navigate(`/posts/${post._id}/edit`)}>
                         <Pencil size={16} />

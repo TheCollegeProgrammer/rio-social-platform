@@ -2,13 +2,13 @@ import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Search as SearchIcon, X } from "lucide-react";
 import { searchUsers, searchPosts, searchHashtag, getTrendingHashtags } from "../services/api";
-import TrendingTags from "../components/search/TrendingTags";
-import RecentSearches from "../components/search/RecentSearches";
+import ExploreFeed from "../components/search/ExploreFeed";
 import SearchResults from "../components/search/SearchResults";
 import SearchSkeleton from "../components/search/SearchSkeleton";
 import "../styles/Home.css";
 import "../styles/Profile.css";
 import "../styles/Search.css";
+import "../styles/Explore.css";
 
 const RECENT_KEY = "rio-recent-searches";
 const loadRecent = () => {
@@ -115,10 +115,13 @@ function Search() {
             {loading && <SearchSkeleton />}
 
             {!loading && !searched && (
-                <>
-                    <RecentSearches searches={recent} onPick={go} onRemove={removeRecent} />
-                    <TrendingTags tags={trending} loading={trendLoading} onSelect={go} />
-                </>
+                <ExploreFeed
+                    recent={recent}
+                    onPick={go}
+                    onRemove={removeRecent}
+                    trending={trending}
+                    trendLoading={trendLoading}
+                />
             )}
 
             {!loading && searched && (

@@ -4,6 +4,7 @@ import { Heart, Bookmark, Trash2, Pencil, Hash } from "lucide-react";
 import { useAuth } from "../context/useAuth";
 import { getPost, toggleLike, toggleBookmark, deletePost, getComments, createComment, mediaUrl } from "../services/api";
 import CommentList from "../components/CommentList";
+import ShareMenu from "../components/ShareMenu";
 import { AuthorAvatar } from "../components/PostCard";
 import "../styles/Home.css";
 import "../styles/Post.css";
@@ -110,6 +111,7 @@ function PostDetail() {
                     <button className={bookmarked ? "action-btn liked" : "action-btn"} onClick={handleBookmark}>
                         <Bookmark size={16} fill={bookmarked ? "currentColor" : "none"} />{bookmarked ? "Saved" : "Save"}
                     </button>
+                    <ShareMenu postId={id} title={post.content.slice(0, 80)} />
                     {isOwner && (
                         <>
                             <button className="action-btn" onClick={() => navigate(`/posts/${id}/edit`)}><Pencil size={16} />Edit</button>
