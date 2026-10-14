@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Heart, MessageCircle, ImageOff } from "lucide-react";
+import { Heart, MessageCircle } from "lucide-react";
 import { getPosts, mediaUrl } from "../../services/api";
 
 function ExploreGrid() {
@@ -13,7 +13,7 @@ function ExploreGrid() {
 
     useEffect(() => {
         let cancelled = false;
-        getPosts(1, 30)
+        getPosts(1, 30, true)
             .then((d) => {
                 if (!cancelled) {
                     setPosts(d.posts);
@@ -29,7 +29,7 @@ function ExploreGrid() {
     const loadMore = async () => {
         const next = page + 1;
         try {
-            const d = await getPosts(next, 30);
+            const d = await getPosts(next, 30, true);
             setPosts((p) => [...p, ...d.posts]);
             setPage(next);
             setTotalPages(d.totalPages || 1);
@@ -50,16 +50,10 @@ function ExploreGrid() {
             <div className="explore-grid">
                 {posts.map((post) => {
                     const image = mediaUrl(post.image);
+                    if (!image) return null;
                     return (
                         <button key={post._id} className="ex-cell" onClick={() => navigate(`/posts/${post._id}`)}>
-                            {image ? (
-                                <img src={image} alt="" loading="lazy" />
-                            ) : (
-                                <span className="ex-text">
-                                    <ImageOff size={18} />
-                                    {post.content.slice(0, 110)}{post.content.length > 110 ? "…" : ""}
-                                </span>
-                            )}
+                            <img src={image} alt="" loading="lazy" />
                             <span className="ex-overlay">
                                 <strong>@{post.author?.username}</strong>
                                 <span className="ex-stats">

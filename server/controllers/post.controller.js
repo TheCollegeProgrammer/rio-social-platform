@@ -65,14 +65,16 @@ const getPosts = async (req, res, next) => {
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 10;
         const skip = (page - 1) * limit;
+        const imageOnly = req.query.imageOnly === "1" || req.query.imageOnly === "true";
+        const filter = imageOnly ? { image: { $ne: null } } : {};
 
-        const posts = await Post.find()
+        const posts = await Post.find(filter)
             .populate("author", "username name avatar")
             .sort({ createdAt: -1 })
             .skip(skip)
             .limit(limit);
 
-        const total = await Post.countDocuments();
+        const total = await Post.countDocuments(filter);
         const userId = req.user ? req.user.id : null;
 
         const enriched = posts.map((post) => ({

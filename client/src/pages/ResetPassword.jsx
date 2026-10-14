@@ -37,7 +37,7 @@ function ResetPassword() {
         return (
             <div className="auth-page">
                 <div className="auth-card">
-                    <div className="auth-brand"><strong>SocialApp</strong></div>
+                    <div className="auth-brand"><img className="brand-logo brand-logo-light" src="/Rio-logo-Light-theme.png" alt="RIO" /><img className="brand-logo brand-logo-dark" src="/Rio-logo-Dark-theme.png" alt="RIO" /></div>
                     <h1>Invalid link</h1>
                     <p className="error-message">This reset link is missing its token.</p>
                     <p className="auth-switch">
@@ -52,7 +52,7 @@ function ResetPassword() {
         return (
             <div className="auth-page">
                 <div className="auth-card">
-                    <div className="auth-brand"><strong>SocialApp</strong></div>
+                    <div className="auth-brand"><img className="brand-logo brand-logo-light" src="/Rio-logo-Light-theme.png" alt="RIO" /><img className="brand-logo brand-logo-dark" src="/Rio-logo-Dark-theme.png" alt="RIO" /></div>
                     <h1>Password updated</h1>
                     <p className="success-message"><CheckCircle2 size={14} /> Redirecting to login...</p>
                     <p className="auth-switch"><Link to="/login">Log in now</Link></p>
@@ -64,7 +64,7 @@ function ResetPassword() {
     return (
         <div className="auth-page">
             <div className="auth-card">
-                <div className="auth-brand"><strong>SocialApp</strong></div>
+                <div className="auth-brand"><img className="brand-logo brand-logo-light" src="/Rio-logo-Light-theme.png" alt="RIO" /><img className="brand-logo brand-logo-dark" src="/Rio-logo-Dark-theme.png" alt="RIO" /></div>
                 <h1>Set a new password</h1>
                 <p className="auth-subtitle">Your new password must be at least 8 characters</p>
 

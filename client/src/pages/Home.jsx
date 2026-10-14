@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { FileText } from "lucide-react";
 import { useAuth } from "../context/useAuth";
-import { getPosts, toggleLike } from "../services/api";
+import { getPosts, toggleLike, mediaUrl } from "../services/api";
 import PostCard from "../components/PostCard";
 import FeedSkeleton from "../components/FeedSkeleton";
 import CreatePostForm from "../components/CreatePostForm";
@@ -58,9 +58,18 @@ function Home() {
     return (
         <main className="home">
             <div className="home-header">
-                <div>
-                    <p className="welcome">Welcome back</p>
-                    <h1>{user?.name}</h1>
+                <div className="home-user">
+                    <div className="avatar">
+                        {mediaUrl(user?.avatar) ? (
+                            <img src={mediaUrl(user.avatar)} alt="" />
+                        ) : (
+                            user?.name?.charAt(0).toUpperCase() || "?"
+                        )}
+                    </div>
+                    <div>
+                        <p className="welcome">Welcome back</p>
+                        <h1>{user?.name}</h1>
+                    </div>
                 </div>
             </div>
 

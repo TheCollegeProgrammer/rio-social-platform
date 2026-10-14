@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { Bell, LogOut } from "lucide-react";
 import { useAuth } from "../context/useAuth";
+import ThemeToggle from "./ThemeToggle";
 import { getNotifications, getUnreadMessageCount, mediaUrl } from "../services/api";
 
 function NavAvatar({ user }) {
@@ -41,7 +42,10 @@ function Navbar() {
 
     return (
         <nav>
-            <Link to="/" className="nav-brand">Social<span>App</span></Link>
+            <Link to="/" className="nav-brand" aria-label="RIO home">
+                <img className="brand-logo brand-logo-light" src="/Rio-logo-Light-theme.png" alt="RIO" />
+                <img className="brand-logo brand-logo-dark" src="/Rio-logo-Dark-theme.png" alt="RIO" />
+            </Link>
 
             {user && (
                 <>
@@ -60,6 +64,7 @@ function Navbar() {
             )}
 
             <div className="nav-spacer" />
+            <ThemeToggle />
 
             {!user && (
                 <>

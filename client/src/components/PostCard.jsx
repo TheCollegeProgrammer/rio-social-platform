@@ -3,20 +3,9 @@ import { Heart, MessageCircle, Bookmark, Hash, Pencil } from "lucide-react";
 import { mediaUrl } from "../services/api";
 import { useAuth } from "../context/useAuth";
 import ShareMenu from "./ShareMenu";
+import PostAuthor from "./PostAuthor";
+import { AuthorAvatar } from "./AuthorAvatar";
 import "../styles/Post.css";
-
-function AuthorAvatar({ author, size = 42 }) {
-    const src = mediaUrl(author?.avatar);
-    const style = { width: size, height: size, fontSize: Math.round(size * 0.42) };
-    if (src) {
-        return <div className="small-avatar" style={style}><img src={src} alt="" /></div>;
-    }
-    return (
-        <div className="small-avatar" style={style}>
-            {author?.name?.charAt(0).toUpperCase()}
-        </div>
-    );
-}
 
 function PostCard({ post, onLike }) {
     const navigate = useNavigate();
@@ -26,17 +15,7 @@ function PostCard({ post, onLike }) {
 
     return (
         <article className="post-card">
-            <div className="post-user">
-                <AuthorAvatar author={post.author} />
-                <div>
-                    <h3>
-                        <Link to={`/users/${post.author?._id}`} className="post-author-link">
-                            {post.author?.name}
-                        </Link>
-                    </h3>
-                    <span>@{post.author?.username}</span>
-                </div>
-            </div>
+            <PostAuthor post={post} />
 
             {post.editedAt && <span className="edited-badge">Edited</span>}
 

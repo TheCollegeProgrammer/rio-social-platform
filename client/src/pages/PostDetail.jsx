@@ -5,7 +5,7 @@ import { useAuth } from "../context/useAuth";
 import { getPost, toggleLike, toggleBookmark, deletePost, getComments, createComment, mediaUrl } from "../services/api";
 import CommentList from "../components/CommentList";
 import ShareMenu from "../components/ShareMenu";
-import { AuthorAvatar } from "../components/PostCard";
+import PostAuthor from "../components/PostAuthor";
 import "../styles/Home.css";
 import "../styles/Post.css";
 import "../styles/Comments.css";
@@ -79,13 +79,7 @@ function PostDetail() {
             {error && <p className="error-message">{error}</p>}
 
             <article className="post-card">
-                <div className="post-user">
-                    <AuthorAvatar author={post.author} />
-                    <div>
-                        <h3>{post.author?.name}</h3>
-                        <span>@{post.author?.username}</span>
-                    </div>
-                </div>
+                <PostAuthor post={post} />
 
                 {post.editedAt && <span className="edited-badge">Edited</span>}
 

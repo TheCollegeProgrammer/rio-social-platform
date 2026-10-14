@@ -13,6 +13,9 @@
     --accent-strong: #3b82f6;
     --danger: #ef4444;
     --success: #4ade80;
+    --danger-text: #fca5a5;
+    --success-text: #4ade80;
+    --nav-bg: rgba(9, 9, 11, 0.85);
 
     --radius-sm: 8px;
     --radius: 12px;
@@ -23,6 +26,28 @@
 
     --shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
     --nav-height: 60px;
+}
+
+[data-theme="light"] {
+    --bg: #f4f4f5;
+    --bg-raised: #ffffff;
+    --bg-hover: #ececee;
+    --border: #e4e4e7;
+    --border-strong: #d4d4d8;
+
+    --text: #18181b;
+    --text-muted: #52525b;
+    --text-faint: #71717a;
+
+    --accent: #2563eb;
+    --accent-strong: #1d4ed8;
+    --danger: #dc2626;
+    --success: #16a34a;
+    --danger-text: #b91c1c;
+    --success-text: #15803d;
+    --nav-bg: rgba(255, 255, 255, 0.85);
+
+    --shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
 }
 
 * {
@@ -92,6 +117,19 @@ textarea::placeholder {
 
 img {
     max-width: 100%;
+    display: block;
+}
+
+.brand-logo {
+    display: none;
+    width: auto;
+    border-radius: 6px;
+    object-fit: contain;
+}
+
+[data-theme="light"] .brand-logo-light,
+[data-theme="dark"] .brand-logo-dark,
+html:not([data-theme]) .brand-logo-dark {
     display: block;
 }
 

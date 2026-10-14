@@ -1,13 +1,13 @@
 const { loadJson, rng, ago } = require("./seed-alive-utils");
 
 async function seedChats({ User, Conversation, Message }) {
-    if ((await Conversation.countDocuments()) > 0) {
-        console.log("chats: already seeded, skipping");
-        return;
-    }
-
     const { chats } = loadJson("engagement.json");
+    const existing = await Conversation.find({}, { participants: 1 }).lean();
+    const seen = new Set(
+        existing.map((c) => c.participants.map(String).sort().join("|"))
+    );
     const rand = rng(4242);
+    let created = 0;
     let total = 0;
 
     for (const chat of chats) {
@@ -17,6 +17,9 @@ async function seedChats({ User, Conversation, Message }) {
             console.log(`chats: skip ${chat.a}<->${chat.b} (user missing)`);
             continue;
         }
+
+        const key = [a._id, b._id].map(String).sort().join("|");
+        if (seen.has(key)) continue;
 
         const start = ago(chat.daysAgo, Math.floor(rand() * 720) + 60);
         const readable = chat.messages
@@ -55,10 +58,12 @@ async function seedChats({ User, Conversation, Message }) {
             { _id: convo._id },
             { $set: { createdAt: start, updatedAt: last.createdAt } }
         );
+        seen.add(key);
+        created++;
         total += docs.length;
     }
 
-    console.log(`chats: ${chats.length} conversations, ${total} messages`);
+    console.log(`chats: +${created} conversations, +${total} messages`);
 }
 
 module.exports = { seedChats };

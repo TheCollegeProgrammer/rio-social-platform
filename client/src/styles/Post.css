@@ -39,6 +39,11 @@
     font-size: 13px;
 }
 
+.follow-btn {
+    margin-left: auto;
+    flex-shrink: 0;
+}
+
 .post-content {
     font-size: 16px;
     line-height: 1.6;

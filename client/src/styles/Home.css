@@ -11,6 +11,12 @@
     margin-bottom: 8px;
 }
 
+.home-user {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
 .welcome {
     color: var(--text-faint);
     margin: 0;

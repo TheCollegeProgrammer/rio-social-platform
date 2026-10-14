@@ -31,9 +31,13 @@ async function seedUsersAndPosts() {
             newUsers++;
         }
 
+        const existing = await Post.find({ author: doc._id }, { content: 1 }).lean();
+        const seen = new Set(existing.map((x) => x.content.slice(0, 50)));
+
         for (const p of u.posts) {
-            const exists = await Post.exists({ content: p.content.slice(0, 50) });
-            if (exists) continue;
+            const key = p.content.slice(0, 50);
+            if (seen.has(key)) continue;
+            seen.add(key);
             const post = await Post.create({
                 content: p.content,
                 author: doc._id,

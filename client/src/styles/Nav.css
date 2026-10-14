@@ -7,20 +7,18 @@ nav {
     align-items: center;
     gap: 6px;
     padding: 0 24px;
-    background: rgba(9, 9, 11, 0.85);
+    background: var(--nav-bg);
     backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--border);
 }
 
 .nav-brand {
-    font-weight: 700;
-    font-size: 18px;
-    letter-spacing: -0.5px;
+    display: flex;
+    align-items: center;
     margin-right: 20px;
-    color: var(--text);
 }
 
-.nav-brand span { color: var(--accent); }
+.nav-brand .brand-logo { height: 34px; }
 
 .nav-link {
     padding: 7px 14px;
@@ -101,6 +99,8 @@ nav {
 .nav-icon-link {
     position: relative;
     padding: 8px;
+    border: none;
+    background: transparent;
     border-radius: var(--radius-sm);
     color: var(--text-muted);
     display: flex;
