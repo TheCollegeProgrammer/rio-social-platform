@@ -14,8 +14,12 @@ const { notFound, errorHandler } = require("./middleware/error.middleware");
 
 const app = express();
 
+const defaultMax = process.env.NODE_ENV === "test" ? 10000
+    : process.env.NODE_ENV === "production" ? 500
+    : 2000;
+
 const limiter = rateLimit({
-    max: process.env.NODE_ENV === "test" ? 10000 : 200,
+    max: Number(process.env.RATE_LIMIT_MAX) || defaultMax,
     windowMs: 15 * 60 * 1000,
     message: { errors: ["Too many requests, please try again later."] }
 });
@@ -23,7 +27,6 @@ const limiter = rateLimit({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-app.use("/api", limiter);
 app.use(cors({
     origin: "http://localhost:5173",
     credentials: true
@@ -35,6 +38,8 @@ app.use((req, res, next) => {
     res.setHeader("X-XSS-Protection", "1; mode=block");
     next();
 });
+
+app.use("/api", limiter);
 
 app.get("/health", (req, res) => {
     res.json({ status: "ok" });

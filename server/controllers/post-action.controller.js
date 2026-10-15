@@ -3,6 +3,12 @@ const User = require("../models/User");
 const { extractHashtags } = require("./post.controller");
 const { createNotification } = require("./notification.controller");
 
+const canModerate = async (post, userId) => {
+    if (post.author.toString() === userId) return true;
+    const me = await User.findById(userId, { role: 1 });
+    return me?.role === "admin";
+};
+
 const editPost = async (req, res, next) => {
     try {
         const { content } = req.body;
@@ -16,7 +22,7 @@ const editPost = async (req, res, next) => {
 
         const post = await Post.findById(req.params.id);
         if (!post) return res.status(404).json({ errors: ["Post not found"] });
-        if (post.author.toString() !== req.user.id) {
+        if (!(await canModerate(post, req.user.id))) {
             return res.status(403).json({ errors: ["Not authorized"] });
         }
 
@@ -39,7 +45,7 @@ const deletePost = async (req, res, next) => {
     try {
         const post = await Post.findById(req.params.id);
         if (!post) return res.status(404).json({ errors: ["Post not found"] });
-        if (post.author.toString() !== req.user.id) {
+        if (!(await canModerate(post, req.user.id))) {
             return res.status(403).json({ errors: ["Not authorized"] });
         }
 

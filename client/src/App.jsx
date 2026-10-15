@@ -16,7 +16,6 @@ import Search from "./pages/Search";
 import Settings from "./pages/Settings";
 import Notifications from "./pages/Notifications";
 import Messages from "./pages/Messages";
-import CategoryPage from "./pages/CategoryPage";
 
 function App() {
   return (
@@ -40,10 +39,6 @@ function App() {
             <Route path="/settings" element={<Settings />} />
             <Route path="/notifications" element={<Notifications />} />
             <Route path="/messages" element={<Messages />} />
-            <Route path="/motivation" element={<CategoryPage category="motivation" />} />
-            <Route path="/billionaire-mindset" element={<CategoryPage category="billionaire-mindset" />} />
-            <Route path="/f1" element={<CategoryPage category="f1" />} />
-            <Route path="/motorsport" element={<CategoryPage category="motorsport" />} />
           </Route>
         </Routes>
       </BrowserRouter>

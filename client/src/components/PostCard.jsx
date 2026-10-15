@@ -1,16 +1,34 @@
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Heart, MessageCircle, Bookmark, Hash, Pencil } from "lucide-react";
+import { Heart, MessageCircle, Bookmark, Hash, Pencil, Trash2 } from "lucide-react";
 import { useAuth } from "../context/useAuth";
+import { useToast } from "../context/useToast";
 import ShareMenu from "./ShareMenu";
 import PostAuthor from "./PostAuthor";
 import PostMedia from "./PostMedia";
 import { AuthorAvatar } from "./AuthorAvatar";
+import { deletePost } from "../services/api";
 import "../styles/Post.css";
 
 function PostCard({ post, onLike }) {
     const navigate = useNavigate();
     const { user } = useAuth();
+    const toast = useToast();
+    const [hidden, setHidden] = useState(false);
     const isOwner = user?._id === post.author?._id;
+    const canEdit = isOwner || user?.role === "admin";
+
+    const handleDelete = async () => {
+        if (!window.confirm("Delete this post?")) return;
+        try {
+            await deletePost(post._id);
+            setHidden(true);
+        } catch (error) {
+            toast.error(error.message || "Could not delete post");
+        }
+    };
+
+    if (hidden) return null;
 
     return (
         <article className="post-card">
@@ -22,7 +40,7 @@ function PostCard({ post, onLike }) {
                 <p className="post-content">{post.content}</p>
             </Link>
 
-            <PostMedia post={post} linked />
+            <PostMedia post={post} />
 
             {post.hashtags?.length > 0 && (
                 <div className="hashtags">
@@ -52,7 +70,13 @@ function PostCard({ post, onLike }) {
                     Save
                 </span>
                 <ShareMenu postId={post._id} title={post.content.slice(0, 80)} />
-                {isOwner && (
+                {canEdit && (
+                    <button className="action-btn danger" onClick={handleDelete}>
+                        <Trash2 size={16} />
+                        Delete
+                    </button>
+                )}
+                {canEdit && (
                     <button className="action-btn" onClick={() => navigate(`/posts/${post._id}/edit`)}>
                         <Pencil size={16} />
                         Edit

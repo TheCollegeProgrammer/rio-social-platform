@@ -74,6 +74,7 @@ function PostDetail() {
     if (!post) return <div className="page"><p className="muted">Post not found.</p></div>;
 
     const isOwner = user?._id === post.author?._id;
+    const canManage = isOwner || user?.role === "admin";
 
     return (
         <main className="home">
@@ -107,7 +108,7 @@ function PostDetail() {
                         <Bookmark size={16} fill={bookmarked ? "currentColor" : "none"} />{bookmarked ? "Saved" : "Save"}
                     </button>
                     <ShareMenu postId={id} title={post.content.slice(0, 80)} />
-                    {isOwner && (
+                    {canManage && (
                         <>
                             <button className="action-btn" onClick={() => navigate(`/posts/${id}/edit`)}><Pencil size={16} />Edit</button>
                             <button className="action-btn danger" onClick={handleDelete}><Trash2 size={16} />Delete</button>
