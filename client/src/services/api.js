@@ -83,6 +83,8 @@ export const deleteNotification = (id) =>
 
 export const getConversations = () => apiRequest("/messages");
 export const getUnreadMessageCount = () => apiRequest("/messages/unread-count");
+export const getNewChatUsers = (q = "") =>
+    apiRequest(`/messages/new-users${q ? `?q=${encodeURIComponent(q)}` : ""}`);
 export const markConversationRead = (convoId) =>
     apiRequest(`/messages/${convoId}/read`, { method: "PATCH" });
 export const getOrCreateConversation = (userId) =>

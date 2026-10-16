@@ -71,9 +71,10 @@ For a **creator community, campus network, brand tribe, or niche interest group*
 
 ### Messaging
 - **1:1 conversations** — auto-created or reused on first message
+- **"New" conversation button** — opens a picker of people you **don't already chat with** (existing conversation partners are excluded server-side), with debounced name/username search, avatar rows, and one-click start
 - **Threaded message list** with real conversation previews
-- **Unread counts** per conversation + global navbar badge
-- **Mark-as-read** with server-side unread tracking both directions
+- **Navbar badge counts PEOPLE, not messages** — distinct users with unread messages (3 unread from 1 person shows `1`)
+- **Unread counts** per conversation + **mark-as-read** with server-side unread tracking both directions
 - **Conversation seeding** — every demo user ships with realistic, on-persona chat history
 
 ### Experience Layer

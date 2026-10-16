@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
+import { MessageSquarePlus } from "lucide-react";
 import { useAuth } from "../context/useAuth";
-import { getConversations } from "../services/api";
+import { getConversations, getOrCreateConversation } from "../services/api";
 import ConversationList from "../components/ConversationList";
+import NewConversationPicker from "../components/NewConversationPicker";
 import ChatWindow from "../components/ChatWindow";
 import "./Messages.css";
 
@@ -14,6 +16,7 @@ function Messages() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const [mobileChat, setMobileChat] = useState(false);
+    const [picker, setPicker] = useState(false);
 
     useEffect(() => {
         let cancelled = false;
@@ -47,6 +50,17 @@ function Messages() {
         setActive((prev) => (prev && prev._id === convoId ? { ...prev, unreadCount: 0 } : prev));
     };
 
+    const startConversation = async (u) => {
+        const d = await getOrCreateConversation(u._id);
+        const convo = d.conversation;
+        setConversations((prev) =>
+            prev.some((c) => c._id === convo._id) ? prev : [convo, ...prev]
+        );
+        setActive(convo);
+        setPicker(false);
+        setMobileChat(true);
+    };
+
     return (
         <div className="page page-wide">
             <div className="page-header">
@@ -57,8 +71,20 @@ function Messages() {
 
             <div className={`messenger ${mobileChat ? "show-chat" : ""}`}>
                 <aside className="convo-panel">
-                    <h2 className="panel-title">Conversations</h2>
-                    {loading ? (
+                    <div className="panel-head">
+                        <h2 className="panel-title">Conversations</h2>
+                        <button
+                            className="btn btn-sm new-chat-btn"
+                            onClick={() => setPicker((v) => !v)}
+                            title="Start a new conversation"
+                        >
+                            <MessageSquarePlus size={15} />
+                            New
+                        </button>
+                    </div>
+                    {picker ? (
+                        <NewConversationPicker onStart={startConversation} onCancel={() => setPicker(false)} />
+                    ) : loading ? (
                         <p className="muted">Loading...</p>
                     ) : (
                         <ConversationList

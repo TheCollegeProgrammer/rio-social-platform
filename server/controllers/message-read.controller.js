@@ -29,17 +29,19 @@ const markConversationRead = async (req, res, next) => {
     }
 };
 
-// Total unread messages across all conversations (for the nav badge)
+// Unread stats for the nav badge: total messages + distinct users with unread
 const getUnreadCount = async (req, res, next) => {
     try {
-        const convos = await Conversation.find({ participants: req.user.id }).select("_id");
-        const ids = convos.map((c) => c._id);
+        const convos = await Conversation.find({ participants: req.user.id }).select("_id unreadCounts");
+        const withUnread = convos.filter(
+            (c) => ((c.unreadCounts && c.unreadCounts.get(req.user.id)) || 0) > 0
+        );
         const unreadCount = await Message.countDocuments({
-            conversation: { $in: ids },
+            conversation: { $in: withUnread.map((c) => c._id) },
             sender: { $ne: req.user.id },
             readBy: { $ne: req.user.id }
         });
-        res.json({ unreadCount });
+        res.json({ unreadCount, unreadUsers: withUnread.length });
     } catch (error) {
         return next(error);
     }

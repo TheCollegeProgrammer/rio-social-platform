@@ -27,7 +27,7 @@ function Navbar() {
                 .then((d) => { if (!cancelled) setUnread(d.unreadCount); })
                 .catch(() => { });
             getUnreadMessageCount()
-                .then((d) => { if (!cancelled) setUnreadMsgs(d.unreadCount); })
+                .then((d) => { if (!cancelled) setUnreadMsgs(d.unreadUsers ?? d.unreadCount); })
                 .catch(() => { });
         };
         load();

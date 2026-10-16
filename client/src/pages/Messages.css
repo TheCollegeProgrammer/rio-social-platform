@@ -105,3 +105,35 @@
 
 .convo-item.unseen .convo-name { font-weight: 700; }
 .convo-item.unseen .convo-preview { color: var(--text); }
+.panel-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+.new-chat-btn { display: inline-flex; align-items: center; gap: 5px; flex-shrink: 0; }
+
+.new-conv-search {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    margin-bottom: 10px;
+    background: var(--bg-hover);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    color: var(--text-muted);
+}
+.new-conv-search input {
+    flex: 1;
+    min-width: 0;
+    padding: 0;
+    background: none;
+    border: none;
+    font-size: 14px;
+    color: var(--text);
+    outline: none;
+}
+.new-conv-msg { color: var(--text-muted); flex-shrink: 0; margin-left: auto; }
+.convo-item:disabled { opacity: 0.6; cursor: default; }
+.new-conv-cancel { width: 100%; margin-top: 10px; }
