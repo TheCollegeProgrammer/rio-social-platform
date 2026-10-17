@@ -1,8 +1,16 @@
 const path = require("path");
 const fs = require("fs");
 const User = require("../models/User");
+const { isRemote, destroyRemote } = require("../config/cloudinary");
 
 const uploadDir = path.join(__dirname, "..", "uploads");
+
+const removeStored = (url) => {
+    if (!url) return;
+    if (isRemote(url)) return destroyRemote(url);
+    const fp = path.join(uploadDir, path.basename(url));
+    if (fs.existsSync(fp)) fs.unlinkSync(fp);
+};
 
 const serveFile = (req, res) => {
     const filePath = path.join(uploadDir, path.basename(req.params.filename));
@@ -18,11 +26,8 @@ const uploadAvatar = async (req, res, next) => {
             return res.status(400).json({ errors: ["Image file is required"] });
         }
         const user = await User.findById(req.user.id);
-        if (user.avatar) {
-            const old = path.join(uploadDir, path.basename(user.avatar));
-            if (fs.existsSync(old)) fs.unlinkSync(old);
-        }
-        user.avatar = `/uploads/${req.file.filename}`;
+        removeStored(user.avatar);
+        user.avatar = req.file.remoteUrl || `/uploads/${req.file.filename}`;
         await user.save();
         res.json({ message: "Avatar uploaded", avatar: user.avatar });
     } catch (error) {
@@ -36,11 +41,8 @@ const uploadCover = async (req, res, next) => {
             return res.status(400).json({ errors: ["Image file is required"] });
         }
         const user = await User.findById(req.user.id);
-        if (user.coverImage) {
-            const old = path.join(uploadDir, path.basename(user.coverImage));
-            if (fs.existsSync(old)) fs.unlinkSync(old);
-        }
-        user.coverImage = `/uploads/${req.file.filename}`;
+        removeStored(user.coverImage);
+        user.coverImage = req.file.remoteUrl || `/uploads/${req.file.filename}`;
         await user.save();
         res.json({ message: "Cover uploaded", coverImage: user.coverImage });
     } catch (error) {
@@ -59,8 +61,7 @@ const deleteImage = async (req, res, next) => {
         if (!current) {
             return res.status(400).json({ errors: ["No image to delete"] });
         }
-        const filePath = path.join(uploadDir, path.basename(current));
-        if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+        removeStored(current);
         user[field] = "";
         await user.save();
         res.json({ message: `${field} deleted` });

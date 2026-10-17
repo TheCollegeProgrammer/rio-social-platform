@@ -3,11 +3,13 @@ const path = require("path");
 const fs = require("fs");
 const { extractHashtags } = require("./post.controller");
 const { normalizeCategory } = require("../config/categories");
+const { isRemote, destroyRemote } = require("../config/cloudinary");
 
 const uploadDir = path.join(__dirname, "..", "uploads");
 const MAX_IMAGES = 8;
 
-const toPaths = (files) => (files || []).map((f) => `/uploads/${f.filename}`);
+const toPaths = (files) =>
+    (files || []).map((f) => f.remoteUrl || `/uploads/${f.filename}`);
 const allImages = (post) =>
     post.images?.length ? post.images : post.image ? [post.image] : [];
 const syncFirst = (post) => {
@@ -15,6 +17,7 @@ const syncFirst = (post) => {
 };
 const deleteFiles = (list) => {
     list.forEach((p) => {
+        if (isRemote(p)) return destroyRemote(p);
         const fp = path.join(uploadDir, path.basename(p));
         if (fs.existsSync(fp)) fs.unlinkSync(fp);
     });

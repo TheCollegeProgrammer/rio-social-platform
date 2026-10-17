@@ -3,7 +3,11 @@ const mongoose = require("mongoose");
 const connectDB = async () => {
     try {
         const base = process.env.MONGO_URI;
-        const uri = process.env.NODE_ENV === "test" ? `${base}_test` : base;
+        let uri = base;
+        if (process.env.NODE_ENV === "test") {
+            const q = base.indexOf("?");
+            uri = q === -1 ? `${base}_test` : `${base.slice(0, q)}_test${base.slice(q)}`;
+        }
         await mongoose.connect(uri);
         console.log(`MongoDB connected${process.env.NODE_ENV === "test" ? " (test DB)" : ""}`);
     } catch (error) {
