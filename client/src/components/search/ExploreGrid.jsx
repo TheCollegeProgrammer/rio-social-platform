@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Heart, MessageCircle } from "lucide-react";
 import { getPosts, mediaUrl } from "../../services/api";
+import { useAutoLoad } from "../../lib/useAutoLoad";
 
 function ExploreGrid() {
     const navigate = useNavigate();
@@ -9,7 +10,10 @@ function ExploreGrid() {
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [loading, setLoading] = useState(true);
+    const [loadingMore, setLoadingMore] = useState(false);
     const [error, setError] = useState("");
+    const loadingMoreRef = useRef(false);
+    const sentinelRef = useRef(null);
 
     useEffect(() => {
         let cancelled = false;
@@ -27,6 +31,9 @@ function ExploreGrid() {
     }, []);
 
     const loadMore = async () => {
+        if (page >= totalPages || loadingMoreRef.current) return;
+        loadingMoreRef.current = true;
+        setLoadingMore(true);
         const next = page + 1;
         try {
             const d = await getPosts(next, 30, true);
@@ -34,7 +41,13 @@ function ExploreGrid() {
             setPage(next);
             setTotalPages(d.totalPages || 1);
         } catch (e) { setError(e.message); }
+        finally {
+            loadingMoreRef.current = false;
+            setLoadingMore(false);
+        }
     };
+
+    useAutoLoad(sentinelRef, loadMore, !loading && page < totalPages, [posts.length]);
 
     if (loading) {
         return (
@@ -66,7 +79,12 @@ function ExploreGrid() {
                 })}
             </div>
             {page < totalPages && (
-                <button className="load-more" onClick={loadMore}>Load more posts</button>
+                <>
+                    <div ref={sentinelRef} aria-hidden="true" />
+                    <button className="load-more" onClick={loadMore} disabled={loadingMore}>
+                        {loadingMore ? "Loading more..." : "Load more posts"}
+                    </button>
+                </>
             )}
         </>
     );

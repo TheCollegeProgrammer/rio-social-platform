@@ -4,6 +4,7 @@ import gsap from "gsap";
 import { useAuth } from "../context/useAuth";
 import { getPosts, toggleLike, mediaUrl } from "../services/api";
 import { reducedMotion } from "../lib/utils";
+import { useAutoLoad } from "../lib/useAutoLoad";
 import PostCard from "../components/PostCard";
 import FeedSkeleton from "../components/FeedSkeleton";
 import CreatePostForm from "../components/CreatePostForm";
@@ -19,6 +20,9 @@ function Home() {
     const [hasMore, setHasMore] = useState(true);
     const feedRef = useRef(null);
     const animatedIds = useRef(new Set());
+    const [loadingMore, setLoadingMore] = useState(false);
+    const loadingMoreRef = useRef(false);
+    const sentinelRef = useRef(null);
 
     useLayoutEffect(() => {
         if (reducedMotion() || !feedRef.current) return;
@@ -53,16 +57,25 @@ function Home() {
         return () => { cancelled = true; };
     }, []);
 
-    const loadMore = () => {
+    const loadMore = async () => {
+        if (!hasMore || loadingMoreRef.current) return;
+        loadingMoreRef.current = true;
+        setLoadingMore(true);
         const next = page + 1;
-        setPage(next);
-        getPosts(next)
-            .then((data) => {
-                setPosts((prev) => [...prev, ...data.posts]);
-                setHasMore(next < data.totalPages);
-            })
-            .catch((err) => setError(err.message));
+        try {
+            const data = await getPosts(next);
+            setPosts((prev) => [...prev, ...data.posts]);
+            setPage(next);
+            setHasMore(next < data.totalPages);
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            loadingMoreRef.current = false;
+            setLoadingMore(false);
+        }
     };
+
+    useAutoLoad(sentinelRef, loadMore, !loading && hasMore, [posts.length]);
 
     const handleLike = async (postId) => {
         try {
@@ -117,9 +130,12 @@ function Home() {
                             <PostCard key={post._id} post={post} onLike={handleLike} />
                         ))}
                         {hasMore && (
-                            <button className="load-more" onClick={loadMore} disabled={loading}>
-                                {loading ? "Loading..." : "Load more"}
-                            </button>
+                            <>
+                                <div ref={sentinelRef} aria-hidden="true" />
+                                <button className="load-more" onClick={loadMore} disabled={loadingMore}>
+                                    {loadingMore ? "Loading more..." : "Load more"}
+                                </button>
+                            </>
                         )}
                     </>
                 )}
