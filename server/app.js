@@ -14,10 +14,16 @@ const { notFound, errorHandler } = require("./middleware/error.middleware");
 
 const app = express();
 
-const allowedOrigins = (process.env.CORS_ORIGINS || "http://localhost:5173")
+const defaultOrigins = [
+    "http://localhost:5173",
+    "https://rio-social-platform-git-main-devansh-avchats-projects.vercel.app",
+    "https://rio-social-platform.vercel.app"
+];
+const envOrigins = (process.env.CORS_ORIGINS || "")
     .split(",")
     .map((s) => s.trim())
     .filter(Boolean);
+const allowedOrigins = [...new Set([...defaultOrigins, ...envOrigins])];
 
 const defaultMax = process.env.NODE_ENV === "test" ? 10000
     : process.env.NODE_ENV === "production" ? 500
@@ -29,9 +35,6 @@ const limiter = rateLimit({
     message: { errors: ["Too many requests, please try again later."] }
 });
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser());
 app.use(cors({
     origin: (origin, callback) => {
         if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
@@ -39,6 +42,9 @@ app.use(cors({
     },
     credentials: true
 }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 app.use((req, res, next) => {
     res.setHeader("X-Content-Type-Options", "nosniff");

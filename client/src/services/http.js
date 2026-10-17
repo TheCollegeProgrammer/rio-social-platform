@@ -1,4 +1,5 @@
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
+const base = (import.meta.env.VITE_API_URL || "http://localhost:3000/api").replace(/\/+$/, "");
+const API_URL = base.endsWith("/api") ? base : `${base}/api`;
 export const MEDIA_URL = API_URL.replace(/\/api$/, "");
 
 const handleError = (data) => {
