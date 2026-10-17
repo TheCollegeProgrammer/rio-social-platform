@@ -14,6 +14,11 @@ const { notFound, errorHandler } = require("./middleware/error.middleware");
 
 const app = express();
 
+const allowedOrigins = (process.env.CORS_ORIGINS || "http://localhost:5173")
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+
 const defaultMax = process.env.NODE_ENV === "test" ? 10000
     : process.env.NODE_ENV === "production" ? 500
     : 2000;
@@ -28,7 +33,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(cors({
-    origin: "http://localhost:5173",
+    origin: (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
+        callback(new Error("Not allowed by CORS"));
+    },
     credentials: true
 }));
 

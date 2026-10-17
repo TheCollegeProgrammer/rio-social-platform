@@ -1,4 +1,6 @@
-import { apiRequest, uploadRequest } from "./http";
+import { apiRequest, uploadRequest, MEDIA_URL } from "./http";
+
+export { MEDIA_URL };
 
 export const registerUser = (userData) =>
     apiRequest("/auth/register", { method: "POST", body: JSON.stringify(userData) });
@@ -110,6 +112,5 @@ export const uploadCover = (file) => {
 export const deleteUploadedImage = (field) =>
     apiRequest(`/upload/${field}`, { method: "DELETE" });
 
-export const MEDIA_URL = "http://localhost:3000";
 export const mediaUrl = (path) =>
     !path ? null : path.startsWith("http") ? path : `${MEDIA_URL}${path}`;
