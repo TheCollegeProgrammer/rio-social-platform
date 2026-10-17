@@ -1,0 +1,16 @@
+.ambient-network {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    pointer-events: none;
+    background: radial-gradient(130% 100% at 50% 0%, #040a05 0%, var(--bg) 55%);
+}
+
+.ambient-network canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+[data-theme="light"] .ambient-network { display: none; }

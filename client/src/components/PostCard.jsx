@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Heart, MessageCircle, Bookmark, Hash, Pencil, Trash2 } from "lucide-react";
+import gsap from "gsap";
 import { useAuth } from "../context/useAuth";
 import { useToast } from "../context/useToast";
+import { reducedMotion } from "../lib/utils";
 import ShareMenu from "./ShareMenu";
 import PostAuthor from "./PostAuthor";
 import PostMedia from "./PostMedia";
@@ -15,8 +17,20 @@ function PostCard({ post, onLike }) {
     const { user } = useAuth();
     const toast = useToast();
     const [hidden, setHidden] = useState(false);
+    const heartRef = useRef(null);
     const isOwner = user?._id === post.author?._id;
     const canEdit = isOwner || user?.role === "admin";
+
+    const handleLike = () => {
+        onLike(post._id);
+        if (!post.liked && heartRef.current && !reducedMotion()) {
+            gsap.fromTo(
+                heartRef.current,
+                { scale: 1 },
+                { scale: 1.4, duration: 0.16, yoyo: true, repeat: 1, ease: "power2.out", clearProps: "scale" }
+            );
+        }
+    };
 
     const handleDelete = async () => {
         if (!window.confirm("Delete this post?")) return;
@@ -31,7 +45,7 @@ function PostCard({ post, onLike }) {
     if (hidden) return null;
 
     return (
-        <article className="post-card">
+        <article className="post-card" data-post-id={post._id}>
             <PostAuthor post={post} />
 
             {post.editedAt && <span className="edited-badge">Edited</span>}
@@ -57,8 +71,8 @@ function PostCard({ post, onLike }) {
             )}
 
             <div className="post-footer">
-                <button className={post.liked ? "action-btn liked" : "action-btn"} onClick={() => onLike(post._id)}>
-                    <Heart size={16} fill={post.liked ? "currentColor" : "none"} />
+                <button className={post.liked ? "action-btn liked" : "action-btn"} onClick={handleLike}>
+                    <Heart ref={heartRef} size={16} fill={post.liked ? "currentColor" : "none"} />
                     {post.likesCount || 0}
                 </button>
                 <Link to={`/posts/${post._id}`} className="action-btn">

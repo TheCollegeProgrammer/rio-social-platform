@@ -5,10 +5,13 @@
     border-radius: var(--radius-lg);
     padding: 18px 20px;
     margin-bottom: 14px;
-    transition: border-color 0.15s;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.post-card:hover { border-color: var(--border-strong); }
+.post-card:hover {
+    border-color: var(--border-strong);
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.22);
+}
 
 .edited-badge {
     position: absolute;
@@ -42,7 +45,10 @@
 .follow-btn {
     margin-left: auto;
     flex-shrink: 0;
+    transition: background 0.18s ease, color 0.18s ease, transform 0.12s ease;
 }
+
+.follow-btn:active { transform: scale(0.95); }
 
 .post-content {
     font-size: 16px;

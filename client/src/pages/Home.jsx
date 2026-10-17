@@ -1,18 +1,14 @@
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { FileText } from "lucide-react";
+import gsap from "gsap";
 import { useAuth } from "../context/useAuth";
 import { getPosts, toggleLike, mediaUrl } from "../services/api";
+import { reducedMotion } from "../lib/utils";
 import PostCard from "../components/PostCard";
 import FeedSkeleton from "../components/FeedSkeleton";
 import CreatePostForm from "../components/CreatePostForm";
 import { TextEffect } from "@/components/motion-primitives/text-effect";
-import { InView } from "@/components/motion-primitives/in-view";
 import "../styles/Home.css";
-
-const fadeUp = {
-    hidden: { opacity: 0, y: 18 },
-    visible: { opacity: 1, y: 0 }
-};
 
 function Home() {
     const { user } = useAuth();
@@ -21,6 +17,27 @@ function Home() {
     const [error, setError] = useState("");
     const [page, setPage] = useState(1);
     const [hasMore, setHasMore] = useState(true);
+    const feedRef = useRef(null);
+    const animatedIds = useRef(new Set());
+
+    useLayoutEffect(() => {
+        if (reducedMotion() || !feedRef.current) return;
+        const cards = Array.from(feedRef.current.querySelectorAll(".post-card"));
+        const fresh = cards.filter((el) => !animatedIds.current.has(el.dataset.postId));
+        if (!fresh.length) return;
+        const ctx = gsap.context(() => {
+            gsap.from(fresh, {
+                opacity: 0,
+                y: 12,
+                duration: 0.5,
+                stagger: 0.07,
+                ease: "power2.out",
+                clearProps: "opacity,transform"
+            });
+        }, feedRef);
+        fresh.forEach((el) => animatedIds.current.add(el.dataset.postId));
+        return () => ctx.revert();
+    }, [posts]);
 
     useEffect(() => {
         let cancelled = false;
@@ -86,7 +103,7 @@ function Home() {
 
             {error && <p className="error-message" style={{ marginTop: 16 }}>{error}</p>}
 
-            <section className="feed">
+            <section className="feed" ref={feedRef}>
                 {loading ? (
                     <FeedSkeleton />
                 ) : posts.length === 0 ? (
@@ -97,9 +114,7 @@ function Home() {
                 ) : (
                     <>
                         {posts.map((post) => (
-                            <InView key={post._id} once variants={fadeUp}>
-                                <PostCard post={post} onLike={handleLike} />
-                            </InView>
+                            <PostCard key={post._id} post={post} onLike={handleLike} />
                         ))}
                         {hasMore && (
                             <button className="load-more" onClick={loadMore} disabled={loading}>

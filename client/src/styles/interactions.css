@@ -1,0 +1,27 @@
+:root { --lime: #a3e635; }
+
+:focus-visible {
+    outline: 2px solid var(--accent-strong);
+    outline-offset: 2px;
+}
+
+.btn,
+.action-btn {
+    transition: transform 0.12s, background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.btn:active,
+.action-btn:active,
+.nav-link:active {
+    transform: scale(0.96);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}

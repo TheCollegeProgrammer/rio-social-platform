@@ -1,8 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { Bell, LogOut } from "lucide-react";
+import gsap from "gsap";
 import { useAuth } from "../context/useAuth";
 import ThemeToggle from "./ThemeToggle";
+import { reducedMotion } from "../lib/utils";
 import { ScrollProgress } from "@/components/motion-primitives/scroll-progress";
 import { Magnetic } from "@/components/motion-primitives/magnetic";
 import { getNotifications, getUnreadMessageCount, mediaUrl } from "../services/api";
@@ -18,6 +20,18 @@ function Navbar() {
     const navigate = useNavigate();
     const [unread, setUnread] = useState(0);
     const [unreadMsgs, setUnreadMsgs] = useState(0);
+    const bellBadgeRef = useRef(null);
+    const msgBadgeRef = useRef(null);
+
+    useEffect(() => {
+        if (reducedMotion() || !bellBadgeRef.current) return;
+        gsap.fromTo(bellBadgeRef.current, { scale: 0.4 }, { scale: 1, duration: 0.45, ease: "back.out(3)", clearProps: "scale" });
+    }, [unread]);
+
+    useEffect(() => {
+        if (reducedMotion() || !msgBadgeRef.current) return;
+        gsap.fromTo(msgBadgeRef.current, { scale: 0.4 }, { scale: 1, duration: 0.45, ease: "back.out(3)", clearProps: "scale" });
+    }, [unreadMsgs]);
 
     useEffect(() => {
         if (!user) return;
@@ -55,12 +69,12 @@ function Navbar() {
                     <NavLink to="/search" className="nav-link">Explore</NavLink>
                     <NavLink to="/messages" className="nav-link">
                         Messages
-                        {unreadMsgs > 0 && <span className="nav-badge nav-badge-inline">{unreadMsgs > 99 ? "99+" : unreadMsgs}</span>}
+                        {unreadMsgs > 0 && <span ref={msgBadgeRef} className="nav-badge nav-badge-inline">{unreadMsgs > 99 ? "99+" : unreadMsgs}</span>}
                     </NavLink>
                     <NavLink to="/profile" className="nav-link">Profile</NavLink>
                     <NavLink to="/notifications" className="nav-icon-link" title="Notifications">
                         <Bell size={19} />
-                        {unread > 0 && <span className="nav-badge">{unread > 99 ? "99+" : unread}</span>}
+                        {unread > 0 && <span ref={bellBadgeRef} className="nav-badge">{unread > 99 ? "99+" : unread}</span>}
                     </NavLink>
                 </>
             )}

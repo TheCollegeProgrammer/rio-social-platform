@@ -16,12 +16,17 @@ import Search from "./pages/Search";
 import Settings from "./pages/Settings";
 import Notifications from "./pages/Notifications";
 import Messages from "./pages/Messages";
+import AmbientNetworkBackground from "./components/AmbientNetworkBackground";
+import PageTransition from "./components/PageTransition";
+import "./styles/interactions.css";
 
 function App() {
   return (
     <ToastProvider>
       <BrowserRouter>
+        <AmbientNetworkBackground />
         <Navbar />
+        <PageTransition>
         <Routes>
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
@@ -41,6 +46,7 @@ function App() {
             <Route path="/messages" element={<Messages />} />
           </Route>
         </Routes>
+        </PageTransition>
       </BrowserRouter>
     </ToastProvider>
   );
