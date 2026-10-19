@@ -5,6 +5,7 @@ import { useAuth } from "../context/useAuth";
 import { getPosts, toggleLike, mediaUrl } from "../services/api";
 import { reducedMotion } from "../lib/utils";
 import { useAutoLoad } from "../lib/useAutoLoad";
+import { useFeedRefresh } from "../lib/useFeedRefresh";
 import PostCard from "../components/PostCard";
 import FeedSkeleton from "../components/FeedSkeleton";
 import CreatePostForm from "../components/CreatePostForm";
@@ -76,6 +77,7 @@ function Home() {
     };
 
     useAutoLoad(sentinelRef, loadMore, !loading && hasMore, [posts.length]);
+    useFeedRefresh({ fetchPage: getPosts, setPosts, active: !loading });
 
     const handleLike = async (postId) => {
         try {

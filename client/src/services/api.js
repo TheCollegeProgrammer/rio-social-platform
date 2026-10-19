@@ -112,5 +112,13 @@ export const uploadCover = (file) => {
 export const deleteUploadedImage = (field) =>
     apiRequest(`/upload/${field}`, { method: "DELETE" });
 
-export const mediaUrl = (path) =>
-    !path ? null : path.startsWith("http") ? path : `${MEDIA_URL}${path}`;
+const withCloudinaryCdn = (url) =>
+    url.includes("res.cloudinary.com") && !url.includes("/upload/f_")
+        ? url.replace("/image/upload/", "/image/upload/f_auto,q_auto/")
+        : url;
+
+export const mediaUrl = (path) => {
+    if (!path) return null;
+    const abs = path.startsWith("http") ? path : `${MEDIA_URL}${path}`;
+    return withCloudinaryCdn(abs);
+};
