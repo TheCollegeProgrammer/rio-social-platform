@@ -18,12 +18,14 @@ import Notifications from "./pages/Notifications";
 import Messages from "./pages/Messages";
 import AmbientNetworkBackground from "./components/AmbientNetworkBackground";
 import PageTransition from "./components/PageTransition";
+import BackendReady from "./components/BackendReady";
 import "./styles/interactions.css";
 
 function App() {
   return (
     <ToastProvider>
       <BrowserRouter>
+        <BackendReady>
         <AmbientNetworkBackground />
         <Navbar />
         <PageTransition>
@@ -47,6 +49,7 @@ function App() {
           </Route>
         </Routes>
         </PageTransition>
+        </BackendReady>
       </BrowserRouter>
     </ToastProvider>
   );

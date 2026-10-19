@@ -1,0 +1,66 @@
+.boot-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    padding: 24px;
+    text-align: center;
+    background: var(--bg, #09090b);
+}
+
+.boot-logo {
+    font-size: clamp(36px, 8vw, 54px);
+    font-weight: 800;
+    letter-spacing: 6px;
+    background: linear-gradient(120deg, #a3e635, #4ade80 55%, #a3e635);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    user-select: none;
+}
+
+.boot-spinner {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 3px solid rgba(163, 230, 53, 0.18);
+    border-top-color: #a3e635;
+    animation: boot-spin 0.9s linear infinite;
+}
+
+@keyframes boot-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.boot-title {
+    margin: 0;
+    font-size: clamp(15px, 3.6vw, 18px);
+    font-weight: 500;
+    color: var(--text, #fafafa);
+}
+
+.boot-sub {
+    margin: 0;
+    max-width: 36ch;
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--text-muted, #a1a1aa);
+}
+
+.boot-elapsed {
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+    color: var(--text-faint, #71717a);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .boot-spinner {
+        animation-duration: 2.4s;
+    }
+}

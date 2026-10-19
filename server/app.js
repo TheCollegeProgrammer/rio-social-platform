@@ -1,6 +1,7 @@
 const express = require("express");
 const path = require("path");
 const cors = require("cors");
+const mongoose = require("mongoose");
 const cookieParser = require("cookie-parser");
 const rateLimit = require("express-rate-limit");
 const authRoutes = require("./routes/auth.routes");
@@ -56,7 +57,8 @@ app.use((req, res, next) => {
 app.use("/api", limiter);
 
 app.get("/health", (req, res) => {
-    res.json({ status: "ok" });
+    const dbReady = mongoose.connection.readyState === 1;
+    res.status(dbReady ? 200 : 503).json({ status: dbReady ? "ok" : "starting" });
 });
 
 app.use("/api/auth", authRoutes);

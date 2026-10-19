@@ -1,6 +1,7 @@
 const base = (import.meta.env.VITE_API_URL || "http://localhost:3000/api").replace(/\/+$/, "");
 const API_URL = base.endsWith("/api") ? base : `${base}/api`;
-export const MEDIA_URL = API_URL.replace(/\/api$/, "");
+export const API_ORIGIN = API_URL.replace(/\/api$/, "");
+export const MEDIA_URL = API_ORIGIN;
 
 const handleError = (data) => {
     if (data.errors && Array.isArray(data.errors)) {
