@@ -254,7 +254,7 @@ Every persona has a real bio, a consistent voice, hashtags, and cross-engagement
 
 ## 9. Roadmap & Known Limitations
 
-**Now:** carousel-scale content, moderation, messaging, notifications, theming, search, Cloudinary media, live feed refresh, full test harness.
+**Now:** carousel-scale content, moderation, messaging, notifications, theming, search, Cloudinary media, live feed refresh, full test harness, **hardened auth & platform security** (server-side sessions + rotation, CSRF, Argon2id, layered rate limits, upload validation, admin audit logging, private-account enforcement).
 
 **Next (30 days):**
 - Push notifications (web push)
@@ -264,13 +264,13 @@ Every persona has a real bio, a consistent voice, hashtags, and cross-engagement
 **Then (90 days):**
 - **socket.io messaging** — replace polling with instant delivery, typing indicators, online presence (see §17)
 - Role-based report/review queue (user reports → admin dashboard)
-- Rate-limit dashboards + abuse heuristics
-- Per-user rate limiting (currently per-IP)
+- Rate-limit dashboards + abuse heuristics (rate limits themselves are per-IP **and** per-account since the P0 hardening)
 - ActivityPub export (leave with your data — the differentiator, weaponized)
 
 **Known limitations (honest list)**
 - No true real-time layer: notifications feed and messages rely on polling (30–45s)
-- `forgot-password` returns the reset token in the HTTP response (demo mode) — no mail provider wired, though token + expiry + purpose validation are implemented
+- Password-reset email delivery is **inactive in production** until `RESEND_API_KEY` + `RESET_EMAIL_FROM` are configured (dev/test use a local outbox file; responses never contain the token)
+- Rate-limit buckets are in-memory (single Render instance) — swap the store seam if scaling out
 - No automated E2E/browser tests — verification is CLI-only by design
 - Legacy `/uploads` fallback bypasses CDN transforms (moot for production: everything migrated)
 
@@ -489,7 +489,7 @@ Comments are nested: `router.use("/:postId/comments", ...)`:
 App shell: `ToastProvider → BrowserRouter → BackendReady → AmbientNetworkBackground + Navbar + PageTransition → Routes`. Session restored via `AuthContext` / `useAuth()` (`/auth/me`) before protected routes render.
 
 ### Key libraries
-- `services/http.js` — `API_URL`, `API_ORIGIN`, `MEDIA_URL`, `apiRequest`/`uploadRequest` (JSON error extraction, `credentials: include`, trailing-slash-safe base, auto-appends `/api`); session restore handled by `AuthContext` (failed `/auth/me` simply leaves the user signed out)
+- `services/http.js` — `API_URL`, `API_ORIGIN`, `MEDIA_URL`, `apiRequest`/`uploadRequest` (JSON error extraction, `credentials: include`, trailing-slash-safe base, auto-appends `/api`); attaches the `X-CSRF-Token` header to every mutation, single-flight refresh on 401 with one retry, and a no-refresh path for auth endpoints; session restore handled by `AuthContext` (failed `/auth/me` simply leaves the user signed out)
 - `services/api.js` — one function per endpoint + `mediaUrl()` (Cloudinary `f_auto,q_auto` injection, §16)
 - `lib/useAutoLoad.js` — infinite scroll sentinel (IntersectionObserver, 400px margin, success-gated page advance)
 - `lib/useFeedRefresh.js` — feed auto-refresh (45s interval + focus/visibility triggers, dedupe by `_id`, overlap + hidden-tab + deep-scroll guards, silent error recovery)
@@ -497,7 +497,7 @@ App shell: `ToastProvider → BrowserRouter → BackendReady → AmbientNetworkB
 - `components/BackendReady.jsx` — cold-start gate (3s `/health` retries, 12s timeout per probe, elapsed timer, StrictMode-safe cleanup)
 
 ### Quality constraint
-**Hard limit: 150 lines per file** — enforced by `node test_lines.js` (currently **133 files, 0 over**). Exception: `client/src/components/motion-primitives/` (vendored, exempt).
+**Hard limit: 150 lines per file** — enforced by `node test_lines.js` (currently **153 files, 0 over**). Exception: `client/src/components/motion-primitives/` (vendored, exempt).
 
 ---
 
@@ -588,4 +588,4 @@ Conventions: temp scripts named `test_*.js` (gitignored, deleted after use); tes
 
 ---
 
-*RIO — built from zero. · This document covers the codebase as of commit `2d3fc62` (+ uncommitted P0 security hardening). · Tests: 260/260 · Files >150 lines: 0*
+*RIO — built from zero. · This document covers the codebase as of commit `fc112bc` · Tests: 260/260 · Files >150 lines: 0*
