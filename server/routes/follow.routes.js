@@ -1,5 +1,6 @@
 const express = require("express");
 const protect = require("../middleware/auth.middleware");
+const { followLimiter } = require("../middleware/ratelimit");
 const {
     toggleFollow,
     getFollowers,
@@ -8,7 +9,7 @@ const {
 
 const router = express.Router();
 
-router.post("/:id/follow", protect, toggleFollow);
+router.post("/:id/follow", protect, followLimiter, toggleFollow);
 router.get("/:id/followers", protect, getFollowers);
 router.get("/:id/following", protect, getFollowing);
 

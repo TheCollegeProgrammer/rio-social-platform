@@ -1,6 +1,12 @@
 const Post = require("../models/post");
 const User = require("../models/User");
 const { postImages } = require("./post.controller");
+const { buildPostVisibility } = require("../utils/visibility");
+
+// F-11: user-supplied search text is interpolated into Mongo $regex - it
+// must be escaped so `(`/`.*` etc. are matched literally (ReDoS/regex
+// injection). Same helper as message-users.controller.
+const escapeRegex = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
 const toggleBookmark = async (req, res, next) => {
     try {
@@ -31,11 +37,12 @@ const getBookmarks = async (req, res, next) => {
             .select("bookmarks")
             .populate({
                 path: "bookmarks",
-                populate: { path: "author", select: "username name avatar" },
+                populate: { path: "author", select: "username name avatar isPrivate" },
                 options: { sort: { createdAt: -1 } }
             });
 
-        res.json({ posts: user.bookmarks });
+        const vis = await buildPostVisibility(req.user.id);
+        res.json({ posts: user.bookmarks.filter((p) => !vis.hidden(p)) });
     } catch (error) {
         return next(error);
     }
@@ -51,15 +58,17 @@ const searchPosts = async (req, res, next) => {
 
         const filter = hashtag
             ? { hashtags: hashtag }
-            : { content: { $regex: query, $options: "i" } };
+            : { content: { $regex: escapeRegex(query), $options: "i" } };
 
         const posts = await Post.find(filter)
-            .populate("author", "username name avatar")
+            .populate("author", "username name avatar isPrivate")
             .sort({ createdAt: -1 })
             .limit(20);
 
         const userId = req.user ? req.user.id : null;
-        const enriched = posts.map((post) => ({
+        const vis = await buildPostVisibility(userId);
+        const visible = posts.filter((post) => !vis.hidden(post));
+        const enriched = visible.map((post) => ({
             _id: post._id,
             content: post.content,
             author: post.author,
@@ -84,8 +93,8 @@ const searchUsers = async (req, res, next) => {
 
         const users = await User.find({
             $or: [
-                { username: { $regex: query, $options: "i" } },
-                { name: { $regex: query, $options: "i" } }
+                { username: { $regex: escapeRegex(query), $options: "i" } },
+                { name: { $regex: escapeRegex(query), $options: "i" } }
             ]
         })
             .select("username name avatar bio isPrivate")

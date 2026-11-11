@@ -60,6 +60,13 @@ const userSchema = new mongoose.Schema(
             default: "user"
         },
 
+        // P0-07: suspended accounts cannot log in and have all sessions
+        // revoked at suspend time (see admin controller).
+        isSuspended: {
+            type: Boolean,
+            default: false
+        },
+
         followers: [
             {
                 type: mongoose.Schema.Types.ObjectId,
@@ -88,6 +95,10 @@ const userSchema = new mongoose.Schema(
 
         resetPasswordToken: {
             type: String
+        },
+
+        resetPasswordExpires: {
+            type: Date
         }
     },
     { timestamps: true }

@@ -8,6 +8,12 @@ const { createPost, getPostById, getPosts, getTrendingHashtags } = require("../c
 const { editPost, deletePost, toggleLike } = require("../controllers/post-action.controller");
 const { toggleBookmark, getBookmarks, searchPosts } = require("../controllers/bookmark.controller");
 const { createPostWithImage, removePostImage, addPostImages } = require("../controllers/post-image.controller");
+const { validateImages } = require("../middleware/validateImage");
+const {
+    likeLimiter,
+    bookmarkLimiter,
+    uploadLimiter
+} = require("../middleware/ratelimit");
 
 const router = express.Router();
 
@@ -16,14 +22,14 @@ router.get("/search", optionalAuth, searchPosts);
 router.get("/trending", optionalAuth, getTrendingHashtags);
 router.get("/bookmarks", protect, getBookmarks);
 router.post("/", protect, createPost);
-router.post("/image", protect, upload.array("image", 8), pushToCloudinary("posts"), createPostWithImage);
+router.post("/image", protect, uploadLimiter, upload.array("image", 8), validateImages, pushToCloudinary("posts"), createPostWithImage);
 router.get("/:id", optionalAuth, getPostById);
 router.put("/:id", protect, editPost);
 router.delete("/:id", protect, deletePost);
 router.delete("/:id/image", protect, removePostImage);
-router.post("/:id/image", protect, upload.array("image", 8), pushToCloudinary("posts"), addPostImages);
-router.post("/:id/like", protect, toggleLike);
-router.post("/:id/bookmark", protect, toggleBookmark);
+router.post("/:id/image", protect, uploadLimiter, upload.array("image", 8), validateImages, pushToCloudinary("posts"), addPostImages);
+router.post("/:id/like", protect, likeLimiter, toggleLike);
+router.post("/:id/bookmark", protect, bookmarkLimiter, toggleBookmark);
 router.use("/:postId/comments", commentRoutes);
 
 module.exports = router;

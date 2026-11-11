@@ -1,11 +1,8 @@
 const Post = require("../models/post");
-const path = require("path");
-const fs = require("fs");
 const { extractHashtags } = require("./post.controller");
 const { normalizeCategory } = require("../config/categories");
-const { isRemote, destroyRemote } = require("../config/cloudinary");
+const { deleteMedia } = require("../utils/media");
 
-const uploadDir = path.join(__dirname, "..", "uploads");
 const MAX_IMAGES = 8;
 
 const toPaths = (files) =>
@@ -15,13 +12,7 @@ const allImages = (post) =>
 const syncFirst = (post) => {
     post.image = post.images.length ? post.images[0] : null;
 };
-const deleteFiles = (list) => {
-    list.forEach((p) => {
-        if (isRemote(p)) return destroyRemote(p);
-        const fp = path.join(uploadDir, path.basename(p));
-        if (fs.existsSync(fp)) fs.unlinkSync(fp);
-    });
-};
+const deleteFiles = (list) => deleteMedia(list);
 
 const createPostWithImage = async (req, res, next) => {
     try {

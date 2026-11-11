@@ -1,5 +1,6 @@
 const Post = require("../models/post");
 const { normalizeCategory } = require("../config/categories");
+const { buildPostVisibility } = require("../utils/visibility");
 
 const extractHashtags = (content) => {
     const matches = content.match(/#\w+/g);
@@ -37,11 +38,16 @@ const createPost = async (req, res, next) => {
 const getPostById = async (req, res, next) => {
     try {
         const post = await Post.findById(req.params.id)
-            .populate("author", "username name avatar");
+            .populate("author", "username name avatar isPrivate");
 
         if (!post) return res.status(404).json({ errors: ["Post not found"] });
 
         const userId = req.user ? req.user.id : null;
+        // F-13: a private author's post is invisible to non-followers -> 404
+        // (existence itself must not leak).
+        const vis = await buildPostVisibility(userId);
+        if (vis.hidden(post)) return res.status(404).json({ errors: ["Post not found"] });
+
         const liked = userId ? post.likes.some((id) => id.toString() === userId) : false;
 
         res.json({
@@ -79,15 +85,18 @@ const getPosts = async (req, res, next) => {
         if (category) filter.category = category;
 
         const posts = await Post.find(filter)
-            .populate("author", "username name avatar")
+            .populate("author", "username name avatar isPrivate")
             .sort({ createdAt: -1 })
             .skip(skip)
             .limit(limit);
 
         const total = await Post.countDocuments(filter);
         const userId = req.user ? req.user.id : null;
+        // F-13: hide posts of private accounts from non-followers.
+        const vis = await buildPostVisibility(userId);
+        const visible = posts.filter((post) => !vis.hidden(post));
 
-        const enriched = posts.map((post) => ({
+        const enriched = visible.map((post) => ({
             _id: post._id,
             content: post.content,
             author: post.author,

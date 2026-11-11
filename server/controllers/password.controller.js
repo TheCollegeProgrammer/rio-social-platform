@@ -1,30 +1,35 @@
+const crypto = require("crypto");
 const User = require("../models/User");
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-const { generateToken } = require("./auth.controller");
+const { hashPassword, verifyPassword } = require("../utils/password");
+const { revokeAllForUser } = require("../utils/sessions");
+const { deliverResetEmail } = require("../utils/mailer");
+
+const RESET_TTL_MS = 60 * 60 * 1000;
+const sha256 = (value) => crypto.createHash("sha256").update(value).digest("hex");
 
 const forgotPassword = async (req, res, next) => {
     try {
         const { email } = req.body;
         if (!email) return res.status(400).json({ errors: ["Email is required"] });
 
+        // Identical response whether or not the account exists (no enumeration).
+        const generic = {
+            message: "If an account with that email exists, a password reset link has been sent."
+        };
+
         const user = await User.findOne({ email });
-        if (!user) {
-            return res.status(200).json({
-                message: "If an account with that email exists, a password reset link has been sent."
-            });
+        if (user) {
+            // P0-03: random single-use token; only its SHA-256 hash is stored.
+            const raw = crypto.randomBytes(32).toString("base64url");
+            user.resetPasswordToken = sha256(raw);
+            user.resetPasswordExpires = new Date(Date.now() + RESET_TTL_MS);
+            await user.save();
+            // F-02: the token is delivered out-of-band only - never returned
+            // in the response body.
+            await deliverResetEmail(user.email, raw);
         }
 
-        const resetToken = jwt.sign(
-            { id: user._id, purpose: "reset-password" },
-            process.env.JWT_SECRET,
-            { expiresIn: "1h" }
-        );
-
-        res.status(200).json({
-            resetToken,
-            message: "Reset token generated (demo mode - normally sent via email)"
-        });
+        res.status(200).json(generic);
     } catch (error) {
         return next(error);
     }
@@ -40,23 +45,20 @@ const resetPassword = async (req, res, next) => {
             return res.status(400).json({ errors: ["New password must be at least 6 characters"] });
         }
 
-        try {
-            const decoded = jwt.verify(token, process.env.JWT_SECRET);
-            if (decoded.purpose !== "reset-password") {
-                return res.status(400).json({ errors: ["Invalid token purpose"] });
-            }
+        const user = await User.findOne({
+            resetPasswordToken: sha256(token),
+            resetPasswordExpires: { $gt: new Date() }
+        });
+        if (!user) return res.status(400).json({ errors: ["Invalid or expired token"] });
 
-            const user = await User.findById(decoded.id);
-            if (!user) return res.status(404).json({ errors: ["User not found"] });
+        user.password = await hashPassword(newPassword);
+        user.resetPasswordToken = undefined;
+        user.resetPasswordExpires = undefined;
+        await user.save();
+        // Credential change: every existing session is revoked (P0-02).
+        await revokeAllForUser(user._id);
 
-            user.password = await bcrypt.hash(newPassword, 10);
-            user.resetPasswordToken = undefined;
-            await user.save();
-
-            res.json({ message: "Password has been reset successfully." });
-        } catch (jwtError) {
-            res.status(400).json({ errors: ["Invalid or expired token"] });
-        }
+        res.json({ message: "Password has been reset successfully." });
     } catch (error) {
         return next(error);
     }
@@ -73,11 +75,13 @@ const changePassword = async (req, res, next) => {
         }
 
         const user = await User.findById(req.user.id);
-        const match = await bcrypt.compare(currentPassword, user.password);
+        const match = await verifyPassword(user.password, currentPassword);
         if (!match) return res.status(400).json({ errors: ["Current password is incorrect"] });
 
-        user.password = await bcrypt.hash(newPassword, 10);
+        user.password = await hashPassword(newPassword);
         await user.save();
+        // P0-02: a password change invalidates every existing session.
+        await revokeAllForUser(req.user.id);
 
         res.json({ message: "Password has been changed successfully." });
     } catch (error) {

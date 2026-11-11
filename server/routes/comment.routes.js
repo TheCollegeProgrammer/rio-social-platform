@@ -1,6 +1,7 @@
 const express = require("express");
 const protect = require("../middleware/auth.middleware");
 const optionalAuth = require("../middleware/optionalAuth.middleware");
+const { commentLimiter } = require("../middleware/ratelimit");
 const { createComment, getComments } = require("../controllers/comment.controller");
 const {
     editComment,
@@ -11,9 +12,9 @@ const {
 const router = express.Router({ mergeParams: true });
 
 router.get("/", optionalAuth, getComments);
-router.post("/", protect, createComment);
+router.post("/", protect, commentLimiter, createComment);
 router.put("/:id", protect, editComment);
 router.delete("/:id", protect, deleteComment);
-router.post("/:id/like", protect, toggleCommentLike);
+router.post("/:id/like", protect, commentLimiter, toggleCommentLike);
 
 module.exports = router;

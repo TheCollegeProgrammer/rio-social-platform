@@ -1,5 +1,6 @@
 const User = require("../models/User");
 const { createNotification } = require("./notification.controller");
+const { buildPostVisibility } = require("../utils/visibility");
 
 const toggleFollow = async (req, res, next) => {
     try {
@@ -52,10 +53,18 @@ const toggleFollow = async (req, res, next) => {
 const getFollowers = async (req, res, next) => {
     try {
         const user = await User.findById(req.params.id)
-            .select("followers")
+            .select("followers isPrivate")
             .populate("followers", "username name avatar bio");
 
         if (!user) return res.status(404).json({ errors: ["User not found"] });
+
+        // F-13: private accounts hide their social graph from non-followers.
+        if (user.isPrivate === true) {
+            const vis = await buildPostVisibility(req.user.id);
+            if (!vis.canSeeLists(user._id, true)) {
+                return res.status(403).json({ errors: ["This account is private"] });
+            }
+        }
 
         res.json({ followers: user.followers });
     } catch (error) {
@@ -69,10 +78,17 @@ const getFollowers = async (req, res, next) => {
 const getFollowing = async (req, res, next) => {
     try {
         const user = await User.findById(req.params.id)
-            .select("following")
+            .select("following isPrivate")
             .populate("following", "username name avatar bio");
 
         if (!user) return res.status(404).json({ errors: ["User not found"] });
+
+        if (user.isPrivate === true) {
+            const vis = await buildPostVisibility(req.user.id);
+            if (!vis.canSeeLists(user._id, true)) {
+                return res.status(403).json({ errors: ["This account is private"] });
+            }
+        }
 
         res.json({ following: user.following });
     } catch (error) {

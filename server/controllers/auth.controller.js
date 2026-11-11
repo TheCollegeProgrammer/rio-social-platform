@@ -1,20 +1,43 @@
 const User = require("../models/User");
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-
-const generateToken = (id) =>
-    jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "1h" });
+const { hashPassword, verifyPassword, needsRehash } = require("../utils/password");
+const {
+    signAccess,
+    verifyAccess,
+    csrfFor,
+    accessTtlMs,
+    refreshTtlMs
+} = require("../utils/tokens");
+const { createSession, revokeSession } = require("../utils/sessions");
 
 const isProd = () => process.env.NODE_ENV === "production";
 
-const cookieOptions = () => ({
+const baseCookieOptions = () => ({
     httpOnly: true,
     secure: isProd(),
-    sameSite: isProd() ? "none" : "lax"
+    sameSite: isProd() ? "none" : "lax",
+    path: "/"
 });
 
-const setAuthCookie = (res, token) => {
-    res.cookie("token", token, cookieOptions());
+// Cookie order matters: `token` must be first (test harness reads cookie[0]).
+const setAuthCookies = (res, { userId, sid, refreshRaw }) => {
+    const base = baseCookieOptions();
+    res.cookie("token", signAccess(userId, sid), {
+        ...base,
+        maxAge: accessTtlMs()
+    });
+    res.cookie("refresh_token", refreshRaw, { ...base, maxAge: refreshTtlMs() });
+    res.cookie("csrf_token", csrfFor(sid), {
+        ...base,
+        httpOnly: false,
+        maxAge: refreshTtlMs()
+    });
+};
+
+const clearAuthCookies = (res) => {
+    const base = baseCookieOptions();
+    res.clearCookie("token", base);
+    res.clearCookie("refresh_token", base);
+    res.clearCookie("csrf_token", { ...base, httpOnly: false });
 };
 
 const register = async (req, res, next) => {
@@ -33,10 +56,11 @@ const register = async (req, res, next) => {
         const existing = await User.findOne({ email });
         if (existing) return res.status(409).json({ errors: ["User already exists"] });
 
-        const hashed = await bcrypt.hash(password, 10);
+        const hashed = await hashPassword(password);
         const user = await User.create({ username, name, age, email, password: hashed });
 
-        setAuthCookie(res, generateToken(user._id));
+        const session = await createSession(user._id, req.headers["user-agent"]);
+        setAuthCookies(res, session);
         res.status(201).json({ message: "User registered successfully" });
     } catch (error) {
         return next(error);
@@ -54,19 +78,39 @@ const login = async (req, res, next) => {
 
         const user = await User.findOne({ email });
         if (!user) return res.status(401).json({ errors: ["Invalid email or password"] });
+        if (user.isSuspended) {
+            return res.status(403).json({ errors: ["Account suspended"] });
+        }
 
-        const match = await bcrypt.compare(password, user.password);
+        const match = await verifyPassword(user.password, password);
         if (!match) return res.status(401).json({ errors: ["Invalid email or password"] });
 
-        setAuthCookie(res, generateToken(user._id));
+        // P0-04: upgrade legacy bcrypt hashes to argon2id on successful login.
+        if (needsRehash(user.password)) {
+            user.password = await hashPassword(password);
+            await user.save();
+        }
+
+        const session = await createSession(user._id, req.headers["user-agent"]);
+        setAuthCookies(res, session);
         res.json({ message: "Login successful" });
     } catch (error) {
         return next(error);
     }
 };
 
-const logout = (req, res) => {
-    res.clearCookie("token", cookieOptions());
+// Idempotent: clears cookies even when the access token is already dead.
+const logout = async (req, res) => {
+    try {
+        const token = req.cookies.token;
+        if (token) {
+            const decoded = verifyAccess(token);
+            if (decoded.sid) await revokeSession(decoded.sid);
+        }
+    } catch {
+        // invalid/expired token - cookies still get cleared below
+    }
+    clearAuthCookies(res);
     res.json({ message: "Logout successful" });
 };
 
@@ -74,7 +118,7 @@ const me = async (req, res, next) => {
     try {
         const user = await User.findById(req.user.id).select("-password");
         if (!user) {
-            return res.status(401).json({ errors: ["Not authenticated"] });
+            return res.status(401).json({ errors: ["Not authenticated"], message: "Not authenticated" });
         }
         res.json({ user });
     } catch (error) {
@@ -92,4 +136,12 @@ const getProfile = async (req, res, next) => {
     }
 };
 
-module.exports = { register, login, logout, me, getProfile, generateToken, setAuthCookie };
+module.exports = {
+    register,
+    login,
+    logout,
+    me,
+    getProfile,
+    setAuthCookies,
+    clearAuthCookies
+};

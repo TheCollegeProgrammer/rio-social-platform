@@ -34,7 +34,7 @@ export const getProfile = (id) => apiRequest(`/profile/${id}`);
 export const updateProfile = (data) =>
     apiRequest("/profile", { method: "PUT", body: JSON.stringify(data) });
 export const deleteAccount = (password) =>
-    apiRequest(`/profile?password=${encodeURIComponent(password)}`, { method: "DELETE" });
+    apiRequest("/profile", { method: "DELETE", body: JSON.stringify({ password }) });
 export const searchUsers = (q) => apiRequest(`/profile/search?q=${encodeURIComponent(q)}`);
 
 export const toggleFollow = (id) => apiRequest(`/users/${id}/follow`, { method: "POST" });
@@ -90,7 +90,7 @@ export const getNewChatUsers = (q = "") =>
 export const markConversationRead = (convoId) =>
     apiRequest(`/messages/${convoId}/read`, { method: "PATCH" });
 export const getOrCreateConversation = (userId) =>
-    apiRequest(`/messages/user/${userId}`);
+    apiRequest(`/messages/user/${userId}`, { method: "POST" });
 export const getMessages = (convoId, page = 1) =>
     apiRequest(`/messages/${convoId}/messages?page=${page}`);
 export const sendMessage = (convoId, content) =>

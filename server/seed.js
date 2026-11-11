@@ -1,8 +1,9 @@
 require("dotenv").config();
+require("./utils/seedGuard");
 const fs = require("fs");
 const path = require("path");
 const mongoose = require("mongoose");
-const bcrypt = require("bcrypt");
+const { hashPassword } = require("./utils/password");
 const PROF = require("./seed-content");
 const User = require("./models/User");
 const Post = require("./models/post");
@@ -39,7 +40,7 @@ async function run() {
     ]);
     console.log(`Wiped ${demoIds.length} demo users, ${postIds.length} posts`);
 
-    const hash = await bcrypt.hash("pass1234", 10);
+    const hash = await hashPassword("pass1234");
     const users = await User.insertMany(PROF.map((p, i) => ({
         username: p.username,
         name: p.name,

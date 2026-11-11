@@ -40,9 +40,7 @@ const getOrCreateConversation = async (req, res, next) => {
         const convo = await findOrCreateConversation(req.user.id, userId);
         res.json({ conversation: convo });
     } catch (error) {
-        if (error.name === "CastError") {
-            return res.status(400).json({ errors: ["Invalid user ID"] });
-        }
+        if (error.name === "CastError") return res.status(400).json({ errors: ["Invalid user ID"] });
         return next(error);
     }
 };
@@ -75,9 +73,7 @@ const getMessages = async (req, res, next) => {
             totalPages: Math.ceil(total / limit)
         });
     } catch (error) {
-        if (error.name === "CastError") {
-            return res.status(400).json({ errors: ["Invalid conversation ID"] });
-        }
+        if (error.name === "CastError") return res.status(400).json({ errors: ["Invalid conversation ID"] });
         return next(error);
     }
 };
@@ -124,16 +120,26 @@ const sendMessage = async (req, res, next) => {
 
         res.status(201).json({ message: "Message sent", data: message });
     } catch (error) {
-        if (error.name === "CastError") {
-            return res.status(400).json({ errors: ["Invalid conversation ID"] });
-        }
+        if (error.name === "CastError") return res.status(400).json({ errors: ["Invalid conversation ID"] });
         return next(error);
     }
 };
 
-module.exports = {
-    getConversations,
-    getOrCreateConversation,
-    getMessages,
-    sendMessage
+// F-12: GET must never create resources (prefetchers/CSRF-less GETs were
+// spawning orphan conversations). Creation moved to POST; GET is find-only.
+const findConversation = async (req, res, next) => {
+    try {
+        const { userId } = req.params;
+        if (userId === req.user.id) return res.status(400).json({ errors: ["Cannot message yourself"] });
+        const convo = await Conversation.findOne({
+            participants: { $all: [req.user.id, userId], $size: 2 }
+        }).populate("participants", "username name avatar");
+        if (!convo) return res.status(404).json({ errors: ["Conversation not found"] });
+        res.json({ conversation: convo });
+    } catch (error) {
+        if (error.name === "CastError") return res.status(400).json({ errors: ["Invalid user ID"] });
+        return next(error);
+    }
 };
+
+module.exports = { getConversations, getOrCreateConversation, findConversation, getMessages, sendMessage };

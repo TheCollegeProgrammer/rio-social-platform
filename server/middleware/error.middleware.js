@@ -7,6 +7,12 @@ const errorHandler = (err, req, res, next) => {
         return res.status(400).json({ errors: ["Invalid ID format"] });
     }
 
+    // CORS rejection: respond 403 with the standard error contract instead of
+    // falling through to a generic 500 (F-22).
+    if (err.message === "Not allowed by CORS") {
+        return res.status(403).json({ errors: ["Origin not allowed"], message: "Origin not allowed" });
+    }
+
     if (err.name === "ValidationError") {
         const messages = Object.values(err.errors).map((e) => e.message);
         return res.status(400).json({ errors: messages });

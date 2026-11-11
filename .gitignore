@@ -16,3 +16,4 @@ test_*.js
 LOGIN_DETAILS.txt
 profiles_posts.json
 server/seed-data/
+server/.reset-outbox.json

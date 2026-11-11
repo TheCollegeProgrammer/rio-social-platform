@@ -39,4 +39,20 @@ const destroyRemote = (url) => {
     if (publicId) cloudinary.uploader.destroy(publicId).catch(() => {});
 };
 
-module.exports = { cloudinary, enabled, uploadBuffer, isRemote, destroyRemote };
+// Promise variant used by the durable cleanup queue (F-08): rejects so the
+// queue can retry instead of swallowing the failure.
+const destroyRemoteAsync = async (url) => {
+    if (!enabled || !isRemote(url)) return;
+    const publicId = publicIdFromUrl(url);
+    if (!publicId) return;
+    await cloudinary.uploader.destroy(publicId, { resource_type: "image" });
+};
+
+module.exports = {
+    cloudinary,
+    enabled,
+    uploadBuffer,
+    isRemote,
+    destroyRemote,
+    destroyRemoteAsync
+};

@@ -1,24 +1,29 @@
 const User = require("../models/User");
 const Post = require("../models/post");
+const { buildPostVisibility } = require("../utils/visibility");
 
 const getProfile = async (req, res, next) => {
     try {
         const user = await User.findById(req.params.id)
-            .select("-password -email -resetPasswordToken")
+            .select("-password -email -resetPasswordToken -resetPasswordExpires")
             .populate("followers", "username name avatar")
             .populate("following", "username name avatar");
 
         if (!user) return res.status(404).json({ errors: ["User not found"] });
 
         const posts = await Post.find({ author: user._id })
-            .populate("author", "username name avatar")
+            .populate("author", "username name avatar isPrivate")
             .sort({ createdAt: -1 })
             .limit(50);
+        // F-13: private accounts show posts only to self/admin/followers.
+        const vis = await buildPostVisibility(req.user ? req.user.id : null);
+        const visible = posts.filter((p) => !vis.hidden(p));
 
         const postsCount = await Post.countDocuments({ author: user._id });
         const followersCount = user.followers.length;
         const followingCount = user.following.length;
-        const isFollowing = user.followers.some((f) => f && String(f._id) === req.user.id);
+        const viewerId = req.user ? req.user.id : null;
+        const isFollowing = user.followers.some((f) => f && String(f._id) === viewerId);
 
         res.json({
             profile: {
@@ -36,7 +41,7 @@ const getProfile = async (req, res, next) => {
                 postsCount,
                 createdAt: user.createdAt
             },
-            posts
+            posts: visible
         });
     } catch (error) {
         if (error.name === "CastError") {
@@ -48,7 +53,7 @@ const getProfile = async (req, res, next) => {
 
 const updateProfile = async (req, res, next) => {
     try {
-        const { name, username, bio, avatar, isPrivate } = req.body;
+        const { name, username, bio, isPrivate } = req.body;
         const errors = [];
 
         if (name !== undefined && (name.length < 1 || name.length > 50)) {
@@ -75,8 +80,11 @@ const updateProfile = async (req, res, next) => {
         if (name !== undefined) updates.name = name;
         if (username !== undefined) updates.username = username;
         if (bio !== undefined) updates.bio = bio;
-        if (avatar !== undefined) updates.avatar = avatar;
         if (isPrivate !== undefined) updates.isPrivate = isPrivate;
+        // F-14: avatar/coverImage are intentionally NOT updatable here - only
+        // the validated upload endpoints may set media URLs. Accepting an
+        // arbitrary URL here let a user point at another account's asset and
+        // trigger its destruction on their next upload/delete.
 
         const user = await User.findByIdAndUpdate(
             req.user.id,
@@ -96,40 +104,6 @@ const updateProfile = async (req, res, next) => {
     }
 };
 
-const deleteAccount = async (req, res, next) => {
-    try {
-        const password = req.body?.password || req.query?.password;
-
-        if (!password) {
-            return res.status(400).json({ errors: ["Password required"] });
-        }
-
-        const bcrypt = require("bcrypt");
-        const user = await User.findById(req.user.id);
-
-        const match = await bcrypt.compare(password, user.password);
-        if (!match) {
-            return res.status(400).json({ errors: ["Password is incorrect"] });
-        }
-
-        await Post.deleteMany({ author: user._id });
-        const Comment = require("../models/Comment");
-        await Comment.deleteMany({ author: user._id });
-        await User.updateMany(
-            { followers: user._id },
-            { $pull: { followers: user._id } }
-        );
-        await User.updateMany(
-            { following: user._id },
-            { $pull: { following: user._id } }
-        );
-        await User.findByIdAndDelete(user._id);
-
-        res.clearCookie("token");
-        res.json({ message: "Account deleted successfully" });
-    } catch (error) {
-        return next(error);
-    }
-};
+const deleteAccount = require("./account-delete.controller").deleteAccount;
 
 module.exports = { getProfile, updateProfile, deleteAccount };

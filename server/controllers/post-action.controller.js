@@ -57,14 +57,23 @@ const deletePost = async (req, res, next) => {
         );
         const imgs = post.images?.length ? post.images : post.image ? [post.image] : [];
         if (imgs.length) {
-            const fs = require("fs");
-            const path = require("path");
-            imgs.forEach((p) => {
-                const imgPath = path.join(__dirname, "..", "uploads", path.basename(p));
-                if (fs.existsSync(imgPath)) fs.unlinkSync(imgPath);
-            });
+            // F-08: local files unlink now; Cloudinary assets go through the
+            // durable retry queue (no silent orphans on API failures).
+            require("../utils/media").deleteMedia(imgs);
         }
         await post.deleteOne();
+
+        // P0-07: log moderator/admin removals (self-deletes need no audit).
+        if (req.user.id !== post.author.toString()) {
+            const { logAudit } = require("../utils/audit");
+            await logAudit(req, {
+                actor: req.user.id,
+                action: "post.delete",
+                targetType: "post",
+                targetId: post._id,
+                meta: { author: post.author.toString() }
+            });
+        }
 
         res.json({ message: "Post deleted" });
     } catch (error) {

@@ -1,6 +1,7 @@
 require("dotenv").config();
+require("./utils/seedGuard");
 const mongoose = require("mongoose");
-const bcrypt = require("bcrypt");
+const { hashPassword } = require("./utils/password");
 const { loadJson, rng, ago } = require("./seed-alive-utils");
 const { seedSocial } = require("./seed-alive-social");
 const { seedChats } = require("./seed-alive-chats");
@@ -13,7 +14,7 @@ const Message = require("./models/Message");
 async function seedUsersAndPosts() {
     const { users } = loadJson("users2.json");
     const rand = rng(20261014);
-    const hash = await bcrypt.hash("pass1234", 10);
+    const hash = await hashPassword("pass1234");
     let newUsers = 0;
     let newPosts = 0;
 

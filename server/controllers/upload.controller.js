@@ -1,15 +1,13 @@
 const path = require("path");
 const fs = require("fs");
 const User = require("../models/User");
-const { isRemote, destroyRemote } = require("../config/cloudinary");
+const { deleteMedia } = require("../utils/media");
 
 const uploadDir = path.join(__dirname, "..", "uploads");
 
 const removeStored = (url) => {
     if (!url) return;
-    if (isRemote(url)) return destroyRemote(url);
-    const fp = path.join(uploadDir, path.basename(url));
-    if (fs.existsSync(fp)) fs.unlinkSync(fp);
+    deleteMedia([url]);
 };
 
 const serveFile = (req, res) => {
