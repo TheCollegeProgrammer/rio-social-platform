@@ -1,9 +1,10 @@
 import { useRef, useState } from "react";
-import { ImagePlus, X } from "lucide-react";
+import { ImagePlus } from "lucide-react";
 import { filterImages } from "../lib/fileValidation";
 import { usePostUpload } from "../lib/usePostUpload";
 import VisibilityToggle from "./VisibilityToggle";
 import UploadProgress from "./UploadProgress";
+import MediaPreviewGrid from "./MediaPreviewGrid";
 import "../styles/Media.css";
 
 const MAX = 500;
@@ -50,6 +51,17 @@ export default function CreatePostForm({ onCreated, category = null }) {
         });
     };
 
+    // 7.4: preview order === submit order; state reindex keeps keys stable.
+    const moveImage = (from, to) => {
+        if (to < 0 || to >= images.length || from === to) return;
+        setImages((prev) => {
+            const next = [...prev];
+            const [moved] = next.splice(from, 1);
+            next.splice(to, 0, moved);
+            return next;
+        });
+    };
+
     const clearImages = () => {
         images.forEach((im) => URL.revokeObjectURL(im.url));
         setImages([]);
@@ -90,16 +102,7 @@ export default function CreatePostForm({ onCreated, category = null }) {
             )}
             {error && <p className="error-message">{error}</p>}
             {images.length > 0 && (
-                <div className="preview-grid" aria-label="Selected images">
-                    {images.map((im, i) => (
-                        <div className="preview-cell" key={im.url}>
-                            <img src={im.url} alt={im.file.name || "Selected image"} />
-                            <button type="button" className="preview-x" onClick={() => removeImage(i)} aria-label={`Remove ${im.file.name || "image"}`}>
-                                <X size={13} />
-                            </button>
-                        </div>
-                    ))}
-                </div>
+                <MediaPreviewGrid images={images} onRemove={removeImage} onMove={moveImage} />
             )}
             <UploadProgress progress={progress} onCancel={cancelUpload} />
             <div className="post-actions">
