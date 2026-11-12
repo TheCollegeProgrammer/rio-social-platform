@@ -16,7 +16,7 @@
 - [x] **4.6 MongoDB Feed Indexes** — ✅ `post {createdAt:-1,_id:-1}`, `user {followers:1}`; feed uses sort+hint-able keyset.
 - [x] **4.7 Lazy Loading** — ✅ `React.lazy` all routes; `loading="lazy"` in `PostMedia`, `ExploreGrid`.
 - [x] **4.8 Frontend Bundle Optimization** — ✅ route-level chunks (build ✓); revisit if any chunk >300 kB.
-- [ ] **4.9 Loading/Empty/Error States** — 🔶 `FeedSkeleton`, `SearchSkeleton`, feed retry exist; gaps: suggestions card skeleton/empty, messages card skeleton, profile tabs empty states, error retry on side cards.
+- [x] **4.9 Loading/Empty/Error States** — ✅ all three side cards skeletonized (shared `.sk-side*` shimmer rows); Messages + Trending now have error+Retry (Trending no longer fails silently); feed/search/profile/notifications/chat empty states verified existing.
 - [ ] **4.10 Animation Optimization** — 🔶 `AmbientNetwork` pauses on `visibilitychange`, `reducedMotion()` guards exist. Gap: gsap/Motion animations without page-hidden pause audit; excessive simultaneous effects check.
 - [ ] **4.11 Theme Consistency** — 🔶 `data-theme` dark/light token system exists (`index.css`, `ThemeToggle`). Gap: per-surface audit (cards/forms/modals/media controls) both themes, dedupe hard-coded colors.
 - [ ] **4.12 Mobile Responsive** — 🔶 breakpoints + `BottomNav` + full-height Messages done. Gap: horizontal-overflow sweep at 360/390/768, touch-target audit, dialogs/carousel small-width check.

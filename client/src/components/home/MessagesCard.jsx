@@ -52,8 +52,22 @@ function MessagesCard() {
                 <h2 id="msg-title" className="side-title">Messages</h2>
                 <Link to="/messages" className="side-link side-link-inline">See all</Link>
             </div>
-            {convos === null && !error && <p className="side-muted">Loading…</p>}
-            {error && <p className="side-error">{error}</p>}
+            {convos === null && !error && (
+                <div className="sk-side-list" aria-hidden="true">
+                    {[0, 1, 2].map((i) => (
+                        <div key={i} className="sk-side">
+                            <span className="sk-circle" />
+                            <span className="sk-lines"><span className="sk-bar" /><span className="sk-bar" /></span>
+                        </div>
+                    ))}
+                </div>
+            )}
+            {error && (
+                <div className="side-error">
+                    <p>{error}</p>
+                    <button className="btn btn-ghost btn-sm" onClick={load}>Retry</button>
+                </div>
+            )}
             {convos && convos.length === 0 && (
                 <p className="side-muted">No conversations yet.</p>
             )}

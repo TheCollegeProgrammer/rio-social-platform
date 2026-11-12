@@ -136,3 +136,9 @@
 }
 
 .sug-btn { flex-shrink: 0; min-width: 68px; }
+
+/* 4.9: side-card skeleton rows (sk-* shimmer base lives in Home.css) */
+.sk-side-list { display: flex; flex-direction: column; gap: 4px; }
+.sk-side { display: flex; gap: 10px; align-items: center; padding: 6px 4px; }
+.sk-side .sk-circle { width: 38px; height: 38px; }
+.sk-side .sk-lines .sk-bar:last-child { width: 60%; }

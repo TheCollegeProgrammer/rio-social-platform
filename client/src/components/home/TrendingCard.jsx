@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getTrendingHashtags } from "../../services/api";
 import "./SideCards.css";
@@ -8,21 +8,37 @@ function TrendingCard() {
     const [tags, setTags] = useState(null);
     const [failed, setFailed] = useState(false);
 
-    useEffect(() => {
-        let cancelled = false;
-        getTrendingHashtags()
-            .then((d) => { if (!cancelled) setTags((d.hashtags || []).slice(0, 6)); })
-            .catch(() => { if (!cancelled) { setFailed(true); setTags([]); } });
-        return () => { cancelled = true; };
+    const fetchTags = useCallback(async () => {
+        try {
+            const d = await getTrendingHashtags();
+            setTags((d.hashtags || []).slice(0, 6));
+            setFailed(false);
+        } catch {
+            setFailed(true);
+        }
     }, []);
 
-    if (failed || (tags && tags.length === 0)) return null;
+    useEffect(() => { fetchTags(); }, [fetchTags]);
+
+    const retry = () => { setFailed(false); setTags(null); fetchTags(); };
+
+    // Nothing trending yet = no card; failures surface with retry instead.
+    if (!failed && tags && tags.length === 0) return null;
 
     return (
         <section className="side-card" aria-labelledby="trend-title">
             <h2 id="trend-title" className="side-title">Trending</h2>
-            {tags === null ? (
-                <p className="side-muted">Loading…</p>
+            {failed ? (
+                <div className="side-error">
+                    <p>Couldn't load trending.</p>
+                    <button className="btn btn-ghost btn-sm" onClick={retry}>Retry</button>
+                </div>
+            ) : tags === null ? (
+                <div className="sk-lines" aria-hidden="true">
+                    <span className="sk-bar" />
+                    <span className="sk-bar" />
+                    <span className="sk-bar" />
+                </div>
             ) : (
                 <ul className="trend-list">
                     {tags.map((t) => (

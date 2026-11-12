@@ -89,7 +89,14 @@ function SuggestionsCard() {
         <section className="side-card" aria-labelledby="sug-title">
             <h2 id="sug-title" className="side-title">Suggested for You</h2>
             {!loaded ? (
-                <p className="side-muted">Loading…</p>
+                <div className="sk-side-list" aria-hidden="true">
+                    {[0, 1, 2].map((i) => (
+                        <div key={i} className="sk-side">
+                            <span className="sk-circle" />
+                            <span className="sk-lines"><span className="sk-bar" /><span className="sk-bar" /></span>
+                        </div>
+                    ))}
+                </div>
             ) : error ? (
                 <div className="side-error">
                     <p>{error}</p>
