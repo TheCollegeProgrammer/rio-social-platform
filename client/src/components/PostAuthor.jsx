@@ -4,6 +4,7 @@ import { toggleFollow } from "../services/api";
 import { useAuth } from "../context/useAuth";
 import { useToast } from "../context/useToast";
 import AuthorAvatar from "./AuthorAvatar";
+import { timeAgo } from "../lib/time";
 
 function PostAuthor({ post }) {
     const { user, setUser } = useAuth();
@@ -41,7 +42,7 @@ function PostAuthor({ post }) {
                         {post.author?.name}
                     </Link>
                 </h3>
-                <span>@{post.author?.username}</span>
+                <span>@{post.author?.username}{post.createdAt ? ` · ${timeAgo(post.createdAt)}` : ""}</span>
             </div>
             {user && authorId && !isOwner && (
                 <button

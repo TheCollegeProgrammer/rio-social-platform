@@ -17,6 +17,20 @@ export const changePassword = (currentPassword, newPassword) =>
 
 export const getPosts = (page = 1, limit = 10, imageOnly = false, category = "") =>
     apiRequest(`/posts?page=${page}&limit=${limit}${imageOnly ? "&imageOnly=1" : ""}${category ? `&category=${encodeURIComponent(category)}` : ""}`);
+
+// Cursor-based feed paging (server falls back to page mode without a cursor).
+export const getFeed = ({ cursor, page = 1, limit = 10, imageOnly = false, category = "" } = {}) => {
+    const q = new URLSearchParams();
+    if (cursor) q.set("cursor", cursor);
+    else q.set("page", String(page));
+    q.set("limit", String(limit));
+    if (imageOnly) q.set("imageOnly", "1");
+    if (category) q.set("category", category);
+    return apiRequest(`/posts?${q.toString()}`);
+};
+
+export const getSuggestions = (limit = 5, offset = 0) =>
+    apiRequest(`/users/suggestions?limit=${limit}&offset=${offset}`);
 export const getPost = (id) => apiRequest(`/posts/${id}`);
 export const createPost = (content, category = null) =>
     apiRequest("/posts", { method: "POST", body: JSON.stringify({ content, category }) }).then((d) => d.post);

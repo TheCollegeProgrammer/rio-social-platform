@@ -1,5 +1,13 @@
 :root { --lime: #a3e635; }
 
+.route-loading {
+    display: flex;
+    justify-content: center;
+    padding: 64px 0;
+    color: var(--text-faint);
+    font-size: 14px;
+}
+
 :focus-visible {
     outline: 2px solid var(--accent-strong);
     outline-offset: 2px;

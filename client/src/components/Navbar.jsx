@@ -1,13 +1,11 @@
-import { useEffect, useRef, useState } from "react";
-import { Link, NavLink, useNavigate } from "react-router-dom";
-import { Bell, LogOut } from "lucide-react";
-import gsap from "gsap";
+import { Link, useNavigate } from "react-router-dom";
+import { LogOut } from "lucide-react";
 import { useAuth } from "../context/useAuth";
 import ThemeToggle from "./ThemeToggle";
-import { reducedMotion } from "../lib/utils";
+import { resetUnread } from "../lib/useUnreadCounts";
 import { ScrollProgress } from "@/components/motion-primitives/scroll-progress";
 import { Magnetic } from "@/components/motion-primitives/magnetic";
-import { getNotifications, getUnreadMessageCount, mediaUrl } from "../services/api";
+import { mediaUrl } from "../services/api";
 
 function NavAvatar({ user }) {
     const src = mediaUrl(user.avatar);
@@ -18,66 +16,19 @@ function NavAvatar({ user }) {
 function Navbar() {
     const { user, logout } = useAuth();
     const navigate = useNavigate();
-    const [unread, setUnread] = useState(0);
-    const [unreadMsgs, setUnreadMsgs] = useState(0);
-    const bellBadgeRef = useRef(null);
-    const msgBadgeRef = useRef(null);
-
-    useEffect(() => {
-        if (reducedMotion() || !bellBadgeRef.current) return;
-        gsap.fromTo(bellBadgeRef.current, { scale: 0.4 }, { scale: 1, duration: 0.45, ease: "back.out(3)", clearProps: "scale" });
-    }, [unread]);
-
-    useEffect(() => {
-        if (reducedMotion() || !msgBadgeRef.current) return;
-        gsap.fromTo(msgBadgeRef.current, { scale: 0.4 }, { scale: 1, duration: 0.45, ease: "back.out(3)", clearProps: "scale" });
-    }, [unreadMsgs]);
-
-    useEffect(() => {
-        if (!user) return;
-        let cancelled = false;
-        const load = () => {
-            getNotifications(1)
-                .then((d) => { if (!cancelled) setUnread(d.unreadCount); })
-                .catch(() => { });
-            getUnreadMessageCount()
-                .then((d) => { if (!cancelled) setUnreadMsgs(d.unreadUsers ?? d.unreadCount); })
-                .catch(() => { });
-        };
-        load();
-        const id = setInterval(load, 30000);
-        return () => { cancelled = true; clearInterval(id); };
-    }, [user]);
 
     const handleLogout = async () => {
         await logout();
-        setUnread(0);
-        setUnreadMsgs(0);
+        resetUnread();
         navigate("/login");
     };
 
     return (
-        <nav>
+        <nav aria-label="Top">
             <Link to="/" className="nav-brand" aria-label="RIO home">
                 <img className="brand-logo brand-logo-light" src="/Rio-logo-Light-theme.png" alt="RIO" />
                 <img className="brand-logo brand-logo-dark" src="/Rio-logo-Dark-theme.png" alt="RIO" />
             </Link>
-
-            {user && (
-                <>
-                    <NavLink to="/" className="nav-link" end>Home</NavLink>
-                    <NavLink to="/search" className="nav-link">Explore</NavLink>
-                    <NavLink to="/messages" className="nav-link">
-                        Messages
-                        {unreadMsgs > 0 && <span ref={msgBadgeRef} className="nav-badge nav-badge-inline">{unreadMsgs > 99 ? "99+" : unreadMsgs}</span>}
-                    </NavLink>
-                    <NavLink to="/profile" className="nav-link">Profile</NavLink>
-                    <NavLink to="/notifications" className="nav-icon-link" title="Notifications">
-                        <Bell size={19} />
-                        {unread > 0 && <span ref={bellBadgeRef} className="nav-badge">{unread > 99 ? "99+" : unread}</span>}
-                    </NavLink>
-                </>
-            )}
 
             <div className="nav-spacer" />
             <ThemeToggle />
@@ -97,7 +48,7 @@ function Navbar() {
                         <NavAvatar user={user} />
                         <span className="nav-username">{user.username}</span>
                     </Link>
-                    <button onClick={handleLogout} className="btn btn-ghost btn-sm" title="Log out">
+                    <button onClick={handleLogout} className="btn btn-ghost btn-sm" title="Log out" aria-label="Log out">
                         <LogOut size={15} />
                     </button>
                 </div>

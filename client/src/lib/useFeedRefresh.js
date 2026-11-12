@@ -1,12 +1,10 @@
 import { useEffect, useRef } from "react";
 
-const MAX_TOP_OFFSET = 300;
-
-export function useFeedRefresh({ fetchPage, setPosts, active, intervalMs = 45000 }) {
+export function useFeedRefresh({ fetchPage, onFresh, active, intervalMs = 45000 }) {
     const fetchRef = useRef(fetchPage);
-    const setRef = useRef(setPosts);
+    const freshRef = useRef(onFresh);
     fetchRef.current = fetchPage;
-    setRef.current = setPosts;
+    freshRef.current = onFresh;
     const busyRef = useRef(false);
 
     useEffect(() => {
@@ -16,16 +14,13 @@ export function useFeedRefresh({ fetchPage, setPosts, active, intervalMs = 45000
 
         const refresh = async () => {
             if (cancelled || busyRef.current || document.hidden) return;
-            if (window.scrollY > MAX_TOP_OFFSET) return;
             busyRef.current = true;
             try {
-                const data = await fetchRef.current(1);
+                const data = await fetchRef.current();
                 if (cancelled) return;
-                setRef.current((prev) => {
-                    const seen = new Set(prev.map((p) => p._id));
-                    const fresh = (data.posts || []).filter((p) => !seen.has(p._id));
-                    return fresh.length ? [...fresh, ...prev] : prev;
-                });
+                // Never mutate the visible feed: hand new posts to the
+                // caller so the user can reveal them from the pill.
+                if (data.posts?.length) freshRef.current(data.posts);
             } catch {
                 // network blip: keep current feed, retry next cycle
             } finally {

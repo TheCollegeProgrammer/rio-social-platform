@@ -1,0 +1,27 @@
+/* Messages fills the device viewport exactly. The page subtracts the sticky
+   nav and the shell gutters (top/bottom vars), drops its own vertical padding,
+   and lets .messenger flex into the remainder — the chat list and bubbles
+   scroll inside their panels, so the page itself never scrolls. dvh tracks the
+   real device height on mobile (URL-bar collapse); vh is the fallback. */
+
+.page.page-messages {
+    height: calc(100vh - var(--nav-height) - var(--shell-top, 20px) - var(--shell-bottom, 80px));
+    height: calc(100dvh - var(--nav-height) - var(--shell-top, 20px) - var(--shell-bottom, 80px));
+    display: flex;
+    flex-direction: column;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.page.page-messages .page-header {
+    flex-shrink: 0;
+    margin-bottom: 16px;
+}
+
+.page.page-messages .error-message { flex-shrink: 0; }
+
+.page.page-messages .messenger {
+    flex: 1;
+    height: auto;
+    min-height: 0;
+}

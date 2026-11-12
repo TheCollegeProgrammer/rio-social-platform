@@ -7,6 +7,7 @@ import ConversationList from "../components/ConversationList";
 import NewConversationPicker from "../components/NewConversationPicker";
 import ChatWindow from "../components/ChatWindow";
 import "./Messages.css";
+import "./MessagesHeight.css";
 
 function Messages() {
     const { user } = useAuth();
@@ -62,7 +63,7 @@ function Messages() {
     };
 
     return (
-        <div className="page page-wide">
+        <div className="page page-wide page-messages">
             <div className="page-header">
                 <h1>Messages</h1>
             </div>

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Pencil } from "lucide-react";
 import { useAuth } from "../context/useAuth";
 import { getProfile, getBookmarks, mediaUrl } from "../services/api";
@@ -20,12 +20,21 @@ function ProfileAvatar({ user }) {
 function Profile() {
     const { user } = useAuth();
     const navigate = useNavigate();
+    const [searchParams, setSearchParams] = useSearchParams();
     const [profile, setProfile] = useState(null);
     const [posts, setPosts] = useState([]);
     const [bookmarks, setBookmarks] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
-    const [activeTab, setActiveTab] = useState("posts");
+    const [activeTab, setActiveTab] = useState(() =>
+        searchParams.get("tab") === "bookmarks" ? "bookmarks" : "posts"
+    );
+
+    const onTab = (tab) => {
+        setActiveTab(tab);
+        if (tab === "bookmarks") setSearchParams({ tab: "bookmarks" }, { replace: true });
+        else setSearchParams({}, { replace: true });
+    };
 
     useEffect(() => {
         if (!user?._id) return;
@@ -76,11 +85,11 @@ function Profile() {
             <div className="profile-tabs">
                 <button
                     className={activeTab === "posts" ? "active" : ""}
-                    onClick={() => setActiveTab("posts")}
+                    onClick={() => onTab("posts")}
                 >Posts</button>
                 <button
                     className={activeTab === "bookmarks" ? "active" : ""}
-                    onClick={() => setActiveTab("bookmarks")}
+                    onClick={() => onTab("bookmarks")}
                 >Bookmarks</button>
             </div>
 

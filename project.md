@@ -51,9 +51,14 @@ For a **creator community, campus network, brand tribe, or niche interest group*
 - **Category tagging** on posts (`motivation`, `billionaire-mindset`, `f1`, `motorsport`) — one schema field, queryable, ready for any taxonomy
 
 ### Feed & Discovery
-- **Home feed** — newest-first, paginated ("Load more"), with **staggered scroll-reveal animations**
-- **Auto-load on scroll** — IntersectionObserver sentinel (400px margin) loads the next page before you reach the button
-- **Live feed auto-refresh** — new posts **prepend automatically** every 45s and on window `focus` / tab visibility; only genuinely new `_id`s are added (no skeleton flash, no duplicate), and the refresh is skipped while the tab is hidden or you're deep down the feed (no content jump)
+- **Home — three-column dashboard** — sticky left rail (Home / Explore / Messages / Notifications / Bookmarks / Profile / Settings with unread badges + user card), center feed column, right sidebar; icon-only rail on tablets, fixed bottom nav under 768px, sidebar hides as space runs out
+- **Compact composer** — collapsed "What's happening?" row (avatar, trigger, image button, category select, Post) expands the existing full composer — one implementation, draft preserved when switching category; new posts prepend instantly
+- **Suggested for You** — real computed suggestions only: mutual connections (shared follows, ranked) then recently-joined accounts; excludes self and everyone you already follow; optimistic follow with auth-state sync; "See all suggestions" pages server-side (`limit ≤ 10`, `offset ≤ 100`, `hasMore`)
+- **Mini Messages card** — top 4 conversations with avatar, relative time, `You:` preview and per-conversation unread badge; one click deep-links into the chat; 45s visibility-aware polling with overlap guard
+- **Trending sidebar card** — top hashtags → instant search (hidden when empty)
+- **"N new posts" pill** — the 45s/focus refresh buffers genuinely new posts and shows a floating `↑ N new posts` pill (aria-live) instead of jumping the feed; reveal prepends and scrolls to top (never auto-inserts)
+- **Cursor pagination** — newest-first keyset cursor over `createdAt|_id` (opaque base64url): no page overlap, survives inserts/deletes between pages, invalid/stale cursors fall back to page mode; responses carry `hasMore` + `nextCursor`
+- **Auto-load on scroll** — IntersectionObserver sentinel (400px margin) loads the next page before you reach the button, with **staggered scroll-reveal animations** (post cards memoized; GSAP entrance skipped under reduced motion)
 - **Explore** — photo-first masonry-style grid of every image post, plus:
   - **People search** with live results
   - **Post & hashtag search**
@@ -71,11 +76,11 @@ For a **creator community, campus network, brand tribe, or niche interest group*
 - **Likes** — toggle, accurate counts, optimistic
 - **Comments** — **threaded up to 3 levels deep** (comment → reply → nested reply), with depth enforced at the API and in the schema (`depth` max 3)
 - **Comment likes**, comment editing, comment deletion (cascades to children)
-- **Bookmarks** — private save, dedicated bookmarks view, bookmark search
+- **Bookmarks** — private save, dedicated bookmarks view, bookmark search; **Save toggle on every post card** (optimistic, `aria-pressed`) and a **Bookmarks nav entry** deep-linking to `/profile?tab=bookmarks` (tab synced to the URL)
 
 ### Notifications
 - Generated for **likes, comments, and follows**
-- **Unread badge** in the navbar (polling-based, updates as you browse)
+- **Unread badge** in the left rail / bottom nav (polling-based, updates as you browse)
 - Mark-one / mark-all read, delete individual notifications
 - **Never notifies yourself** for your own actions
 
@@ -83,7 +88,7 @@ For a **creator community, campus network, brand tribe, or niche interest group*
 - **1:1 conversations** — auto-created or reused on first message
 - **"New" conversation button** — opens a picker of people you **don't already chat with** (existing conversation partners are excluded server-side), with debounced name/username search, avatar rows, and one-click start
 - **Threaded message list** with real conversation previews
-- **Navbar badge counts PEOPLE, not messages** — distinct users with unread messages (3 unread from 1 person shows `1`)
+- **Unread badge counts PEOPLE, not messages** — distinct users with unread messages (3 unread from 1 person shows `1`), shown in the left rail and bottom nav
 - **Unread counts** per conversation + **mark-as-read** with server-side unread tracking both directions
 - **Conversation seeding** — every demo user ships with realistic, on-persona chat history
 
@@ -259,7 +264,6 @@ Every persona has a real bio, a consistent voice, hashtags, and cross-engagement
 **Next (30 days):**
 - Push notifications (web push)
 - Rich post composer (image reordering, drafts)
-- Feed "N new posts" pill instead of silent prepend when scrolled deep
 
 **Then (90 days):**
 - **socket.io messaging** — replace polling with instant delivery, typing indicators, online presence (see §17)
@@ -296,7 +300,7 @@ npm run dev                 # http://localhost:5173
 **Demo logins** (password `pass1234`): 21 personas — see `LOGIN_DETAILS.txt`.
 **Admin:** `admin@rio.app` — password comes from `ADMIN_PASSWORD` (never committed; rotate per the runbook in `docs/P0_IMPLEMENTATION_REPORT.md` §4).
 
-**Tests:** `node run_tests.js` from the project root (kills flaky port conflicts, runs all 5 suites).
+**Tests:** `node run_tests.js` from the project root (kills flaky port conflicts, runs all 6 suites).
 **Line discipline:** `node test_lines.js` — enforces the 150-line rule across the codebase.
 
 **Production** pushes from `main` to GitHub: Render (Root Directory `server`) redeploys the API, Vercel redeploys the client. Server env vars live in `server/.env` locally and in Render's dashboard; the client needs only `VITE_API_URL`. Full detail in §19.
@@ -305,7 +309,7 @@ npm run dev                 # http://localhost:5173
 
 ## Bottom Line
 
-RIO is not a landing page with a heart icon. It is a **complete social platform** — content, graph, engagement, messaging, moderation, and motion — built with a level of structural discipline (file-length law, 260 tests including a dedicated security suite, idempotent seeds, transparent moderation) that most production teams never achieve.
+RIO is not a landing page with a heart icon. It is a **complete social platform** — content, graph, engagement, messaging, moderation, and motion — built with a level of structural discipline (file-length law, 434 assertions across 6 suites including a dedicated security suite, idempotent seeds, transparent moderation) that most production teams never achieve.
 
 **Own the platform. Own the data. Own the roadmap.**
 
@@ -321,9 +325,9 @@ project-1/
 ├── client/
 │   ├── src/
 │   │   ├── pages/           # 14 route pages (Home, Profile, Messages, ...)
-│   │   ├── components/      # 22 components (+ vendored motion-primitives/)
+│   │   ├── components/      # 36 components (22 top-level + home/ dashboard cards + layout/ shell & nav; + vendored motion-primitives/)
 │   │   ├── context/         # AuthContext + useAuth, ToastContext + useToast
-│   │   ├── lib/             # useAutoLoad, useFeedRefresh, network.js/Scene/Render
+│   │   ├── lib/             # useAutoLoad, useFeed, useFeedRefresh, useUnreadCounts, time.js, network.js/Scene/Render
 │   │   ├── services/        # http.js (base/auth/errors), api.js (endpoints)
 │   │   ├── styles/          # index.css (theme vars), AmbientNetwork.css, ...
 │   │   └── main.jsx / App.jsx
@@ -331,19 +335,19 @@ project-1/
 │   └── vite.config.js       # react + tailwindcss plugins
 ├── server/
 │   ├── config/              # db.js (retrying connect + _test suffix), cloudinary.js, upload.js, categories.js
-│   ├── controllers/         # 18 controllers (split for the 150-line rule: post, post-image, post-action, comment, comment-action, message, message-read, message-users, password, bookmark, account-delete, admin, session, ...)
+│   ├── controllers/         # 20 controllers (split for the 150-line rule: post, post-image, post-action, feed, suggestion, comment, comment-action, message, message-read, message-users, password, bookmark, account-delete, admin, session, ...)
 │   ├── middleware/          # auth, optionalAuth, csrf, admin, ratelimit, validateImage, cloudinary, error
 │   ├── models/              # User, Session, AuditLog, MediaCleanup, post, Comment, Conversation, Message, Notification
 │   ├── routes/              # 9 route files (comments nested under posts, admin API)
 │   ├── uploads/             # legacy disk storage (fallback)
-│   ├── utils/               # tokens, sessions, password, mailer, audit, media, mediaQueue, visibility, seedGuard
+│   ├── utils/               # tokens, sessions, password, mailer, audit, media, mediaQueue, visibility, cursor, postShape, seedGuard
 │   ├── app.js               # express app (testable, no listen; security headers + CSRF mount)
 │   ├── server.js            # entry: fail-fast env validation, db connect, listen 0.0.0.0
 │   ├── seed.js              # personas + admin + posts + chats (idempotent, prod-guarded)
 │   └── migrate-cloudinary.js # one-time legacy image migration
-├── docs/                    # P0_SECURITY_AUDIT.md, P0_IMPLEMENTATION_REPORT.md
+├── docs/                    # P0_SECURITY_AUDIT.md, P0_IMPLEMENTATION_REPORT.md, PHASE1_IMPLEMENTATION_REPORT.md
 ├── test_lines.js            # 150-line rule checker (root)
-├── run_tests.js             # CLI test runner (5 suites, per-suite env)
+├── run_tests.js             # CLI test runner (6 suites, per-suite env)
 └── project.md               # this document
 ```
 
@@ -423,7 +427,7 @@ All routes below are prefixed with `/api`. Auth = httpOnly JWT cookie (set at lo
 ### Posts — `/api/posts`
 | Method | Endpoint | Auth | Purpose |
 |---|---|---|---|
-| GET | `/?page&limit&imageOnly&category` | optional | Feed page (newest first; `imageOnly` accepts `1`/`true`) |
+| GET | `/?cursor&page&limit&imageOnly&category` | optional | Feed page, newest first. **Cursor mode** (opaque `nextCursor`, keyset over `createdAt\|_id`) returns `hasMore` + `nextCursor`; `limit` capped at 50; invalid cursor falls back to `page` mode; `imageOnly` accepts `1`/`true` |
 | GET | `/search?q&hashtag` | optional | Text regex search **or** exact hashtag match (limit 20) |
 | GET | `/trending` | optional | Trending hashtags |
 | GET | `/bookmarks` | protected | Saved posts |
@@ -449,7 +453,7 @@ Comments are nested: `router.use("/:postId/comments", ...)`:
 | POST | `/:id/like` | Toggle comment like |
 
 ### Users & Follow — `/api/users`
-`POST /:id/follow` (toggle) · `GET /:id/followers` · `GET /:id/following`
+`GET /suggestions?limit&offset` (protected — mutuals + recent, excludes self/following/suspended, `limit ≤ 10`, `offset ≤ 100`, returns `{users, hasMore}`) · `POST /:id/follow` (toggle) · `GET /:id/followers` · `GET /:id/following`
 
 ### Profile — `/api/profile`
 `GET /search` · `GET /:id` (posts + lists gated for private accounts) · `PUT /` (name/bio/privacy — avatar/cover **only** via `/upload`) · `DELETE /` (staged account deletion, password required in body)
@@ -486,13 +490,18 @@ Comments are nested: `router.use("/:postId/comments", ...)`:
 **Protected (10, wrapped in `<ProtectedRoute>` — redirects to `/login` when signed out):**
 `/` Home · `/search` Explore · `/posts/:id` PostDetail · `/posts/:id/edit` PostEdit · `/profile` own profile · `/profile/edit` EditProfile · `/users/:id` UserProfile · `/messages` Messages · `/notifications` Notifications · `/settings` Settings
 
-App shell: `ToastProvider → BrowserRouter → BackendReady → AmbientNetworkBackground + Navbar + PageTransition → Routes`. Session restored via `AuthContext` / `useAuth()` (`/auth/me`) before protected routes render.
+App shell: `ToastProvider → BrowserRouter → BackendReady → AmbientNetworkBackground + Navbar + PageTransition → Routes`; protected routes nest `ProtectedRoute → AppShell (left rail + <main> + bottom nav) → page`, and every page is `React.lazy` behind a Suspense route fallback (route-level code splitting). Session restored via `AuthContext` / `useAuth()` (`/auth/me`) before protected routes render.
 
 ### Key libraries
 - `services/http.js` — `API_URL`, `API_ORIGIN`, `MEDIA_URL`, `apiRequest`/`uploadRequest` (JSON error extraction, `credentials: include`, trailing-slash-safe base, auto-appends `/api`); attaches the `X-CSRF-Token` header to every mutation, single-flight refresh on 401 with one retry, and a no-refresh path for auth endpoints; session restore handled by `AuthContext` (failed `/auth/me` simply leaves the user signed out)
 - `services/api.js` — one function per endpoint + `mediaUrl()` (Cloudinary `f_auto,q_auto` injection, §16)
 - `lib/useAutoLoad.js` — infinite scroll sentinel (IntersectionObserver, 400px margin, success-gated page advance)
-- `lib/useFeedRefresh.js` — feed auto-refresh (45s interval + focus/visibility triggers, dedupe by `_id`, overlap + hidden-tab + deep-scroll guards, silent error recovery)
+- `lib/useFeed.js` — home feed state: cursor paging with `_id` dedupe, pending buffer for the new-posts pill, optimistic likes, retry, memoized `PostCard` render list
+- `lib/useFeedRefresh.js` — feed refresh (45s interval + focus/visibility triggers, dedupe by `_id`, overlap + hidden-tab guards, silent error recovery) delivering new posts to a **buffer** (`onFresh`) instead of mutating the list
+- `lib/useUnreadCounts.js` — module-shared 30s polling for notification + message badges (single in-flight request, visibility-aware, `resetUnread()` on logout)
+- `lib/time.js` — `timeAgo` / `shortTime` relative timestamps (post bylines, inbox previews)
+- `components/layout/` — `AppShell` (grid shell + `<Outlet>`), `LeftNav` (sticky rail, badges, user card), `BottomNav` (fixed <768px) + their CSS
+- `components/home/` — `CompactComposer`, `NewPostsPill`, `SuggestionsCard`, `MessagesCard`, `TrendingCard` (+ `SideCards`/`Composer`/`FeedChrome` styles)
 - `lib/network.js` + `networkScene.js` + `networkRender.js` — background engine (config, physics, drawing)
 - `components/BackendReady.jsx` — cold-start gate (3s `/health` retries, 12s timeout per probe, elapsed timer, StrictMode-safe cleanup)
 
@@ -541,8 +550,9 @@ The app is **HTTP + polling** — no `socket.io`, `ws`, or `EventSource` anywher
 
 | Feature | Mechanism |
 |---|---|
-| Navbar notifications + unread badge | `setInterval` 30s (`Navbar.jsx`) |
-| Home feed new posts | 45s interval + `focus` + `visibilitychange` (`useFeedRefresh`) |
+| Navbar notifications + unread badge | `setInterval` 30s, visibility-aware (`lib/useUnreadCounts.js`, shared by left rail + bottom nav) |
+| Home feed new posts | 45s interval + `focus` + `visibilitychange` (`useFeedRefresh`) → buffered into the "N new posts" pill (never auto-inserted) |
+| Home mini inbox (sidebar) | 45s, visibility-aware, overlap-guarded |
 | Messages | fetched on conversation open / inbox load |
 | Likes & comments | immediate request on interaction |
 
@@ -556,10 +566,10 @@ All verification is **CLI-only** (no browser automation):
 
 | Command | What it checks | Current status |
 |---|---|---|
-| `node test_lines.js` | 150-line rule (root, skips node_modules/dist/.git; markdown not counted) | **153 files, 0 over** |
+| `node test_lines.js` | 150-line rule (root, skips node_modules/dist/.git; markdown not counted) | **178 files, 0 over** |
 | `npm run lint` (client) | oxlint | **0 warnings** |
 | `npm run build` (client) | Production bundle | **✓ built** |
-| `node run_tests.js` | 5 suites sequentially — `test_m1.js` (auth, 18), `test_m234.js` (posts/profile/users, 74), `test_m56.js` (messages/notifications, 58), `test_images.js` (images/Cloudinary, 31), `test_security.js` (security, 79) | **260/260 (5/5)** |
+| `node run_tests.js` | 6 suites sequentially — `test_m1.js` (auth, 18), `test_m234.js` (posts/profile/users, 74), `test_m56.js` (messages/notifications, 58), `test_images.js` (images/Cloudinary, 31), `test_security.js` (security, 79), `test_phase1.js` (cursor feed, suggestions, bookmarks, inbox/privacy — 174+, grows with feed size) | **6/6 (434+ assertions)** |
 
 Conventions: temp scripts named `test_*.js` (gitignored, deleted after use); tests run against `rio-database_test`; kill stray `node` processes before running (Vite port conflicts); never run the build and the suite in parallel (the cleanup step kills node).
 
@@ -588,4 +598,4 @@ Conventions: temp scripts named `test_*.js` (gitignored, deleted after use); tes
 
 ---
 
-*RIO — built from zero. · This document covers the codebase as of commit `fc112bc` · Tests: 260/260 · Files >150 lines: 0*
+*RIO — built from zero. · This document covers the codebase as of Phase 1 (working tree; last commit `1fe6af6`) · Tests: 6/6 suites (434+ assertions) · Files >150 lines: 0 (178 files)*

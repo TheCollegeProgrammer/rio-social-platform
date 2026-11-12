@@ -7,8 +7,7 @@ const extractHashtags = (content) => {
     return matches ? [...new Set(matches.map((h) => h.toLowerCase()))] : [];
 };
 
-const postImages = (post) =>
-    post.images?.length ? post.images : post.image ? [post.image] : [];
+const postImages = require("../utils/postShape").postImages;
 
 const createPost = async (req, res, next) => {
     try {
@@ -73,54 +72,6 @@ const getPostById = async (req, res, next) => {
     }
 };
 
-const getPosts = async (req, res, next) => {
-    try {
-        const page = parseInt(req.query.page) || 1;
-        const limit = parseInt(req.query.limit) || 10;
-        const skip = (page - 1) * limit;
-        const imageOnly = req.query.imageOnly === "1" || req.query.imageOnly === "true";
-        const filter = {};
-        if (imageOnly) filter.image = { $ne: null };
-        const category = normalizeCategory(req.query.category);
-        if (category) filter.category = category;
-
-        const posts = await Post.find(filter)
-            .populate("author", "username name avatar isPrivate")
-            .sort({ createdAt: -1 })
-            .skip(skip)
-            .limit(limit);
-
-        const total = await Post.countDocuments(filter);
-        const userId = req.user ? req.user.id : null;
-        // F-13: hide posts of private accounts from non-followers.
-        const vis = await buildPostVisibility(userId);
-        const visible = posts.filter((post) => !vis.hidden(post));
-
-        const enriched = visible.map((post) => ({
-            _id: post._id,
-            content: post.content,
-            author: post.author,
-            likesCount: post.likes.length,
-            liked: userId ? post.likes.some((id) => id.toString() === userId) : false,
-            hashtags: post.hashtags,
-            image: post.image,
-            images: postImages(post),
-            category: post.category,
-            editedAt: post.editedAt,
-            createdAt: post.createdAt
-        }));
-
-        res.json({
-            posts: enriched,
-            page,
-            totalPages: Math.ceil(total / limit),
-            total
-        });
-    } catch (error) {
-        return next(error);
-    }
-};
-
 let trendingCache = { at: 0, tags: null };
 
 const getTrendingHashtags = async (req, res, next) => {
@@ -145,4 +96,4 @@ const getTrendingHashtags = async (req, res, next) => {
     }
 };
 
-module.exports = { createPost, getPostById, getPosts, getTrendingHashtags, extractHashtags, postImages };
+module.exports = { createPost, getPostById, getTrendingHashtags, extractHashtags, postImages };

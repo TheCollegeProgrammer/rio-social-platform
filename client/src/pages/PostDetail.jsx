@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Heart, Bookmark, Trash2, Pencil, Hash } from "lucide-react";
 import { useAuth } from "../context/useAuth";
-import { getPost, toggleLike, toggleBookmark, deletePost, getComments, createComment } from "../services/api";
-import CommentList from "../components/CommentList";
+import { getPost, toggleLike, toggleBookmark, deletePost } from "../services/api";
+import PostComments from "../components/PostComments";
 import ShareMenu from "../components/ShareMenu";
 import PostAuthor from "../components/PostAuthor";
 import PostMedia from "../components/PostMedia";
@@ -16,22 +16,15 @@ function PostDetail() {
     const navigate = useNavigate();
     const { user } = useAuth();
     const [post, setPost] = useState(null);
-    const [comments, setComments] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
-    const [commentText, setCommentText] = useState("");
-    const [submitting, setSubmitting] = useState(false);
     const [bookmarked, setBookmarked] = useState(false);
 
     useEffect(() => {
         let cancelled = false;
-        Promise.all([getPost(id), getComments(id)])
-            .then(([postData, commentData]) => {
-                if (!cancelled) {
-                    setPost(postData.post);
-                    setComments(commentData.comments);
-                }
-            })
+        setLoading(true);
+        getPost(id)
+            .then((d) => { if (!cancelled) setPost(d.post); })
             .catch((err) => { if (!cancelled) setError(err.message); })
             .finally(() => { if (!cancelled) setLoading(false); });
         return () => { cancelled = true; };
@@ -56,18 +49,6 @@ function PostDetail() {
         await deletePost(id);
         navigate("/");
     });
-
-    const handleComment = async (e) => {
-        e.preventDefault();
-        if (!commentText.trim()) return;
-        try {
-            setSubmitting(true);
-            const data = await createComment(id, commentText);
-            setComments((prev) => [data.comment, ...prev]);
-            setCommentText("");
-        } catch (err) { setError(err.message); }
-        finally { setSubmitting(false); }
-    };
 
     if (loading) return <div className="page"><p className="muted">Loading post...</p></div>;
     if (error && !post) return <div className="page"><p className="error-message">{error}</p></div>;
@@ -117,26 +98,7 @@ function PostDetail() {
                 </div>
             </article>
 
-            <section className="comments-section">
-                <h2>Comments ({comments.reduce((s, c) => s + 1 + (c.replies?.length || 0), 0)})</h2>
-
-                <form onSubmit={handleComment} className="create-post">
-                    <textarea placeholder="Write a comment..." value={commentText} onChange={(e) => setCommentText(e.target.value)} rows={2} />
-                    <div className="post-actions">
-                        <span />
-                        <button type="submit" className="btn btn-sm" disabled={submitting || !commentText.trim()}>
-                            {submitting ? "Posting..." : "Comment"}
-                        </button>
-                    </div>
-                </form>
-
-                <CommentList
-                    postId={id}
-                    comments={comments}
-                    onDeleted={(cid) => setComments((p) => p.filter((c) => c._id !== cid))}
-                    onUpdated={(u) => setComments((p) => p.map((c) => (c._id === u._id ? u : c)))}
-                />
-            </section>
+            <PostComments postId={id} />
         </main>
     );
 }

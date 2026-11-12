@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { memo, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Heart, MessageCircle, Bookmark, Hash, Pencil, Trash2 } from "lucide-react";
 import gsap from "gsap";
@@ -9,14 +9,20 @@ import ShareMenu from "./ShareMenu";
 import PostAuthor from "./PostAuthor";
 import PostMedia from "./PostMedia";
 import { AuthorAvatar } from "./AuthorAvatar";
-import { deletePost } from "../services/api";
+import { deletePost, toggleBookmark } from "../services/api";
 import "../styles/Post.css";
+import "../styles/PostExtras.css";
 
 function PostCard({ post, onLike }) {
     const navigate = useNavigate();
-    const { user } = useAuth();
+    const { user, setUser } = useAuth();
     const toast = useToast();
     const [hidden, setHidden] = useState(false);
+    const [saving, setSaving] = useState(false);
+    const bookmarkedIds = user?.bookmarks || [];
+    const [saved, setSaved] = useState(() =>
+        bookmarkedIds.some((b) => (b?._id || b) === post._id)
+    );
     const heartRef = useRef(null);
     const isOwner = user?._id === post.author?._id;
     const canEdit = isOwner || user?.role === "admin";
@@ -29,6 +35,29 @@ function PostCard({ post, onLike }) {
                 { scale: 1 },
                 { scale: 1.4, duration: 0.16, yoyo: true, repeat: 1, ease: "power2.out", clearProps: "scale" }
             );
+        }
+    };
+
+    const handleSave = async () => {
+        if (saving || !user) return;
+        setSaving(true);
+        const next = !saved;
+        setSaved(next);
+        try {
+            const d = await toggleBookmark(post._id);
+            setSaved(d.bookmarked);
+            const ids = user.bookmarks || [];
+            setUser({
+                ...user,
+                bookmarks: d.bookmarked
+                    ? [...ids, post._id]
+                    : ids.filter((b) => (b?._id || b) !== post._id)
+            });
+        } catch (err) {
+            setSaved(!next);
+            toast.error(err.message || "Could not update bookmark");
+        } finally {
+            setSaving(false);
         }
     };
 
@@ -71,18 +100,29 @@ function PostCard({ post, onLike }) {
             )}
 
             <div className="post-footer">
-                <button className={post.liked ? "action-btn liked" : "action-btn"} onClick={handleLike}>
+                <button
+                    className={post.liked ? "action-btn liked" : "action-btn"}
+                    onClick={handleLike}
+                    aria-pressed={Boolean(post.liked)}
+                    aria-label={post.liked ? "Unlike post" : "Like post"}
+                >
                     <Heart ref={heartRef} size={16} fill={post.liked ? "currentColor" : "none"} />
                     {post.likesCount || 0}
                 </button>
-                <Link to={`/posts/${post._id}`} className="action-btn">
+                <Link to={`/posts/${post._id}`} className="action-btn" aria-label="View comments">
                     <MessageCircle size={16} />
                     Comments
                 </Link>
-                <span className="action-btn">
-                    <Bookmark size={16} />
-                    Save
-                </span>
+                <button
+                    className={saved ? "action-btn saved" : "action-btn"}
+                    onClick={handleSave}
+                    disabled={saving}
+                    aria-pressed={saved}
+                    aria-label={saved ? "Remove bookmark" : "Save post"}
+                >
+                    <Bookmark size={16} fill={saved ? "currentColor" : "none"} />
+                    {saved ? "Saved" : "Save"}
+                </button>
                 <ShareMenu postId={post._id} title={post.content.slice(0, 80)} />
                 {canEdit && (
                     <button className="action-btn danger" onClick={handleDelete}>
@@ -102,4 +142,4 @@ function PostCard({ post, onLike }) {
 }
 
 export { AuthorAvatar };
-export default PostCard;
+export default memo(PostCard);

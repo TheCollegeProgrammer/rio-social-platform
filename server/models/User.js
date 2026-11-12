@@ -105,5 +105,6 @@ const userSchema = new mongoose.Schema(
 );
 
 userSchema.index({ username: "text", name: "text" });
+userSchema.index({ followers: 1 });
 
 module.exports = mongoose.model("User", userSchema);

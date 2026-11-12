@@ -1,0 +1,47 @@
+/* Three-column dashboard shell: [240px nav] [content] — the Home page adds
+   its own center feed + right sidebar inside .shell-main. */
+
+.shell {
+    --shell-top: 20px;
+    --shell-bottom: 80px;
+    display: grid;
+    grid-template-columns: 240px minmax(0, 1fr);
+    gap: 28px;
+    max-width: 1330px;
+    margin: 0 auto;
+    padding: var(--shell-top) 24px var(--shell-bottom);
+    align-items: start;
+}
+
+.shell-main { min-width: 0; }
+
+/* Medium desktop: compact rail, content gets the space */
+@media (max-width: 1279px) {
+    .shell {
+        grid-template-columns: 216px minmax(0, 1fr);
+        gap: 20px;
+        max-width: 1120px;
+    }
+}
+
+/* Tablet: icon-only rail */
+@media (max-width: 1023px) {
+    .shell {
+        --shell-top: 16px;
+        grid-template-columns: 64px minmax(0, 1fr);
+        gap: 16px;
+        padding: var(--shell-top) 16px var(--shell-bottom);
+    }
+}
+
+/* Mobile: single column + bottom navigation */
+@media (max-width: 767px) {
+    .shell {
+        --shell-top: 12px;
+        --shell-bottom: 76px;
+        grid-template-columns: minmax(0, 1fr);
+        padding: var(--shell-top) 12px var(--shell-bottom);
+        gap: 0;
+    }
+    .left-nav { display: none; }
+}

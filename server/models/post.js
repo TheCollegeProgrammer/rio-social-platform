@@ -56,5 +56,6 @@ const postSchema = new mongoose.Schema(
 postSchema.index({ content: "text", hashtags: "text" });
 postSchema.index({ author: 1, createdAt: -1 });
 postSchema.index({ category: 1, createdAt: -1 });
+postSchema.index({ createdAt: -1, _id: -1 });
 
 module.exports = mongoose.model("Post", postSchema);
