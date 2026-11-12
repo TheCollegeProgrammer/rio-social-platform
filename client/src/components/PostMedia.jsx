@@ -9,15 +9,26 @@ import {
     CarouselIndicator
 } from "@/components/motion-primitives/carousel";
 
-function ImageCarousel({ images, onZoom }) {
-    const [idx, setIdx] = useState(0);
-    if (!images?.length) return null;
+// 7.10: standardized responsive cloudinary variants (browser picks the
+// right width); local uploads have no CDN transforms and serve as-is.
+const responsiveAttrs = (srcPath) => {
+    const url = mediaUrl(srcPath);
+    if (!url || !url.includes("res.cloudinary.com")) return {};
+    return {
+        srcSet: [480, 960, 1600].map((w) => mediaUrl(srcPath, w)).join(", "),
+        sizes: "(max-width: 640px) 100vw, 860px"
+    };
+};
 
-    if (images.length === 1) {
+function ImageCarousel({ cards, onZoom }) {
+    const [idx, setIdx] = useState(0);
+    if (!cards?.length) return null;
+
+    if (cards.length === 1) {
         return (
             <img
+                {...cards[0]}
                 className="post-image zoomable"
-                src={images[0]}
                 alt=""
                 loading="lazy"
                 onClick={() => onZoom?.(0)}
@@ -29,11 +40,11 @@ function ImageCarousel({ images, onZoom }) {
         <div className="post-carousel">
             <Carousel onIndexChange={setIdx}>
                 <CarouselContent>
-                    {images.map((src, i) => (
-                        <CarouselItem key={`${src}-${i}`}>
+                    {cards.map((card, i) => (
+                        <CarouselItem key={`${card.src}-${i}`}>
                             <img
+                                {...card}
                                 className="carousel-img zoomable"
-                                src={src}
                                 alt=""
                                 loading="lazy"
                                 draggable={false}
@@ -51,8 +62,9 @@ function ImageCarousel({ images, onZoom }) {
 }
 
 function PostMedia({ post }) {
-    const raw = post.images?.length ? post.images : post.image ? [post.image] : [];
-    const images = raw.map(mediaUrl).filter(Boolean);
+    const raw = (post.images?.length ? post.images : post.image ? [post.image] : []).filter(Boolean);
+    const cards = raw.map((srcPath) => ({ src: mediaUrl(srcPath), ...responsiveAttrs(srcPath) }));
+    const images = cards.map((c) => c.src);
     const [zoom, setZoom] = useState(false);
     const [zoomIdx, setZoomIdx] = useState(0);
 
@@ -65,7 +77,7 @@ function PostMedia({ post }) {
 
     return (
         <>
-            <ImageCarousel images={images} onZoom={openZoom} />
+            <ImageCarousel cards={cards} onZoom={openZoom} />
             <MediaLightbox
                 open={zoom}
                 images={images}

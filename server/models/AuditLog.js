@@ -11,7 +11,7 @@ const auditSchema = new mongoose.Schema(
         action: { type: String, required: true, index: true },
         targetType: {
             type: String,
-            enum: ["user", "post", "comment", "session", "report", "appeal"],
+            enum: ["user", "post", "comment", "session", "report", "appeal", "media"],
             default: ""
         },
         targetId: { type: mongoose.Schema.Types.ObjectId },

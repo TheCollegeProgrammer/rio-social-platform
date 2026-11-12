@@ -53,6 +53,7 @@ module.exports = {
     enabled,
     uploadBuffer,
     isRemote,
+    publicIdFromUrl,
     destroyRemote,
     destroyRemoteAsync
 };

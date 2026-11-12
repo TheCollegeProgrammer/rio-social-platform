@@ -137,13 +137,13 @@ export const uploadCover = (file) => {
 export const deleteUploadedImage = (field) =>
     apiRequest(`/upload/${field}`, { method: "DELETE" });
 
-const withCloudinaryCdn = (url) =>
+const withCloudinaryCdn = (url, width) =>
     url.includes("res.cloudinary.com") && !url.includes("/upload/f_")
-        ? url.replace("/image/upload/", "/image/upload/f_auto,q_auto/")
+        ? url.replace("/image/upload/", `/image/upload/${width ? `w_${width},` : ""}f_auto,q_auto/`)
         : url;
 
-export const mediaUrl = (path) => {
+export const mediaUrl = (path, width) => {
     if (!path) return null;
     const abs = path.startsWith("http") ? path : `${MEDIA_URL}${path}`;
-    return withCloudinaryCdn(abs);
+    return withCloudinaryCdn(abs, width);
 };
