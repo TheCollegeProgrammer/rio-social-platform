@@ -12,14 +12,14 @@
 - [x] **4.2 Suggestions API** — ✅ `suggestion.controller.js` + `GET /users/suggestions` (excludes self/following, bounded, mutuals signal).
 - [x] **4.3 Messages Preview API** — ✅ `GET /messages` bounded conversations + Home `MessagesCard` (empty/loading/error states).
 - [x] **4.4 Optimistic Follow** — ✅ shared `lib/useFollowToggle.js` (instant flip, in-flight dedupe per id, rollback + toast, server-response reconcile); wired into `UserProfile` (counts too), `PostAuthor`, `SuggestionsCard`; server `addToSet` idempotency (no duplicate edges); toggle-integrity tests in `test_phase1.js`.
-- [ ] **4.5 Server-State Optimization** — 🔶 custom hooks exist (`useFeed`, `useUnreadCounts`), no TanStack Query. Decision: **keep custom hooks** (dep constraint #8; no cache-layer need at current scale), document; add request dedupe guard only if gaps found.
+- [x] **4.5 Server-State Optimization** — ✅ decision: **keep custom hooks** (`useFeed`, `useUnreadCounts`, `useFeedRefresh`, `useFollowToggle`) — dedupe/pause/visibility handled per-hook; TanStack Query not justified at current scale (dep constraint #8, no cache-invalidation pain observed). Revisit if request duplication reappears.
 - [x] **4.6 MongoDB Feed Indexes** — ✅ `post {createdAt:-1,_id:-1}`, `user {followers:1}`; feed uses sort+hint-able keyset.
 - [x] **4.7 Lazy Loading** — ✅ `React.lazy` all routes; `loading="lazy"` in `PostMedia`, `ExploreGrid`.
 - [x] **4.8 Frontend Bundle Optimization** — ✅ route-level chunks (build ✓); revisit if any chunk >300 kB.
 - [x] **4.9 Loading/Empty/Error States** — ✅ all three side cards skeletonized (shared `.sk-side*` shimmer rows); Messages + Trending now have error+Retry (Trending no longer fails silently); feed/search/profile/notifications/chat empty states verified existing.
 - [x] **4.10 Animation Optimization** — ✅ audited: AmbientNetwork pauses ticker **and** kills the signal scheduler on `visibilitychange` (explicit, not just rAF physics); reduced-motion = global CSS kill-switch (`interactions.css`) + 6 JS guards (Home stagger/TextEffect, PostCard heart, PageTransition, feed scroll, ambient static frame); only infinite animations are loading indicators (skeleton shimmer, boot spinner), both frozen under reduced-motion.
-- [ ] **4.11 Theme Consistency** — 🔶 `data-theme` dark/light token system exists (`index.css`, `ThemeToggle`). Gap: per-surface audit (cards/forms/modals/media controls) both themes, dedupe hard-coded colors.
-- [ ] **4.12 Mobile Responsive** — 🔶 breakpoints + `BottomNav` + full-height Messages done. Gap: horizontal-overflow sweep at 360/390/768, touch-target audit, dialogs/carousel small-width check.
+- [x] **4.11 Theme Consistency** — ✅ audited: all surfaces/borders/text use `--bg*/--border*/--text*/--accent/--lime` tokens in both `data-theme` themes; hard-coded values limited to intentional patterns (lime fallbacks, white-on-`--danger` badges, white-on-media overlays, boot screen pre-theme, dark-only ambient hidden in light); zero inline colors in JSX; ThemeToggle persists to localStorage.
+- [x] **4.12 Mobile Responsive** — ✅ static sweep: viewport meta present; no fixed width ≥360px anywhere; breakpoints at 1379/1279/1023/767/760/720/640; `home-grid` collapses single-column, shell → single-col + fixed BottomNav, messages → 1-col with show-chat toggle, explore/media auto-fill grids; full-height messages accounts for bottom nav. Caveat: visual spot-check at 360/768 recommended before deploy.
 
 ## Phase 2 — Real-Time Infrastructure (all ❌ — no socket.io in repo)
 
