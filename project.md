@@ -49,6 +49,12 @@ For a **creator community, campus network, brand tribe, or niche interest group*
 - **Post editing** with "Edited" badge
 - **Post deletion** (owner — or admin) with full cleanup: comments, bookmarks references, and **images removed from Cloudinary**
 - **Category tagging** on posts (`motivation`, `billionaire-mindset`, `f1`, `motorsport`) — one schema field, queryable, ready for any taxonomy
+- **Rich composer** — drag-and-drop + file picker sharing one validation path, per-image previews with removable cells, `n/8` counter, near-limit char-count warning, a11y labels
+- **Image reordering** — drag-and-drop, keyboard arrows, and ‹ › buttons on preview cells; preview order is the submit order end-to-end (multipart → schema)
+- **Image cropping** — pre-publish crop/position editor (Original / 1:1 / 4:5 / 16:9, pan + zoom, 2048px output cap); the cropped canvas bytes ARE the uploaded bytes, so the confirmed preview is pixel-identical to the published image; GIFs are never rasterized
+- **Upload progress & retry** — truthful request-level progress bar with Cancel and safe Retry (server only creates the post on a completed body — no duplicate posts/media)
+- **Post drafts** — owner-private `Draft` collection (never surfaces in feeds), versioned patches with 409 conflict detection, **debounced autosave** after the first explicit save, publish that moves files without re-upload, DraftsList panel on home
+- **Share URLs** — stable `GET /posts/:id` on the API origin renders server-side og/twitter meta for link scrapers + redirects humans into the SPA; visibility-gated with the exact API policy (restricted/deleted → content-free 404), always `Cache-Control: no-store`; share menu targets it, dead links show a friendly "Post unavailable" page
 
 ### Feed & Discovery
 - **Home — three-column dashboard** — sticky left rail (Home / Explore / Messages / Notifications / Bookmarks / Profile / Settings with unread badges + user card), center feed column, right sidebar; icon-only rail on tablets, fixed bottom nav under 768px, sidebar hides as space runs out
@@ -77,6 +83,12 @@ For a **creator community, campus network, brand tribe, or niche interest group*
 - **Comments** — **threaded up to 3 levels deep** (comment → reply → nested reply), with depth enforced at the API and in the schema (`depth` max 3)
 - **Comment likes**, comment editing, comment deletion (cascades to children)
 - **Bookmarks** — private save, dedicated bookmarks view, bookmark search; **Save toggle on every post card** (optimistic, `aria-pressed`) and a **Bookmarks nav entry** deep-linking to `/profile?tab=bookmarks` (tab synced to the URL)
+
+### Stories (24h ephemeral)
+- **Create & view stories** — image stories live 24 hours; `expiresAt` comes from the **server clock** and every read filters on it (expired → 404 regardless of UI), backed by a TTL index **plus** a lazy sweep that deletes expired docs **and their media files**
+- **Story tray** above the feed (own "Your story" create entry + one ring per followed author with active stories, session-local seen state) and a **fullscreen viewer** (5s auto-advance with progress bars, tap zones / arrow keys / Esc, deduped view recording, author-only viewer list + Delete)
+- **Privacy** — blocks always hide; private accounts and followers-only stories require the approved follow edge; view records are stripped for everyone except the author
+- **Profile story ring** — active stories ring your avatar on your profile; click opens the same viewer
 
 ### Notifications
 - Generated for **likes, comments, and follows**
@@ -119,7 +131,7 @@ For a **creator community, campus network, brand tribe, or niche interest group*
 | Feed ranking | **Chronological. Always.** | Engagement-optimized black box |
 | Moderation | **Transparent, role-based, auditable** | Opaque, automated, appeal-less |
 | Ads / tracking | **Zero** | The business model |
-| Codebase | **~130 small files, one engineer can hold it** | Millions of LOC |
+| Codebase | **~250 small files, one engineer can hold it** | Millions of LOC |
 | Deploy cost | A free-tier VPS + a database | — |
 
 ### vs. "build your own" alternatives
@@ -199,6 +211,7 @@ Any account with `role: "admin"` (created via `node create-admin.js`):
 - Can delete another user's post — with the **same full cleanup path** as a owner delete (comments, bookmarks, images)
 - Can **suspend / restore** accounts (`POST /api/admin/users/:id/suspend|restore`) — suspension revokes every session and blocks login until restored
 - Every moderation + suspension action writes an append-only **audit entry** (actor, action, target, reason, ip, outcome) readable via `GET /api/admin/audit`
+- **Reports & appeals queue** — users report posts/comments/users (`POST /api/reports`); admins triage in the **Moderation dashboard** (`GET /api/admin/reports`, detail with full context, resolve/dismiss with notes — every decision audit-logged). Decided subjects can **appeal** (`POST /api/appeals`, unique per report ever); an **approved appeal reopens the report** to `reviewing`; only the affected subject may appeal
 - Cannot be spoofed from the client: the role claim is verified server-side on every moderated action
 
 This is the difference between a *demo* and a *platform someone can actually operate*.
@@ -210,7 +223,7 @@ This is the difference between a *demo* and a *platform someone can actually ope
 | Discipline | Implementation |
 |---|---|
 | **150-line hard rule** | Every owned source file (JS/JSX/CSS) is capped at 150 lines, enforced by `node test_lines.js` across client + server. No god-components, no 800-line "utils". (Vendored `motion-primitives/` is exempt and documented.) |
-| **Test suite** | 260 CLI-driven HTTP tests across 5 suites — `test_m1.js` auth (18), `test_m234.js` posts/profile/users (74), `test_m56.js` messages/notifications (58), `test_images.js` images/Cloudinary (31), `test_security.js` security (79: CSRF, sessions, reset, Argon2id migration, upload attacks, 429s, admin audit, IDOR, fail-fast secrets). Zero browser automation flakiness; pure `http.request` against a live server. |
+| **Test suite** | **814 CLI-driven assertions across 7 suites** — `test_m1.js` auth (18), `test_m234.js` posts/profile/users (74), `test_m56.js` messages/notifications (58), `test_images.js` images/Cloudinary/drafts/media-safety/image-order/stories (93), `test_security.js` security (81: CSRF, sessions, reset, Argon2id migration, upload attacks, 429s, admin audit, IDOR, fail-fast secrets), `test_phase1.js` cursor feed/suggestions/bookmarks/inbox privacy/drafts/share URLs/media reconcile (542), `server/test_socket.js` socket handshake/presence/typing/receipts (48). Zero browser automation flakiness; pure `http.request` against a live server. |
 | **Idempotent seeding** | Every seed script is re-runnable: content-prefix guards, per-pair chat dedup, deterministic PRNG. Run it twice → +0 duplicates, guaranteed. |
 | **DB isolation** | Tests target a separate database — `db.js` automatically suffixes `_test` onto the DB **name** (`rio-database_test`) with an elevated rate limit — production data is never touched. |
 | **Error contract** | Every endpoint returns `{ errors: [...] }` on failure. One shape. Predictable client handling. |
@@ -229,8 +242,8 @@ This is the difference between a *demo* and a *platform someone can actually ope
 | Conversations / Messages | 37 / 219 |
 | Notifications | 12 |
 | Post images on Cloudinary | 137 (+ 15 avatars); local `/uploads/` references: **0** |
-| Test coverage | 260/260 passing |
-| Source files over 150 lines | **0** (153 checked) |
+| Test coverage | 814/814 passing (7 suites) |
+| Source files over 150 lines | **0** (252 checked) |
 
 Every persona has a real bio, a consistent voice, hashtags, and cross-engagement — comments reply to actual post content, not lorem ipsum.
 
@@ -259,20 +272,21 @@ Every persona has a real bio, a consistent voice, hashtags, and cross-engagement
 
 ## 9. Roadmap & Known Limitations
 
-**Now:** carousel-scale content, moderation, messaging, notifications, theming, search, Cloudinary media, live feed refresh, full test harness, **hardened auth & platform security** (server-side sessions + rotation, CSRF, Argon2id, layered rate limits, upload validation, admin audit logging, private-account enforcement).
+**Now (shipped):** carousel-scale content, moderation (reports → admin queue → appeals), Socket.IO messaging (delivery/typing/presence/receipts), notifications, theming, search, Cloudinary media, live feed refresh, full test harness, hardened auth & platform security (server-side sessions + rotation, CSRF, Argon2id, layered rate limits, upload validation, admin audit logging, private-account enforcement), cursor feed + suggestions + bookmarks, post drafts with debounced autosave, 24h stories with tray/viewer/ring, share URLs (og previews), rich composer (drag-reorder + crop + upload progress/retry), media reconciliation.
 
 **Next (30 days):**
+- Video upload & playback (formats/size/duration validation, playback UI)
 - Push notifications (web push)
-- Rich post composer (image reordering, drafts)
+- Re-crop published images in PostEdit (7.5 parity with the composer)
 
 **Then (90 days):**
-- **socket.io messaging** — replace polling with instant delivery, typing indicators, online presence (see §17)
-- Role-based report/review queue (user reports → admin dashboard)
-- Rate-limit dashboards + abuse heuristics (rate limits themselves are per-IP **and** per-account since the P0 hardening)
+- Structured logging, OpenAPI docs, schema validation (RIO 2.0 §8.2–8.4)
+- CI/CD pipeline + perf monitoring + rollback runbook (§8.5, 8.11–8.12)
 - ActivityPub export (leave with your data — the differentiator, weaponized)
+- Rate-limit dashboards + abuse heuristics (rate limits themselves are per-IP **and** per-account since the P0 hardening)
 
 **Known limitations (honest list)**
-- No true real-time layer: notifications feed and messages rely on polling (30–45s)
+- Home feed refresh + navbar/sidebar badges still poll (30–45s) — messaging, typing, presence, and notification pushes are instant via Socket.IO (§17)
 - Password-reset email delivery is **inactive in production** until `RESEND_API_KEY` + `RESET_EMAIL_FROM` are configured (dev/test use a local outbox file; responses never contain the token)
 - Rate-limit buckets are in-memory (single Render instance) — swap the store seam if scaling out
 - No automated E2E/browser tests — verification is CLI-only by design
@@ -300,7 +314,7 @@ npm run dev                 # http://localhost:5173
 **Demo logins** (password `pass1234`): 21 personas — see `LOGIN_DETAILS.txt`.
 **Admin:** `admin@rio.app` — password comes from `ADMIN_PASSWORD` (never committed; rotate per the runbook in `docs/P0_IMPLEMENTATION_REPORT.md` §4).
 
-**Tests:** `node run_tests.js` from the project root (kills flaky port conflicts, runs all 6 suites).
+**Tests:** `node run_tests.js` from the project root (kills flaky port conflicts, runs all 7 suites).
 **Line discipline:** `node test_lines.js` — enforces the 150-line rule across the codebase.
 
 **Production** pushes from `main` to GitHub: Render (Root Directory `server`) redeploys the API, Vercel redeploys the client. Server env vars live in `server/.env` locally and in Render's dashboard; the client needs only `VITE_API_URL`. Full detail in §19.
@@ -309,7 +323,7 @@ npm run dev                 # http://localhost:5173
 
 ## Bottom Line
 
-RIO is not a landing page with a heart icon. It is a **complete social platform** — content, graph, engagement, messaging, moderation, and motion — built with a level of structural discipline (file-length law, 434 assertions across 6 suites including a dedicated security suite, idempotent seeds, transparent moderation) that most production teams never achieve.
+RIO is not a landing page with a heart icon. It is a **complete social platform** — content, graph, engagement, messaging, moderation, stories, and motion — built with a level of structural discipline (file-length law, 814 assertions across 7 suites including dedicated security + socket suites, idempotent seeds, transparent moderation) that most production teams never achieve.
 
 **Own the platform. Own the data. Own the roadmap.**
 
@@ -324,30 +338,31 @@ RIO is not a landing page with a heart icon. It is a **complete social platform*
 project-1/
 ├── client/
 │   ├── src/
-│   │   ├── pages/           # 14 route pages (Home, Profile, Messages, ...)
-│   │   ├── components/      # 36 components (22 top-level + home/ dashboard cards + layout/ shell & nav; + vendored motion-primitives/)
+│   │   ├── pages/           # 15 route pages (Home, Profile, Messages, AdminDashboard, ...)
+│   │   ├── components/      # 33 top-level + home/ dashboard cards + layout/ shell + story/ (tray, viewer) + vendored motion-primitives/
 │   │   ├── context/         # AuthContext + useAuth, ToastContext + useToast
 │   │   ├── lib/             # useAutoLoad, useFeed, useFeedRefresh, useUnreadCounts, time.js, network.js/Scene/Render
-│   │   ├── services/        # http.js (base/auth/errors), api.js (endpoints)
+│   │   ├── services/        # http.js (base/auth/errors), api.js (endpoints), storyApi.js
 │   │   ├── styles/          # index.css (theme vars), AmbientNetwork.css, ...
 │   │   └── main.jsx / App.jsx
 │   ├── .env(.example)       # VITE_API_URL
 │   └── vite.config.js       # react + tailwindcss plugins
 ├── server/
 │   ├── config/              # db.js (retrying connect + _test suffix), cloudinary.js, upload.js, categories.js
-│   ├── controllers/         # 20 controllers (split for the 150-line rule: post, post-image, post-action, feed, suggestion, comment, comment-action, message, message-read, message-users, password, bookmark, account-delete, admin, session, ...)
+│   ├── controllers/         # 32 controllers (split for the 150-line rule: post, post-image, comment, comment-action, message, message-read, message-users, feed, suggestion, bookmark, password, account-delete, admin, report, report-admin, appeal, draft, story, session, ...)
 │   ├── middleware/          # auth, optionalAuth, csrf, admin, ratelimit, validateImage, cloudinary, error
-│   ├── models/              # User, Session, AuditLog, MediaCleanup, post, Comment, Conversation, Message, Notification
-│   ├── routes/              # 9 route files (comments nested under posts, admin API)
+│   ├── models/              # User, Session, AuditLog, MediaCleanup, Draft, Story, Report, Appeal, Block, Mute, FollowRequest, post, Comment, Conversation, Message, Notification
+│   ├── routes/              # 13 route files (comments nested under posts; reports, appeals, drafts, stories, admin API)
+│   ├── socket/              # socket.io: auth handshake, index (rooms/fan-out), presence, typing, receipts
 │   ├── uploads/             # legacy disk storage (fallback)
-│   ├── utils/               # tokens, sessions, password, mailer, audit, media, mediaQueue, visibility, cursor, postShape, seedGuard
+│   ├── utils/               # tokens, sessions, password, mailer, audit, media, mediaQueue, visibility, postPreview, cursor, postShape, categories, seedGuard
 │   ├── app.js               # express app (testable, no listen; security headers + CSRF mount)
 │   ├── server.js            # entry: fail-fast env validation, db connect, listen 0.0.0.0
 │   ├── seed.js              # personas + admin + posts + chats (idempotent, prod-guarded)
 │   └── migrate-cloudinary.js # one-time legacy image migration
 ├── docs/                    # P0_SECURITY_AUDIT.md, P0_IMPLEMENTATION_REPORT.md, PHASE1_IMPLEMENTATION_REPORT.md
 ├── test_lines.js            # 150-line rule checker (root)
-├── run_tests.js             # CLI test runner (6 suites, per-suite env)
+├── run_tests.js             # CLI test runner (7 suites, per-suite env)
 └── project.md               # this document
 ```
 
@@ -400,6 +415,18 @@ Indexes: text on `content` + `hashtags` · `author + createdAt` · `category + c
 
 ### `Message`
 `conversation` → Conversation (indexed) · `sender` → User · `content` (≤2000) · `readBy` [→ User] · timestamps. Index: `conversation + createdAt`.
+
+### `Draft` (post drafts)
+`author` → User · `content` (≤5000) · `category` · `visibility` · `images[]` (Cloudinary URLs) · `version` (optimistic concurrency → stale patch = 409) · timestamps. Separate collection — drafts never appear in feeds, profiles, or share URLs.
+
+### `Story` (24h ephemeral)
+`author` → User · `media` (Cloudinary URL) · `visibility` · `expiresAt` (server clock +24h; TTL index **and** lazy sweep that also deletes media) · `views` [{user, viewedAt}] (deduped, capped `$slice -500`) · timestamps. Index: `author + expiresAt`.
+
+### `Report` / `Appeal` (moderation)
+Report: `reporter` · `targetType` ∈ `post|comment|user` · `target` · `reason` · `details` · `status` ∈ `open|reviewing|resolved|dismissed` · resolution notes + `resolvedBy`. Appeal: `appellant` · `report` (**unique per appellant+report ever**) · `statement` · `status` ∈ `pending|approved|denied` · decision meta — an approved appeal reopens the report to `reviewing`.
+
+### `Block` / `Mute` / `FollowRequest`
+Directional `Block` + `Mute` edges (privacy + graph filtering) and `FollowRequest` approvals — only an **approved** follow edge counts as `following` (private accounts, followers-only stories).
 
 ---
 
@@ -464,6 +491,15 @@ Comments are nested: `router.use("/:postId/comments", ...)`:
 ### Messages — `/api/messages`
 `GET /` (inbox) · `GET /unread-count` · `GET /new-users` (chat candidates) · `GET /user/:userId` (**find-only**) · `POST /user/:userId` (**create/find conversation**) · `GET /:id/messages` · `POST /:id/messages` · `PATCH /:id/read`
 
+### Drafts — `/api/drafts` (owner-private; non-owner → 404)
+`GET /` · `POST /` (multipart ≤8 images) · `GET /:id` · `PATCH /:id` (JSON **or** multipart; stale `version` → 409) · `DELETE /:id` · `POST /:id/publish` (moves files into a new Post — no re-upload)
+
+### Stories — `/api/stories` (auth required; every read filters `expiresAt > now`)
+`GET /` (tray: self + following, grouped) · `POST /` (multipart image; +24h from **server clock**) · `GET /user/:userId` · `GET /:id` (non-authors never see `views`) · `POST /:id/view` (deduped) · `DELETE /:id` (author; deletes media)
+
+### Reports & Appeals — `/api/reports`, `/api/appeals`
+`POST /reports` (targetType + target + reason + details) · `POST /appeals` (unique per report ever) · `GET /appeals/mine` — admin side in `/api/admin` below
+
 ### Uploads — `/api/upload`
 `POST /avatar` · `POST /cover` · `DELETE /:field` — all image-validated (magic bytes, ≤8192 px side, ≤40 MP)
 
@@ -473,22 +509,25 @@ Comments are nested: `router.use("/:postId/comments", ...)`:
 | POST | `/users/:id/suspend` | Suspend account (revokes sessions; login blocked) + audit |
 | POST | `/users/:id/restore` | Restore account + audit |
 | GET | `/audit` | Paginated audit log (≤100/page) |
+| GET | `/reports` · `GET /reports/:id` · `PATCH /reports/:id` | Moderation queue: list (status filter), detail with target context, resolve/dismiss + notes → audit |
+| GET | `/appeals` · `PATCH /appeals/:id` | Appeals list + decide (approved → reopens report to `reviewing`; decision → audit) |
 
 ### Ops
 | Method | Endpoint | Purpose |
 |---|---|---|
 | GET | `/health` | **200** only when Mongo connected, else **503** `{status:"starting"}` (drives `BackendReady`) |
 | GET | `/uploads/*` | Legacy static images (fallback) |
+| GET | `/posts/:id` | **HTML** share preview on the API origin: og/twitter meta for link scrapers → redirect into the SPA (visibility-gated, content-free 404, `Cache-Control: no-store`) |
 
 ---
 
 ## 14. Client Structure
 
-### Routes (14 pages)
+### Routes (15 pages)
 **Public (4):** `/login` · `/register` · `/forgot-password` · `/reset-password`
 
-**Protected (10, wrapped in `<ProtectedRoute>` — redirects to `/login` when signed out):**
-`/` Home · `/search` Explore · `/posts/:id` PostDetail · `/posts/:id/edit` PostEdit · `/profile` own profile · `/profile/edit` EditProfile · `/users/:id` UserProfile · `/messages` Messages · `/notifications` Notifications · `/settings` Settings
+**Protected (11, wrapped in `<ProtectedRoute>` — redirects to `/login` when signed out):**
+`/` Home · `/search` Explore · `/posts/:id` PostDetail · `/posts/:id/edit` PostEdit · `/profile` own profile · `/profile/edit` EditProfile · `/users/:id` UserProfile · `/messages` Messages · `/notifications` Notifications · `/settings` Settings · `/admin` AdminDashboard (reports queue + appeals + audit)
 
 App shell: `ToastProvider → BrowserRouter → BackendReady → AmbientNetworkBackground + Navbar + PageTransition → Routes`; protected routes nest `ProtectedRoute → AppShell (left rail + <main> + bottom nav) → page`, and every page is `React.lazy` behind a Suspense route fallback (route-level code splitting). Session restored via `AuthContext` / `useAuth()` (`/auth/me`) before protected routes render.
 
@@ -504,9 +543,12 @@ App shell: `ToastProvider → BrowserRouter → BackendReady → AmbientNetworkB
 - `components/home/` — `CompactComposer`, `NewPostsPill`, `SuggestionsCard`, `MessagesCard`, `TrendingCard` (+ `SideCards`/`Composer`/`FeedChrome` styles)
 - `lib/network.js` + `networkScene.js` + `networkRender.js` — background engine (config, physics, drawing)
 - `components/BackendReady.jsx` — cold-start gate (3s `/health` retries, 12s timeout per probe, elapsed timer, StrictMode-safe cleanup)
+- `lib/usePostUpload.js` + `services/draftApi.js` + `lib/useDrafts.js` — upload progress/retry (XHR, truthful bar, cancel, no-duplicate retry); draft CRUD with debounced autosave, dirty-check, 409 conflict chip, publish-without-reupload
+- `components/ImageCropper.jsx` + `MediaPreviewGrid.jsx` + `CreatePostForm.jsx` — crop before upload (cropped bytes ARE the published bytes), drag/keyboard image reorder, `n/8` previews
+- `components/story/` + `services/storyApi.js` — `StoryTray` (feed header, own create entry + author rings) and `StoryViewer` (fullscreen, 5s auto-advance, deduped view recording, author delete)
 
 ### Quality constraint
-**Hard limit: 150 lines per file** — enforced by `node test_lines.js` (currently **153 files, 0 over**). Exception: `client/src/components/motion-primitives/` (vendored, exempt).
+**Hard limit: 150 lines per file** — enforced by `node test_lines.js` (currently **252 files, 0 over**). Exception: `client/src/components/motion-primitives/` (vendored, exempt).
 
 ---
 
@@ -528,7 +570,7 @@ App shell: `ToastProvider → BrowserRouter → BackendReady → AmbientNetworkB
 | Admin | Role re-checked from DB per request; suspend/restore + append-only `AuditLog` (`GET /api/admin/audit`) |
 | Account deletion | Password from body only; staged idempotent cleanup (media → comments → posts → notifications → social graph → conversations → sessions → audit → user last) |
 | Privacy | `isPrivate` enforced: posts + follower/following lists hidden from non-followers (self/admin exempt) |
-| Tests | Separate DB — `db.js` inserts `_test` into the DB **name** (before the query string) so tests never touch production; dedicated `test_security.js` suite (79 assertions) |
+| Tests | Separate DB — `db.js` inserts `_test` into the DB **name** (before the query string) so tests never touch production; dedicated `test_security.js` suite (81 assertions) |
 
 ---
 
@@ -541,22 +583,27 @@ App shell: `ToastProvider → BrowserRouter → BackendReady → AmbientNetworkB
 5. **Delivery** — `mediaUrl()` injects **`f_auto,q_auto`** into every Cloudinary URL (auto format: webp/avif; auto quality). Verified ~35% smaller payloads (359KB → 232KB on sample); double-injection guarded.
 6. **Migration** — `node migrate-cloudinary.js` (idempotent, `--delete-local` optional) moved **15 avatars + 137 post images**; production now has **0 `/uploads/` references**.
 7. **Gate** — Cloudinary disabled during automated tests (`NODE_ENV=test`), so the suite never touches the CDN.
+8. **Responsive variants** — `mediaUrl(path, width)` emits standardized Cloudinary transforms (`w_480|960|1600, f_auto, q_auto`); post images ship `srcSet` + `sizes` so phones fetch 480w and desktops 960/1600w. The CDN caches the transforms — zero reprocessing on resize.
+9. **Reconciliation** — `node server/reconcile-media.js` cross-references local `uploads/` + remote `rio/*` against **every** DB media reference (Post, User, Draft): dry-run by default (prints `RECONCILE {json}`), `--delete` to execute, `--grace-hours=N` (default 24), `--retry-destroy` requeues exhausted destroy jobs; refuses `--delete` under `NODE_ENV=test`; every deletion writes an `AuditLog` `media.reconcile` entry. Exhausted destroy jobs are kept (not dropped), audited, and requeueable.
 
 ---
 
-## 17. "Real-Time" Layer (Why No Socket.io)
+## 17. Real-Time Layer (Socket.IO)
 
-The app is **HTTP + polling** — no `socket.io`, `ws`, or `EventSource` anywhere:
+Messaging, presence, and notification pushes ride **Socket.IO** on the same HTTP server (REST stays fully intact — no separate WS process):
 
 | Feature | Mechanism |
 |---|---|
-| Navbar notifications + unread badge | `setInterval` 30s, visibility-aware (`lib/useUnreadCounts.js`, shared by left rail + bottom nav) |
-| Home feed new posts | 45s interval + `focus` + `visibilitychange` (`useFeedRefresh`) → buffered into the "N new posts" pill (never auto-inserted) |
-| Home mini inbox (sidebar) | 45s, visibility-aware, overlap-guarded |
-| Messages | fetched on conversation open / inbox load |
-| Likes & comments | immediate request on interaction |
+| New messages | `message:new` pushed to `user:<id>` rooms from the REST controllers (`emitToConversation`) |
+| Delivery + read receipts | `message:delivered` (client → server) → `message:status` fan-out |
+| Typing indicators | `typing:start` / `typing:stop` → `typing:update` per participant |
+| Online presence | connection tracking + `presence:get` / `presence:update` (visibility-aware) |
+| Notifications | `notification:new` pushed on creation |
+| Handshake auth | JWT from the httpOnly cookie (polling transport carries the Cookie; no token in the query string) |
 
-**Trade-off:** updates appear within 30–45s instead of instantly. **Roadmap:** socket.io (§9) would enable instant message delivery, typing indicators, online presence, and would replace both polling loops.
+Still polling **by design** — low-churn, visibility-aware loops that don't warrant a socket: home feed refresh (45s + focus), navbar unread badges (30s), sidebar mini-inbox (45s).
+
+Implementation: `server/socket/` (`auth`, `index`, `presence`, `typing`, `receipts`) initialized in `server.js`; suite `server/test_socket.js` (48 assertions: authenticated handshake, REST coexistence, fan-out).
 
 ---
 
@@ -566,10 +613,10 @@ All verification is **CLI-only** (no browser automation):
 
 | Command | What it checks | Current status |
 |---|---|---|
-| `node test_lines.js` | 150-line rule (root, skips node_modules/dist/.git; markdown not counted) | **178 files, 0 over** |
+| `node test_lines.js` | 150-line rule (root, skips node_modules/dist/.git; markdown not counted) | **252 files, 0 over** |
 | `npm run lint` (client) | oxlint | **0 warnings** |
 | `npm run build` (client) | Production bundle | **✓ built** |
-| `node run_tests.js` | 6 suites sequentially — `test_m1.js` (auth, 18), `test_m234.js` (posts/profile/users, 74), `test_m56.js` (messages/notifications, 58), `test_images.js` (images/Cloudinary, 31), `test_security.js` (security, 79), `test_phase1.js` (cursor feed, suggestions, bookmarks, inbox/privacy — 174+, grows with feed size) | **6/6 (434+ assertions)** |
+| `node run_tests.js` | 7 suites sequentially — `test_m1.js` (auth, 18), `test_m234.js` (posts/profile/users, 74), `test_m56.js` (messages/notifications, 58), `test_images.js` (images/Cloudinary/drafts/media-safety/image-order/stories, 93), `test_security.js` (security, 81), `test_phase1.js` (cursor feed, suggestions, bookmarks, inbox privacy, drafts, share URLs, media reconcile, 542), `test_socket.js` (socket handshake/presence/typing/receipts, 48) | **7/7 (814 assertions)** |
 
 Conventions: temp scripts named `test_*.js` (gitignored, deleted after use); tests run against `rio-database_test`; kill stray `node` processes before running (Vite port conflicts); never run the build and the suite in parallel (the cleanup step kills node).
 
@@ -598,4 +645,4 @@ Conventions: temp scripts named `test_*.js` (gitignored, deleted after use); tes
 
 ---
 
-*RIO — built from zero. · This document covers the codebase as of Phase 1 (working tree; last commit `1fe6af6`) · Tests: 6/6 suites (434+ assertions) · Files >150 lines: 0 (178 files)*
+*RIO — built from zero. · This document covers the codebase as of Phase 4 (last commit `7d2191b`) · Tests: 7/7 suites (814 assertions) · Files >150 lines: 0 (252 files)*
