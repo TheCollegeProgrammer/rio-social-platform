@@ -25,6 +25,7 @@ const Search = lazy(() => import("./pages/Search"));
 const Settings = lazy(() => import("./pages/Settings"));
 const Notifications = lazy(() => import("./pages/Notifications"));
 const Messages = lazy(() => import("./pages/Messages"));
+const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
 
 function RouteFallback() {
   return (
@@ -62,6 +63,7 @@ function App() {
               <Route path="/settings" element={<Settings />} />
               <Route path="/notifications" element={<Notifications />} />
               <Route path="/messages" element={<Messages />} />
+              <Route path="/admin" element={<AdminDashboard />} />
             </Route>
           </Route>
         </Routes>

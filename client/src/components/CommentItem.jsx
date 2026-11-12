@@ -1,12 +1,16 @@
 import { useState } from "react";
-import { Heart, MessageSquareReply, Pencil, Trash2 } from "lucide-react";
+import { Heart, MessageSquareReply, Pencil, Trash2, Flag } from "lucide-react";
 import { useAuth } from "../context/useAuth";
+import { useToast } from "../context/useToast";
 import { editComment, deleteComment, toggleCommentLike, createComment } from "../services/api";
+import { useReport } from "../lib/useReport";
 import { AuthorAvatar } from "./PostCard";
 import MentionText from "./MentionText";
 
 function CommentItem({ postId, comment, onDeleted, onUpdated, depth = 0 }) {
     const { user } = useAuth();
+    const toast = useToast();
+    const { report: reportComment, busy: reportBusy } = useReport("comment");
     const [editing, setEditing] = useState(false);
     const [editText, setEditText] = useState(comment.content);
     const [replying, setReplying] = useState(false);
@@ -55,6 +59,13 @@ function CommentItem({ postId, comment, onDeleted, onUpdated, depth = 0 }) {
         } catch (err) { setError(err.message); }
     };
 
+    const handleReport = async () => {
+        const res = await reportComment(comment._id, "comment");
+        if (!res) return;
+        if (res.ok) { setError(""); toast.success(res.message); }
+        else setError(res.message);
+    };
+
     return (
         <div className="comment" style={{ marginLeft: Math.min(depth, 2) * 20 }}>
             {error && <p className="error-message">{error}</p>}
@@ -92,6 +103,9 @@ function CommentItem({ postId, comment, onDeleted, onUpdated, depth = 0 }) {
                         <button onClick={() => setEditing(true)}><Pencil size={14} /> Edit</button>
                         <button onClick={handleDelete}><Trash2 size={14} /> Delete</button>
                     </>
+                )}
+                {!isOwner && (
+                    <button onClick={handleReport} disabled={reportBusy}><Flag size={14} /> Report</button>
                 )}
             </div>
 

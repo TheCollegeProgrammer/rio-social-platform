@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { UserCog } from "lucide-react";
+import { UserCog, Shield } from "lucide-react";
 import { useAuth } from "../context/useAuth";
 import { useToast } from "../context/useToast.js";
 import { changePassword, deleteAccount } from "../services/api";
@@ -54,6 +54,11 @@ function Settings() {
                 <Link to="/profile/edit" className="btn">
                     <UserCog size={15} /> Edit profile
                 </Link>
+                {user?.role === "admin" && (
+                    <Link to="/admin" className="btn btn-ghost" style={{ marginTop: 10 }}>
+                        <Shield size={15} /> Moderation dashboard
+                    </Link>
+                )}
             </section>
 
             <PrivacySettings user={user} setUser={setUser} />

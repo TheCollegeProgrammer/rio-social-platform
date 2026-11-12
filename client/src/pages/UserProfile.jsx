@@ -6,6 +6,8 @@ import { useProfileFollow } from "../lib/useProfileFollow";
 import { useProfileBlock } from "../lib/useProfileBlock";
 import { useProfileMute } from "../lib/useProfileMute";
 import { usePresence } from "../lib/usePresence";
+import { useReport } from "../lib/useReport";
+import { useToast } from "../context/useToast";
 import PostCard from "../components/PostCard";
 import FollowListPopover from "../components/FollowListPopover";
 import "../styles/Home.css";
@@ -33,6 +35,8 @@ function UserProfile() {
     const { busy: muteBusy, toggle: toggleMute } = useProfileMute(profile, setProfile);
     // 5.5: live presence for other users' profiles (null for your own).
     const { online } = usePresence(user?._id === id ? null : id);
+    const toast = useToast();
+    const { report: reportUser, busy: reportBusy } = useReport("user");
 
     useEffect(() => {
         let cancelled = false;
@@ -58,6 +62,11 @@ function UserProfile() {
             setError(err.message);
             setMessaging(false);
         }
+    };
+
+    const handleReportUser = async () => {
+        const res = await reportUser(profile._id, "account");
+        if (res) { if (res.ok) toast.success(res.message); else toast.error(res.message); }
     };
 
     if (loading) return <div className="page"><p className="muted">Loading profile...</p></div>;
@@ -120,6 +129,7 @@ function UserProfile() {
                                 <button className="btn btn-ghost" onClick={() => toggleBlock(id)} disabled={blockBusy}>
                                     Block
                                 </button>
+                                <button className="btn btn-ghost" onClick={handleReportUser} disabled={reportBusy}>Report</button>
                             </>
                         )}
                     </div>

@@ -13,6 +13,7 @@ const notificationRoutes = require("./routes/notification.routes");
 const messageRoutes = require("./routes/message.routes");
 const uploadRoutes = require("./routes/upload.routes");
 const adminRoutes = require("./routes/admin.routes");
+const reportRoutes = require("./routes/report.routes");
 const { notFound, errorHandler } = require("./middleware/error.middleware");
 const { allowedOrigins } = require("./config/origins");
 
@@ -65,6 +66,7 @@ app.use("/api/notifications", notificationRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/upload", uploadRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/reports", reportRoutes);
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use(notFound);
 app.use(errorHandler);
