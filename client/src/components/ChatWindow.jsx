@@ -3,6 +3,7 @@ import { ArrowLeft, Send, Mail } from "lucide-react";
 import { useAuth } from "../context/useAuth";
 import { getMessages, sendMessage, markConversationRead } from "../services/api";
 import { useChatSocket } from "../lib/useChatSocket";
+import { messageStatus } from "../lib/messageStatus";
 import Avatar from "./Avatar";
 import "../pages/MessagesChat.css";
 
@@ -14,7 +15,7 @@ function ChatWindow({ conversation, onBack, onRead }) {
     const [error, setError] = useState("");
     const [sending, setSending] = useState(false);
     const bottomRef = useRef(null);
-    const { peerTyping, notifyTyping, stopTyping } = useChatSocket({
+    const { peerTyping, notifyTyping, stopTyping, ackDelivered } = useChatSocket({
         conversationId: conversation?._id,
         currentUserId: user?._id,
         setMessages
@@ -27,7 +28,12 @@ function ChatWindow({ conversation, onBack, onRead }) {
         if (!conversation?._id) return;
         let cancelled = false;
         getMessages(conversation._id)
-            .then((d) => { if (!cancelled) { setMessages(d.messages); setLoadedFor(conversation._id); } })
+            .then((d) => {
+                if (cancelled) return;
+                setMessages(d.messages);
+                setLoadedFor(conversation._id);
+                ackDelivered(d.messages);
+            })
             .catch((e) => { if (!cancelled) setError(e.message); });
         // Opening the chat marks it read
         if (conversation.unreadCount > 0) {
@@ -92,14 +98,19 @@ function ChatWindow({ conversation, onBack, onRead }) {
                         <p>No messages yet — say hello!</p>
                     </div>
                 ) : (
-                    messages.map((m) => (
-                        <div
-                            key={m._id}
-                            className={`bubble-row ${m.sender?._id === user?._id ? "mine" : ""}`}
-                        >
-                            <div className="bubble">{m.content}</div>
-                        </div>
-                    ))
+                    messages.map((m) => {
+                        const mine = m.sender?._id === user?._id;
+                        return (
+                            <div key={m._id} className={`bubble-row ${mine ? "mine" : ""}`}>
+                                <div className="bubble">
+                                    {m.content}
+                                    {mine && (
+                                        <span className="bubble-status">{messageStatus(m, other?._id)}</span>
+                                    )}
+                                </div>
+                            </div>
+                        );
+                    })
                 )}
                 <div ref={bottomRef} />
             </div>

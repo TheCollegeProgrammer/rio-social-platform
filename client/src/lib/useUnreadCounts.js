@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { getNotifications, getUnreadMessageCount } from "../services/api";
+import { getSocket } from "./socket";
 
 // Module-level shared polling: one interval + one in-flight guard for all
 // consumers (Navbar, LeftNav, BottomNav) — no duplicate requests.
@@ -7,9 +8,16 @@ let snapshot = { notifs: 0, msgs: 0 };
 const listeners = new Set();
 let timer = null;
 let running = false;
+let boundSocket = null;
 
 const onVisibility = () => {
     if (!document.hidden) poll();
+};
+
+// 5.8/5.9: socket pushes refresh badges immediately; a reconnect refetches
+// anything missed while offline. poll() is authoritative (server counts).
+const onSocketEvent = () => {
+    poll();
 };
 
 async function poll() {
@@ -38,6 +46,11 @@ function ensure() {
         if (!document.hidden) poll();
     }, 30000);
     document.addEventListener("visibilitychange", onVisibility);
+    boundSocket = getSocket();
+    boundSocket.on("notification:new", onSocketEvent);
+    boundSocket.on("message:new", onSocketEvent);
+    boundSocket.on("message:status", onSocketEvent);
+    boundSocket.on("connect", onSocketEvent);
 }
 
 function teardown() {
@@ -45,6 +58,13 @@ function teardown() {
     clearInterval(timer);
     timer = null;
     document.removeEventListener("visibilitychange", onVisibility);
+    if (boundSocket) {
+        boundSocket.off("notification:new", onSocketEvent);
+        boundSocket.off("message:new", onSocketEvent);
+        boundSocket.off("message:status", onSocketEvent);
+        boundSocket.off("connect", onSocketEvent);
+        boundSocket = null;
+    }
 }
 
 export function useUnreadCounts() {

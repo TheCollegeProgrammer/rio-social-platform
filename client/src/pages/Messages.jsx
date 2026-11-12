@@ -2,8 +2,8 @@ import { useCallback, useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { MessageSquarePlus } from "lucide-react";
 import { useAuth } from "../context/useAuth";
-import { useSocket } from "../context/SocketContext";
-import { getConversations, getOrCreateConversation, markConversationRead } from "../services/api";
+import { getConversations, getOrCreateConversation } from "../services/api";
+import { useInboxSync } from "../lib/useInboxSync";
 import ConversationList from "../components/ConversationList";
 import NewConversationPicker from "../components/NewConversationPicker";
 import ChatWindow from "../components/ChatWindow";
@@ -13,7 +13,6 @@ import "./MessagesHeight.css";
 function Messages() {
     const { user } = useAuth();
     const location = useLocation();
-    const { socket } = useSocket();
     const [conversations, setConversations] = useState([]);
     const [active, setActive] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -53,40 +52,13 @@ function Messages() {
         setActive((prev) => (prev && prev._id === convoId ? { ...prev, unreadCount: 0 } : prev));
     }, []);
 
-    // 5.3: live inbox — preview/unread update on socket push; messages
-    // arriving while the chat is open are marked read immediately.
-    useEffect(() => {
-        if (!socket) return undefined;
-        const onNew = ({ conversationId, message }) => {
-            const senderId = message.sender?._id || message.sender;
-            const isOwn = String(senderId) === String(user?._id);
-            const isActive = active?._id === conversationId;
-            if (isActive && !isOwn) {
-                markConversationRead(conversationId)
-                    .then(() => handleRead(conversationId))
-                    .catch(() => {});
-            }
-            setConversations((prev) => {
-                const idx = prev.findIndex((c) => c._id === conversationId);
-                if (idx === -1) return prev;
-                const target = prev[idx];
-                const unread = isActive
-                    ? 0
-                    : isOwn
-                        ? target.unreadCount || 0
-                        : (target.unreadCount || 0) + 1;
-                const updated = {
-                    ...target,
-                    lastMessage: { content: message.content, sender: senderId, createdAt: message.createdAt },
-                    unreadCount: unread,
-                    updatedAt: message.createdAt
-                };
-                return [updated, ...prev.filter((c) => c._id !== conversationId)];
-            });
-        };
-        socket.on("message:new", onNew);
-        return () => socket.off("message:new", onNew);
-    }, [socket, active?._id, user?._id, handleRead]);
+    // 5.3/5.7/5.9: live message pushes, cross-device read sync, reconnect refetch.
+    useInboxSync({
+        setConversations,
+        handleRead,
+        activeId: active?._id,
+        currentUserId: user?._id
+    });
 
     const startConversation = async (u) => {
         const d = await getOrCreateConversation(u._id);

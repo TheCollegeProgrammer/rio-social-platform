@@ -24,6 +24,14 @@ const messageSchema = new mongoose.Schema(
                 type: mongoose.Schema.Types.ObjectId,
                 ref: "User"
             }
+        ],
+        // 5.6: delivery is recorded only when the recipient's client acks
+        // (socket ack or REST fetch) — never from the server's own emit.
+        deliveredTo: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "User"
+            }
         ]
     },
     { timestamps: true }

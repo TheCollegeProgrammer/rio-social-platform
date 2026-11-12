@@ -3,6 +3,7 @@ const { allowedOrigins } = require("../config/origins");
 const { authenticate } = require("./auth");
 const presence = require("./presence");
 const { registerTyping } = require("./typing");
+const { registerReceipts } = require("./receipts");
 
 // 5.1/5.2: Socket.IO transport layered beside the existing REST APIs
 // (history, initial state and fallback stay on REST). Handshakes must
@@ -39,6 +40,7 @@ const initSocket = (httpServer) => {
         });
 
         registerTyping(socket, io);
+        registerReceipts(socket, io);
 
         socket.on("disconnect", () => {
             // Only broadcast offline when the LAST device disconnects.

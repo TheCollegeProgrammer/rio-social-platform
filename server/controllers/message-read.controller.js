@@ -1,5 +1,6 @@
 const Conversation = require("../models/Conversation");
 const Message = require("../models/Message");
+const { emitToConversation } = require("../socket");
 
 // Mark every unread message in a conversation as read by this user
 const markConversationRead = async (req, res, next) => {
@@ -12,13 +13,20 @@ const markConversationRead = async (req, res, next) => {
 
         await Message.updateMany(
             { conversation: convo._id, sender: { $ne: req.user.id }, readBy: { $ne: req.user.id } },
-            { $addToSet: { readBy: req.user.id } }
+            { $addToSet: { readBy: req.user.id, deliveredTo: req.user.id } }
         );
 
         // Reset this user's unread counter on the conversation
         convo.unreadCounts = convo.unreadCounts || new Map();
         convo.unreadCounts.set(req.user.id, 0);
         await convo.save();
+
+        // 5.6/5.7: after persist, sync read state to every participant device.
+        emitToConversation(convo.participants, "message:status", {
+            conversationId: String(convo._id),
+            userId: req.user.id,
+            status: "read"
+        });
 
         res.json({ message: "Conversation marked read", unreadCount: 0 });
     } catch (error) {

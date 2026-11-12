@@ -1,9 +1,20 @@
 const Notification = require("../models/Notification");
+const { emitToUser } = require("../socket");
 
 const createNotification = async (data) => {
     try {
         if (String(data.recipient) === String(data.sender)) return null;
-        return await Notification.create(data);
+        const notification = await Notification.create(data);
+        // 5.8: emit only after the notification is persisted; populate so
+        // the push payload matches the REST list shape. Recipient room =
+        // all of their live devices.
+        await notification.populate([
+            { path: "sender", select: "name username" },
+            { path: "post", select: "content" },
+            { path: "comment", select: "content" }
+        ]);
+        emitToUser(String(data.recipient), "notification:new", notification);
+        return notification;
     } catch {
         return null;
     }

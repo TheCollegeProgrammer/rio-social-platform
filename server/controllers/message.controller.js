@@ -99,7 +99,8 @@ const sendMessage = async (req, res, next) => {
             conversation: convo._id,
             sender: req.user.id,
             content: content.trim(),
-            readBy: [req.user.id]
+            readBy: [req.user.id],
+            deliveredTo: [req.user.id]
         });
 
         convo.lastMessage = {
@@ -112,9 +113,7 @@ const sendMessage = async (req, res, next) => {
         convo.unreadCounts = convo.unreadCounts || new Map();
         for (const p of convo.participants) {
             const pid = p.toString();
-            if (pid !== req.user.id) {
-                convo.unreadCounts.set(pid, (convo.unreadCounts.get(pid) || 0) + 1);
-            }
+            if (pid !== req.user.id) convo.unreadCounts.set(pid, (convo.unreadCounts.get(pid) || 0) + 1);
         }
         await convo.save();
         await message.populate("sender", "username name avatar");

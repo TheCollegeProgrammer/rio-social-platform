@@ -8,6 +8,7 @@ import {
     deleteNotification,
     mediaUrl
 } from "../services/api";
+import { useNotificationSync } from "../lib/useNotificationSync";
 import "./Notifications.css";
 
 const ICONS = {
@@ -50,6 +51,8 @@ function Notifications() {
     }, []);
 
     useEffect(load, [load]);
+    // 5.8/5.9: refetch on new notification and after reconnect.
+    useNotificationSync(load);
 
     const openNotification = async (n) => {
         try {
