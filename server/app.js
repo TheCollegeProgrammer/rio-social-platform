@@ -14,19 +14,9 @@ const messageRoutes = require("./routes/message.routes");
 const uploadRoutes = require("./routes/upload.routes");
 const adminRoutes = require("./routes/admin.routes");
 const { notFound, errorHandler } = require("./middleware/error.middleware");
+const { allowedOrigins } = require("./config/origins");
 
 const app = express();
-
-const defaultOrigins = [
-    "http://localhost:5173",
-    "https://rio-social-platform-git-main-devansh-avchats-projects.vercel.app",
-    "https://rio-social-platform.vercel.app"
-];
-const envOrigins = (process.env.CORS_ORIGINS || "")
-    .split(",")
-    .map((s) => s.trim())
-    .filter(Boolean);
-const allowedOrigins = [...new Set([...defaultOrigins, ...envOrigins])];
 
 // Render terminates TLS and forwards via its router: trust exactly one hop so
 // req.ip (and rate-limit keys) reflect the real client, not the proxy.

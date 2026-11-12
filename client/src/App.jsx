@@ -1,6 +1,7 @@
 import { lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ToastProvider } from "./context/ToastContext";
+import { SocketProvider } from "./context/SocketContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AppShell from "./components/layout/AppShell";
 import Navbar from "./components/Navbar";
@@ -38,6 +39,7 @@ function App() {
     <ToastProvider>
       <BrowserRouter>
         <BackendReady>
+        <SocketProvider>
         <AmbientNetworkBackground />
         <Navbar />
         <PageTransition>
@@ -65,6 +67,7 @@ function App() {
         </Routes>
         </Suspense>
         </PageTransition>
+        </SocketProvider>
         </BackendReady>
       </BrowserRouter>
     </ToastProvider>

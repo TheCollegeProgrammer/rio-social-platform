@@ -1,6 +1,8 @@
 require("dotenv").config();
+const http = require("http");
 const app = require("./app");
 const connectDB = require("./config/db");
+const { initSocket } = require("./socket");
 
 const PORT = process.env.PORT || 3000;
 const isProd = process.env.NODE_ENV === "production";
@@ -31,6 +33,10 @@ console.log(
 
 connectDB();
 
-app.listen(PORT, "0.0.0.0", () => {
+// Socket.IO rides the same HTTP server (REST stays fully intact).
+const server = http.createServer(app);
+initSocket(server);
+
+server.listen(PORT, "0.0.0.0", () => {
     console.log(`Server running on port ${PORT}`);
 });

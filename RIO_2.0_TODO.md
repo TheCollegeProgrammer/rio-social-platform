@@ -23,8 +23,8 @@
 
 ## Phase 2 — Real-Time Infrastructure (all ❌ — no socket.io in repo)
 
-- [ ] **5.1 Socket.IO Integration** — ❌ add `socket.io` + `socket.io-client`, event contract, REST retained for history/fallback.
-- [ ] **5.2 Authenticated Sockets** — ❌ handshake via existing httpOnly-JWT verification, server-side room authorization.
+- [x] **5.1 Socket.IO Integration** — ✅ `socket.io` + `socket.io-client` installed; `server/socket/index.js` (initSocket, personal rooms, `emitToUser`); `client/src/lib/socket.js` + `SocketContext.jsx` (single shared socket, connect/disconnect by session); `server/config/origins.js` shared by Express + Socket.IO; REST retained for history/fallback.
+- [x] **5.2 Authenticated Sockets** — ✅ `server/socket/auth.js` mirrors REST trust chain (`verifyAccess` + `isSessionActive`); `io.use` middleware rejects unauthenticated/garbage/revoked handshakes with `unauthorized`; `server/test_socket.js` covers no-cookie/garbage/authenticated/revoked + REST coexistence + unknown-event resilience (11 checks).
 - [ ] **5.3 Real-Time Messaging** — ❌ persist-then-emit message events, dedupe vs REST.
 - [ ] **5.4 Typing Indicators** — ❌ ephemeral, rate-limited, auto-clear.
 - [ ] **5.5 Online/Offline Presence** — ❌ in-memory socket-count presence, multi-device correct, no DB writes per heartbeat.
