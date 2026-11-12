@@ -45,7 +45,7 @@
 - [ ] **6.7 Moderation Dashboard** — 🔶 admin has suspend/restore, audit-log view, post removal w/ audit (`admin.routes.js`). Gap: report intake, queue UI, context view, status/pagination.
 - [ ] **6.8 Moderation Appeals** — ❌ no appeal model/workflow.
 - [ ] **6.9 Pinned Posts** — ❌ no pin metadata/endpoint/profile display.
-- [ ] **6.10 Interaction Privacy Controls** — ❌ no comment/mention/message audience settings.
+- [x] **6.10 Interaction Privacy Controls** — ✅ `User.{comment,mention,message}Audience: everyone|followers` (default everyone); shared policy `utils/interactionPolicy.js` (`audienceError` + `parseAudiences`); enforced on comment create, DM open + send (403 with clear message, blocks still first, self always allowed, history stays readable); `PUT /api/profile/privacy` endpoint; Settings → Privacy section (`PrivacySettings.jsx`); `mentionAudience` enforcement lands with 6.6 mention creation.
 
 ## Phase 4 — Media & Content Creation
 

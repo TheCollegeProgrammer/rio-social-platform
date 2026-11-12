@@ -5,6 +5,7 @@ import { useAuth } from "../context/useAuth";
 import { useToast } from "../context/useToast.js";
 import { changePassword, deleteAccount } from "../services/api";
 import { notifyAuthChange } from "../services/sessionSync";
+import PrivacySettings from "../components/PrivacySettings";
 import "../styles/Settings.css";
 
 function Settings() {
@@ -54,6 +55,8 @@ function Settings() {
                     <UserCog size={15} /> Edit profile
                 </Link>
             </section>
+
+            <PrivacySettings user={user} setUser={setUser} />
 
             <section className="settings-section">
                 <h2>Change password</h2>

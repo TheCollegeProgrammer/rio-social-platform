@@ -34,8 +34,7 @@ export const getSuggestions = (limit = 5, offset = 0) =>
 export const getPost = (id) => apiRequest(`/posts/${id}`);
 export const createPost = (content, category = null, visibility = "public") =>
     apiRequest("/posts", { method: "POST", body: JSON.stringify({ content, category, visibility }) }).then((d) => d.post);
-export const editPost = (id, content, visibility) =>
-    apiRequest(`/posts/${id}`, { method: "PUT", body: JSON.stringify(visibility ? { content, visibility } : { content }) });
+export const editPost = (id, content, visibility) => apiRequest(`/posts/${id}`, { method: "PUT", body: JSON.stringify(visibility ? { content, visibility } : { content }) });
 export const deletePost = (id) => apiRequest(`/posts/${id}`, { method: "DELETE" });
 export const toggleLike = (id) => apiRequest(`/posts/${id}/like`, { method: "POST" });
 export const toggleBookmark = (id) => apiRequest(`/posts/${id}/bookmark`, { method: "POST" });
@@ -47,6 +46,7 @@ export const getTrendingHashtags = () => apiRequest("/posts/trending");
 export const getProfile = (id) => apiRequest(`/profile/${id}`);
 export const updateProfile = (data) =>
     apiRequest("/profile", { method: "PUT", body: JSON.stringify(data) });
+export const updatePrivacy = (data) => apiRequest("/profile/privacy", { method: "PUT", body: JSON.stringify(data) });
 export const deleteAccount = (password) =>
     apiRequest("/profile", { method: "DELETE", body: JSON.stringify({ password }) });
 export const searchUsers = (q) => apiRequest(`/profile/search?q=${encodeURIComponent(q)}`);

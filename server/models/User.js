@@ -93,6 +93,24 @@ const userSchema = new mongoose.Schema(
             default: false
         },
 
+        // 6.10: interaction audiences - "followers" = only accounts that
+        // follow you may comment / mention / message you.
+        commentAudience: {
+            type: String,
+            enum: ["everyone", "followers"],
+            default: "everyone"
+        },
+        mentionAudience: {
+            type: String,
+            enum: ["everyone", "followers"],
+            default: "everyone"
+        },
+        messageAudience: {
+            type: String,
+            enum: ["everyone", "followers"],
+            default: "everyone"
+        },
+
         resetPasswordToken: {
             type: String
         },

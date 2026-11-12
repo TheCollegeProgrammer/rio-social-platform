@@ -3,6 +3,7 @@ const Post = require("../models/post");
 const { createNotification } = require("./notification.controller");
 const { blockedEither } = require("../utils/socialGraph");
 const { canViewPost } = require("../utils/visibility");
+const { audienceError } = require("../utils/interactionPolicy");
 
 const createComment = async (req, res, next) => {
     try {
@@ -26,6 +27,9 @@ const createComment = async (req, res, next) => {
         if (!(await canViewPost(req.user.id, post))) {
             return res.status(404).json({ errors: ["Post not found"] });
         }
+        // 6.10: the author's comment audience setting.
+        const audienceErr = await audienceError(post.author, req.user.id, "comment");
+        if (audienceErr) return res.status(403).json({ errors: [audienceErr] });
 
         let depth = 0;
         let parent = null;

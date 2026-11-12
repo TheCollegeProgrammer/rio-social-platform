@@ -3,6 +3,7 @@ const Message = require("../models/Message");
 const User = require("../models/User");
 const { emitToConversation } = require("../socket");
 const { blockedEither } = require("../utils/socialGraph");
+const { audienceError } = require("../utils/interactionPolicy");
 
 const findOrCreateConversation = async (userId, otherId) => {
     let convo = await Conversation.findOne({
@@ -39,10 +40,13 @@ const getOrCreateConversation = async (req, res, next) => {
         }
         const user = await User.findById(userId);
         if (!user) return res.status(404).json({ errors: ["User not found"] });
-        // 6.1: blocks cut both message directions, even for existing threads.
+        // 6.1/6.10: blocks cut both message directions; the recipient's
+        // audience setting applies on top.
         if (await blockedEither(req.user.id, userId)) {
             return res.status(403).json({ errors: ["Cannot interact with this user"] });
         }
+        const audienceErr = await audienceError(userId, req.user.id, "message");
+        if (audienceErr) return res.status(403).json({ errors: [audienceErr] });
         const convo = await findOrCreateConversation(req.user.id, userId);
         res.json({ conversation: convo });
     } catch (error) {
@@ -99,11 +103,13 @@ const sendMessage = async (req, res, next) => {
         if (!convo.participants.some((p) => p.toString() === req.user.id)) {
             return res.status(403).json({ errors: ["Not authorized"] });
         }
-        // 6.1: history stays readable, but a block stops new sends.
         const other = convo.participants.find((p) => p.toString() !== req.user.id);
+        // 6.1: a block stops new sends; 6.10: the recipient's audience applies.
         if (other && await blockedEither(req.user.id, other.toString())) {
             return res.status(403).json({ errors: ["Cannot send messages to this user"] });
         }
+        const audienceErr = other && await audienceError(other.toString(), req.user.id, "message");
+        if (audienceErr) return res.status(403).json({ errors: [audienceErr] });
 
         const message = await Message.create({
             conversation: convo._id,
