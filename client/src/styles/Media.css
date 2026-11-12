@@ -126,3 +126,19 @@
 .preview-move button { width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; padding: 0; border: none; border-radius: 4px; background: rgba(0, 0, 0, 0.6); color: #fff; cursor: pointer; }
 .preview-move button:disabled { opacity: 0.35; cursor: default; }
 @media (hover: none) { .preview-move { opacity: 1; } }
+
+/* 7.5: per-cell crop scissors + the crop editor overlay. */
+.preview-crop { position: absolute; top: 4px; left: 4px; width: 21px; height: 21px; padding: 0; border: none; border-radius: 50%; background: rgba(0, 0, 0, 0.65); color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+.preview-crop:hover { background: var(--accent); }
+.crop-overlay { position: fixed; inset: 0; z-index: 60; background: rgba(0, 0, 0, 0.6); display: flex; align-items: center; justify-content: center; padding: 16px; }
+.crop-box { background: var(--bg-raised); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; display: flex; flex-direction: column; gap: 10px; max-width: calc(100vw - 32px); max-height: calc(100vh - 32px); overflow: auto; }
+.crop-stage { position: relative; overflow: hidden; touch-action: none; cursor: grab; align-self: center; background: rgba(0, 0, 0, 0.85); border-radius: var(--radius-sm); max-width: calc(100vw - 64px); }
+.crop-stage:active { cursor: grabbing; }
+.crop-stage img { position: absolute; user-select: none; -webkit-user-drag: none; pointer-events: none; }
+.crop-controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; }
+.crop-ratios { display: flex; gap: 6px; }
+.crop-ratio { border: 1px solid var(--border); background: transparent; color: var(--text); border-radius: 999px; padding: 4px 11px; font-size: 12px; cursor: pointer; }
+.crop-ratio.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+.crop-zoom { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-muted); }
+.crop-zoom input { width: 150px; }
+.crop-actions { display: flex; justify-content: flex-end; gap: 8px; }

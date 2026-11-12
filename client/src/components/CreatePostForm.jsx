@@ -45,12 +45,7 @@ export default function CreatePostForm({ onCreated, category = null, setCategory
         addFiles(e.dataTransfer?.files);
     };
 
-    const removeImage = (i) => {
-        setImages((prev) => {
-            URL.revokeObjectURL(prev[i].url);
-            return prev.filter((_, idx) => idx !== i);
-        });
-    };
+    const removeImage = (i) => setImages((prev) => { URL.revokeObjectURL(prev[i].url); return prev.filter((_, idx) => idx !== i); });
 
     // 7.4: preview order === submit order; state reindex keeps keys stable.
     const moveImage = (from, to) => {
@@ -63,11 +58,15 @@ export default function CreatePostForm({ onCreated, category = null, setCategory
         });
     };
 
-    const clearImages = () => {
-        images.forEach((im) => URL.revokeObjectURL(im.url));
-        setImages([]);
-        if (fileRef.current) fileRef.current.value = "";
-    };
+    // 7.5: cropped bytes replace the pick in place (old URL revoked);
+    // preview cell, draft autosave and submit all read the same state.
+    const replaceImage = (i, file) => setImages((prev) => prev.map((im, j) => {
+        if (j !== i) return im;
+        URL.revokeObjectURL(im.url);
+        return { file, url: URL.createObjectURL(file) };
+    }));
+
+    const clearImages = () => { images.forEach((im) => URL.revokeObjectURL(im.url)); setImages([]); if (fileRef.current) fileRef.current.value = ""; };
 
     // 7.6: publish flow owns progress/cancel/retry; resets on success.
     const { posting, progress, failed, error, setError, publish, cancelUpload } =
@@ -111,7 +110,7 @@ export default function CreatePostForm({ onCreated, category = null, setCategory
             )}
             {error && <p className="error-message">{error}</p>}
             {images.length > 0 && (
-                <MediaPreviewGrid images={images} onRemove={removeImage} onMove={moveImage} />
+                <MediaPreviewGrid images={images} onRemove={removeImage} onMove={moveImage} onChange={replaceImage} />
             )}
             <UploadProgress progress={progress} onCancel={cancelUpload} />
             <div className="post-actions">

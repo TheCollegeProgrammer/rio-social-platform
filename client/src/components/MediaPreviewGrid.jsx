@@ -1,10 +1,15 @@
-import { useRef } from "react";
-import { X, ChevronLeft, ChevronRight } from "lucide-react";
+import { useRef, useState } from "react";
+import { createPortal } from "react-dom";
+import { X, ChevronLeft, ChevronRight, Crop } from "lucide-react";
+import ImageCropper from "./ImageCropper";
 
 // 7.4: ordered media preview - drag to reorder with keyboard and
 // button alternatives; `images` order is exactly the submit order.
-export default function MediaPreviewGrid({ images, onRemove, onMove }) {
+// 7.5: per-cell crop opens the editor; only picked Files can be cropped,
+// and GIF cells hide the button so animation is never rasterized.
+export default function MediaPreviewGrid({ images, onRemove, onMove, onChange }) {
     const dragIndex = useRef(null);
+    const [cropIndex, setCropIndex] = useState(null);
     return (
         <div className="preview-grid" role="list" aria-label="Selected images, in order">
             {images.map((im, i) => (
@@ -41,8 +46,21 @@ export default function MediaPreviewGrid({ images, onRemove, onMove }) {
                             <ChevronRight size={12} />
                         </button>
                     </div>
+                    {onChange && im.file.type !== "image/gif" && (
+                        <button type="button" className="preview-crop" onClick={() => setCropIndex(i)} aria-label={`Crop ${im.file.name || `image ${i + 1}`}`}>
+                            <Crop size={12} />
+                        </button>
+                    )}
                 </div>
             ))}
+            {cropIndex !== null && images[cropIndex] && createPortal(
+                <ImageCropper
+                    file={images[cropIndex].file}
+                    onClose={() => setCropIndex(null)}
+                    onApply={(f) => { onChange(cropIndex, f); setCropIndex(null); }}
+                />,
+                document.body
+            )}
         </div>
     );
 }
