@@ -9,8 +9,11 @@ import {
     mediaUrl
 } from "../services/api";
 import { useNotificationSync } from "../lib/useNotificationSync";
+import { createAppeal } from "../services/moderationApi";
+import { useToast } from "../context/useToast";
 import { ICONS, PROFILE_LINK_TYPES, timeAgo, notificationText } from "../lib/notificationMeta";
 import FollowRequests from "../components/FollowRequests";
+import AppealStatus from "../components/AppealStatus";
 import "./Notifications.css";
 
 function Notifications() {
@@ -18,6 +21,8 @@ function Notifications() {
     const [unread, setUnread] = useState(0);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+    const [appealed, setAppealed] = useState([]);
+    const toast = useToast();
 
     const load = useCallback(() => {
         getNotifications(1)
@@ -57,6 +62,20 @@ function Notifications() {
         } catch (err) { setError(err.message); }
     };
 
+    // 6.8: appeal straight from the moderation notice on the decision.
+    const appealFrom = async (e, n) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const reason = window.prompt("Why should this decision be reviewed?");
+        if (reason === null) return;
+        try {
+            await createAppeal(n.report._id, reason);
+            setAppealed((prev) => [...prev, n.report._id]);
+            toast.success("Appeal submitted");
+            await openNotification(n);
+        } catch (err) { toast.error(err.message); }
+    };
+
     if (loading) return <div className="page"><p className="muted">Loading...</p></div>;
 
     return (
@@ -73,6 +92,7 @@ function Notifications() {
             {error && <p className="error-message">{error}</p>}
 
             <FollowRequests onChange={load} />
+            <AppealStatus />
 
             {items.length === 0 ? (
                 <div className="empty-state">
@@ -100,6 +120,10 @@ function Notifications() {
                                 <div className="notif-body">
                                     <p className="notif-text">{notificationText(n)}</p>
                                     <span className="notif-time">{timeAgo(n.createdAt)}</span>
+                                    {n.type === "moderation" && n.report?.status === "resolved"
+                                        && !appealed.includes(n.report._id) && (
+                                        <button className="notif-appeal" onClick={(e) => appealFrom(e, n)}>Appeal</button>
+                                    )}
                                 </div>
                                 <button
                                     className="notif-delete"

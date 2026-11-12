@@ -14,3 +14,14 @@ export const updateReport = (id, data) =>
 export const suspendUser = (id, reason) =>
     apiRequest(`/admin/users/${id}/suspend`, { method: "POST", body: JSON.stringify({ reason }) });
 export const restoreUser = (id) => apiRequest(`/admin/users/${id}/restore`, { method: "POST" });
+
+// 6.8: appeal intake (affected user) + moderator review.
+export const createAppeal = (reportId, reason) =>
+    apiRequest("/appeals", { method: "POST", body: JSON.stringify({ reportId, reason }) });
+export const getMyAppeals = () => apiRequest("/appeals/mine");
+export const listAppeals = (params = {}) => {
+    const q = new URLSearchParams(Object.entries(params).filter(([, v]) => v)).toString();
+    return apiRequest(`/admin/appeals${q ? `?${q}` : ""}`);
+};
+export const decideAppeal = (id, data) =>
+    apiRequest(`/admin/appeals/${id}`, { method: "PATCH", body: JSON.stringify(data) });

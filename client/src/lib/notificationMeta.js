@@ -1,4 +1,4 @@
-import { Heart, MessageCircle, Reply, UserPlus, X, Check, AtSign } from "lucide-react";
+import { Heart, MessageCircle, Reply, UserPlus, X, Check, AtSign, Shield, ShieldCheck, ShieldX } from "lucide-react";
 
 // Shared presentation data for the notifications feed (5.8 + 6.4 types).
 export const ICONS = {
@@ -9,7 +9,10 @@ export const ICONS = {
     follow_request: UserPlus,
     follow_approved: Check,
     follow_rejected: X,
-    mention: AtSign
+    mention: AtSign,
+    moderation: Shield,
+    appeal_approved: ShieldCheck,
+    appeal_denied: ShieldX
 };
 
 export const PROFILE_LINK_TYPES = [
@@ -35,6 +38,9 @@ export function notificationText(n) {
         case "follow_approved": return `${name} approved your follow request`;
         case "follow_rejected": return `${name} declined your follow request`;
         case "mention": return `${name} mentioned you${n.comment ? " in a comment" : ""}`;
+        case "moderation": return `${name} resolved a report about your ${n.report?.targetType === "user" ? "account" : n.report?.targetType || "content"}`;
+        case "appeal_approved": return `${name} approved your appeal`;
+        case "appeal_denied": return `${name} denied your appeal`;
         default: return `${n.type} notification`;
     }
 }

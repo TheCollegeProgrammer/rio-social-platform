@@ -1,0 +1,32 @@
+/* 6.8: user's own appeal history, above the notification feed. */
+.appeal-status {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.appeal-status h2 {
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.appeal-status-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 16px;
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+
+.appeal-status-row p {
+    margin: 0;
+    font-size: 14px;
+}
+
+.appeal-status-row p.muted {
+    margin-top: 4px;
+    font-size: 13px;
+}

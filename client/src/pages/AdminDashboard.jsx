@@ -3,6 +3,7 @@ import { Navigate } from "react-router-dom";
 import { useAuth } from "../context/useAuth";
 import { listReports } from "../services/moderationApi";
 import AdminReportDetail from "../components/AdminReportDetail";
+import AdminAppealsList from "../components/AdminAppealsList";
 import "../styles/Home.css";
 import "../styles/Admin.css";
 
@@ -10,6 +11,7 @@ const STATUSES = ["all", "open", "reviewing", "resolved", "dismissed"];
 
 function AdminDashboard() {
     const { user } = useAuth();
+    const [tab, setTab] = useState("reports");
     const [status, setStatus] = useState("open");
     const [page, setPage] = useState(1);
     const [refresh, setRefresh] = useState(0);
@@ -35,7 +37,19 @@ function AdminDashboard() {
             <div className="home-header"><h1>Moderation queue</h1></div>
 
             <div className="admin-filters">
-                {STATUSES.map((s) => (
+                <button
+                    className={tab === "reports" ? "admin-filter active" : "admin-filter"}
+                    onClick={() => setTab("reports")}
+                >
+                    Reports
+                </button>
+                <button
+                    className={tab === "appeals" ? "admin-filter active" : "admin-filter"}
+                    onClick={() => setTab("appeals")}
+                >
+                    Appeals
+                </button>
+                {tab === "reports" && STATUSES.map((s) => (
                     <button
                         key={s}
                         className={s === status ? "admin-filter active" : "admin-filter"}
@@ -46,7 +60,11 @@ function AdminDashboard() {
                 ))}
             </div>
 
-            {error && <p className="error-message">{error}</p>}
+            {tab === "appeals" && <AdminAppealsList />}
+
+            {tab === "reports" && (
+                <>
+                    {error && <p className="error-message">{error}</p>}
 
             {loading ? (
                 <p className="muted">Loading reports...</p>
@@ -87,6 +105,8 @@ function AdminDashboard() {
                     onClose={() => setSelected(null)}
                     onChanged={() => setRefresh((r) => r + 1)}
                 />
+            )}
+                </>
             )}
         </main>
     );

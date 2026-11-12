@@ -55,6 +55,8 @@
 .admin-pill.open { color: var(--danger); border-color: var(--danger); }
 .admin-pill.reviewing { color: var(--accent); border-color: var(--accent); }
 .admin-pill.resolved { color: var(--success); border-color: var(--success); }
+.admin-pill.approved { color: var(--success); border-color: var(--success); }
+.admin-pill.denied { color: var(--danger); border-color: var(--danger); }
 
 .admin-reason {
     flex: 1;

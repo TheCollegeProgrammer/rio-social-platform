@@ -7,9 +7,11 @@ const createNotification = async (data) => {
         if (String(data.recipient) === String(data.sender)) return null;
         // 6.1/6.2: blocks silence everything crossing them; mutes drop the
         // muted sender's notifications to the muter (feed suppression only
-        // would still leak activity through the badge).
-        if (await blockedEither(data.recipient, data.sender)) return null;
-        if (await mutedBy(data.recipient, data.sender)) return null;
+        // would still leak activity through the badge). 6.8: moderation and
+        // appeal outcomes are system decisions - they must reach the user.
+        const system = ["moderation", "appeal_approved", "appeal_denied"].includes(data.type);
+        if (!system && await blockedEither(data.recipient, data.sender)) return null;
+        if (!system && await mutedBy(data.recipient, data.sender)) return null;
         // 6.6: a re-mention from an edit or a retry must not double-notify.
         if (data.type === "mention") {
             const dup = await Notification.exists({
@@ -28,7 +30,8 @@ const createNotification = async (data) => {
         await notification.populate([
             { path: "sender", select: "name username" },
             { path: "post", select: "content" },
-            { path: "comment", select: "content" }
+            { path: "comment", select: "content" },
+            { path: "report", select: "status resolution targetType" }
         ]);
         emitToUser(String(data.recipient), "notification:new", notification);
         return notification;
@@ -50,7 +53,8 @@ const getNotifications = async (req, res, next) => {
                 .limit(limit)
                 .populate("sender", "name username")
                 .populate("post", "content")
-                .populate("comment", "content"),
+                .populate("comment", "content")
+                .populate("report", "status resolution targetType"),
             Notification.countDocuments({ recipient: req.user.id }),
             Notification.countDocuments({ recipient: req.user.id, read: false })
         ]);

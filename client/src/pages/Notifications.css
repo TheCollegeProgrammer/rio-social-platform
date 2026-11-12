@@ -104,3 +104,24 @@
 
 .notif-item:hover .notif-delete { opacity: 1; }
 .notif-delete:hover { background: var(--danger); color: white; }
+
+/* 6.8: appeal entry point on moderation notices. */
+.notif-icon.moderation,
+.notif-icon.appeal_approved { background: rgba(96, 165, 250, 0.15); color: var(--accent); }
+.notif-icon.appeal_denied { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
+
+.notif-appeal {
+    display: inline-block;
+    margin-top: 8px;
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--accent);
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 12px;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+}
+
+.notif-appeal:hover { border-color: var(--accent); background: rgba(96, 165, 250, 0.1); }

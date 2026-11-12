@@ -3,6 +3,7 @@ const Post = require("../models/post");
 const Comment = require("../models/Comment");
 const User = require("../models/User");
 const { logAudit } = require("../utils/audit");
+const { createNotification } = require("./notification.controller");
 
 const STATUSES = ["open", "reviewing", "resolved", "dismissed"];
 
@@ -82,6 +83,7 @@ const updateReport = async (req, res, next) => {
         }
         const report = await Report.findById(req.params.id);
         if (!report) return res.status(404).json({ errors: ["Report not found"] });
+        const wasResolved = report.status === "resolved";
 
         report.status = status;
         if (resolution !== undefined) report.resolution = String(resolution).slice(0, 500);
@@ -89,6 +91,22 @@ const updateReport = async (req, res, next) => {
         report.handledAt = new Date();
         await report.save();
         await report.populate("reporter", "username name avatar");
+
+        // 6.8: tell the affected user about the adverse decision so they can appeal.
+        if (status === "resolved" && !wasResolved) {
+            const context = await loadContext(report);
+            const subject = context
+                ? (context.kind === "user" ? String(context._id) : String(context.author?._id || ""))
+                : "";
+            if (subject && subject !== req.user.id) {
+                await createNotification({
+                    recipient: subject,
+                    sender: req.user.id,
+                    type: "moderation",
+                    report: report._id
+                });
+            }
+        }
 
         await logAudit(req, {
             actor: req.user.id,
@@ -107,4 +125,4 @@ const updateReport = async (req, res, next) => {
     }
 };
 
-module.exports = { listReports, getReport, updateReport };
+module.exports = { listReports, getReport, updateReport, loadContext };
