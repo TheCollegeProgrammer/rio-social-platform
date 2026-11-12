@@ -16,6 +16,7 @@ const adminRoutes = require("./routes/admin.routes");
 const reportRoutes = require("./routes/report.routes");
 const appealRoutes = require("./routes/appeal.routes");
 const draftRoutes = require("./routes/draft.routes");
+const storyRoutes = require("./routes/story.routes");
 const optionalAuth = require("./middleware/optionalAuth.middleware");
 const { postPreview } = require("./utils/postPreview");
 const { notFound, errorHandler } = require("./middleware/error.middleware");
@@ -73,6 +74,7 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/reports", reportRoutes);
 app.use("/api/appeals", appealRoutes);
 app.use("/api/drafts", draftRoutes);
+app.use("/api/stories", storyRoutes);
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 // 7.7: share URL page - og tags for scrapers, redirect into the SPA;
 // must sit before notFound so it never falls into the JSON 404 handler.

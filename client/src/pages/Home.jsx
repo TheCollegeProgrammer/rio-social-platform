@@ -7,6 +7,7 @@ import { reducedMotion } from "../lib/utils";
 import PostCard from "../components/PostCard";
 import FeedSkeleton from "../components/FeedSkeleton";
 import CompactComposer from "../components/home/CompactComposer";
+import StoryTray from "../components/story/StoryTray";
 import NewPostsPill from "../components/home/NewPostsPill";
 import SuggestionsCard from "../components/home/SuggestionsCard";
 import MessagesCard from "../components/home/MessagesCard";
@@ -68,6 +69,7 @@ function Home() {
                     </div>
                 </header>
 
+                <StoryTray />
                 <CompactComposer onCreated={prependLocal} />
                 <NewPostsPill count={pending.length} onReveal={revealPending} />
 

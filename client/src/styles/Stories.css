@@ -1,0 +1,30 @@
+/* 7.8: story tray + fullscreen viewer. Ring uses --accent; "seen" mutes it. */
+.story-tray { display: flex; gap: 14px; overflow-x: auto; padding: 10px 2px 14px; scrollbar-width: none; }
+.story-tray::-webkit-scrollbar { display: none; }
+.story-item { display: flex; flex-direction: column; align-items: center; gap: 5px; background: none; border: none; color: inherit; cursor: pointer; padding: 0; flex: 0 0 auto; }
+.story-avatar { position: relative; width: 58px; height: 58px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 20px; background: var(--bg-raised); box-shadow: 0 0 0 3px var(--accent), 0 0 0 5px var(--bg); overflow: visible; }
+.story-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+.story-avatar.seen { box-shadow: 0 0 0 3px var(--border-strong), 0 0 0 5px var(--bg); }
+.story-avatar.add img, .story-avatar.add { font-size: 22px; }
+.story-badge { position: absolute; right: -2px; bottom: -2px; width: 20px; height: 20px; border-radius: 50%; background: var(--accent); color: #fff; display: flex; align-items: center; justify-content: center; border: 2px solid var(--bg); font-style: normal; }
+.story-avatar.sm { width: 32px; height: 32px; font-size: 14px; box-shadow: none; }
+.story-name { font-size: 11px; color: var(--text-muted); max-width: 66px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.story-add .story-name { color: var(--text); }
+
+.story-overlay { position: fixed; inset: 0; z-index: 80; background: rgba(0, 0, 0, 0.88); display: flex; align-items: center; justify-content: center; padding: 12px; }
+.story-view { width: min(430px, 96vw); height: min(78vh, 740px); display: flex; flex-direction: column; gap: 8px; }
+.story-bars { display: flex; gap: 4px; }
+.story-bars span { flex: 1; height: 3px; background: rgba(255, 255, 255, 0.3); border-radius: 999px; overflow: hidden; }
+.story-bars i { display: block; height: 100%; background: #fff; transition: width 0.1s linear; }
+.story-head { display: flex; align-items: center; gap: 9px; color: #fff; }
+.story-head b { font-size: 14px; }
+.story-time { font-size: 12px; }
+.story-close { margin-left: auto; background: rgba(255, 255, 255, 0.15); border: none; color: #fff; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+.story-media { position: relative; flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; background: #000; border-radius: var(--radius); overflow: hidden; }
+.story-media img { max-width: 100%; max-height: 100%; object-fit: contain; }
+.story-tap { position: absolute; top: 0; bottom: 0; width: 35%; background: none; border: none; cursor: pointer; z-index: 2; }
+.story-tap.left { left: 0; }
+.story-tap.right { right: 0; }
+.story-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; color: #fff; font-size: 13px; min-height: 34px; }
+.story-profile-btn { background: none; border: none; padding: 0; cursor: pointer; display: inline-flex; }
+.has-story { box-shadow: 0 0 0 3px var(--accent), 0 0 0 6px var(--bg); }
