@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Share2, Link2, MessageCircle, Mail, Check } from "lucide-react";
 import { useToast } from "../context/useToast.js";
+import { API_ORIGIN } from "../services/http";
 import "../styles/Share.css";
 
 function ShareMenu({ postId, title }) {
@@ -8,7 +9,9 @@ function ShareMenu({ postId, title }) {
     const [copied, setCopied] = useState(false);
     const wrapRef = useRef(null);
     const toast = useToast();
-    const url = `${window.location.origin}/posts/${postId}`;
+    // 7.7: share the server-side preview URL so link scrapers get og tags;
+    // that page redirects humans into the SPA at the client origin.
+    const url = `${API_ORIGIN}/posts/${postId}`;
     const text = title || "Check out this post";
 
     useEffect(() => {

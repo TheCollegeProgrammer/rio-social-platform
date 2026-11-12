@@ -69,8 +69,15 @@ function PostDetail() {
     };
 
     if (loading) return <div className="page"><p className="muted">Loading post...</p></div>;
-    if (error && !post) return <div className="page"><p className="error-message">{error}</p></div>;
-    if (!post) return <div className="page"><p className="muted">Post not found.</p></div>;
+    // 7.7: graceful dead-link state - share links must never dump raw errors.
+    if (!post) return (
+        <div className="page">
+            <h2>Post unavailable</h2>
+            <p className="muted">This post may have been deleted, or you don&apos;t have access to it.</p>
+            {error && error !== "Post not found" && <p className="error-message">{error}</p>}
+            <button type="button" className="btn btn-sm" onClick={() => navigate("/")}>Back to feed</button>
+        </div>
+    );
 
     const isOwner = user?._id === post.author?._id;
     const canManage = isOwner || user?.role === "admin";
