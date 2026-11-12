@@ -4,6 +4,7 @@ import { useAuth } from "../context/useAuth";
 import { getProfile, getOrCreateConversation, mediaUrl } from "../services/api";
 import { useProfileFollow } from "../lib/useProfileFollow";
 import { useProfileBlock } from "../lib/useProfileBlock";
+import { useProfileMute } from "../lib/useProfileMute";
 import { usePresence } from "../lib/usePresence";
 import PostCard from "../components/PostCard";
 import FollowListPopover from "../components/FollowListPopover";
@@ -28,6 +29,8 @@ function UserProfile() {
     const { busy: blockBusy, toggle: toggleBlock } = useProfileBlock(
         profile, setProfile, () => sync({ isFollowing: false, followRequested: false })
     );
+    // 6.2: mute is soft - feed/notifications only, no state to reset.
+    const { busy: muteBusy, toggle: toggleMute } = useProfileMute(profile, setProfile);
     // 5.5: live presence for other users' profiles (null for your own).
     const { online } = usePresence(user?._id === id ? null : id);
 
@@ -96,11 +99,7 @@ function UserProfile() {
                                 Edit profile
                             </button>
                         ) : profile.blockedByYou ? (
-                            <button
-                                className="btn btn-ghost"
-                                onClick={() => toggleBlock(id)}
-                                disabled={blockBusy}
-                            >
+                            <button className="btn btn-ghost" onClick={() => toggleBlock(id)} disabled={blockBusy}>
                                 Unblock
                             </button>
                         ) : (
@@ -115,11 +114,10 @@ function UserProfile() {
                                 <button className="btn btn-ghost" onClick={handleMessage} disabled={messaging}>
                                     {messaging ? "Opening..." : "Message"}
                                 </button>
-                                <button
-                                    className="btn btn-ghost"
-                                    onClick={() => toggleBlock(id)}
-                                    disabled={blockBusy}
-                                >
+                                <button className="btn btn-ghost" onClick={() => toggleMute(id)} disabled={muteBusy}>
+                                    {profile.mutedByYou ? "Unmute" : "Mute"}
+                                </button>
+                                <button className="btn btn-ghost" onClick={() => toggleBlock(id)} disabled={blockBusy}>
                                     Block
                                 </button>
                             </>

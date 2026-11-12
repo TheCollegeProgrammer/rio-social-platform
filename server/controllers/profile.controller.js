@@ -2,6 +2,7 @@ const User = require("../models/User");
 const Post = require("../models/post");
 const FollowRequest = require("../models/FollowRequest");
 const Block = require("../models/Block");
+const Mute = require("../models/Mute");
 const { buildPostVisibility } = require("../utils/visibility");
 
 const getProfile = async (req, res, next) => {
@@ -14,20 +15,26 @@ const getProfile = async (req, res, next) => {
         if (!user) return res.status(404).json({ errors: ["User not found"] });
 
         const viewerId = req.user ? req.user.id : null;
-        // 6.1: if the target blocked the viewer the profile is unavailable;
-        // the reverse direction stays visible so the blocker can unblock.
+        // 6.1/6.2: if the target blocked the viewer the profile is
+        // unavailable; the reverse direction stays visible so the blocker
+        // can unblock. Mutes are soft and only set a button flag.
         let blockedByYou = false;
+        let mutedByYou = false;
         if (viewerId && String(viewerId) !== String(user._id)) {
-            const edge = await Block.findOne({
-                $or: [
-                    { blocker: viewerId, blocked: user._id },
-                    { blocker: user._id, blocked: viewerId }
-                ]
-            });
+            const [edge, muteEdge] = await Promise.all([
+                Block.findOne({
+                    $or: [
+                        { blocker: viewerId, blocked: user._id },
+                        { blocker: user._id, blocked: viewerId }
+                    ]
+                }),
+                Mute.findOne({ muter: viewerId, muted: user._id })
+            ]);
             if (edge && String(edge.blocker) === String(user._id)) {
                 return res.status(403).json({ errors: ["This account is unavailable"] });
             }
             blockedByYou = !!edge;
+            mutedByYou = !!muteEdge;
         }
 
         const posts = await Post.find({ author: user._id })
@@ -65,6 +72,7 @@ const getProfile = async (req, res, next) => {
                 isFollowing,
                 followRequested,
                 blockedByYou,
+                mutedByYou,
                 followersCount,
                 followingCount,
                 postsCount,

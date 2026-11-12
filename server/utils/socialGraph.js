@@ -1,4 +1,5 @@
 const Block = require("../models/Block");
+const Mute = require("../models/Mute");
 
 // True when either user has blocked the other. Blocks are symmetric for
 // interaction checks: neither side may follow/like/comment/message.
@@ -35,4 +36,18 @@ const blockedIdsFor = async (viewerId) => {
     return [...ids];
 };
 
-module.exports = { blockedEither, blockedByTarget, blockedIdsFor };
+// True when muterId has muted targetId (one-directional, unlike blocks).
+const mutedBy = async (muterId, targetId) => {
+    if (!muterId || !targetId || String(muterId) === String(targetId)) return false;
+    return !!(await Mute.findOne({ muter: muterId, muted: targetId }).select("_id"));
+};
+
+// Authors the viewer has muted - only ever applied to the muter's own
+// surfaces (feed, notifications). Anonymous viewers get an empty list.
+const mutedIdsFor = async (viewerId) => {
+    if (!viewerId) return [];
+    const docs = await Mute.find({ muter: viewerId }).select("muted");
+    return docs.map((d) => String(d.muted));
+};
+
+module.exports = { blockedEither, blockedByTarget, blockedIdsFor, mutedBy, mutedIdsFor };

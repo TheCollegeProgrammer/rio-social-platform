@@ -104,7 +104,7 @@ const toggleLike = async (req, res, next) => {
         );
 
         if (!alreadyLiked) {
-            createNotification({
+            await createNotification({
                 recipient: post.author,
                 sender: userId,
                 type: "like",

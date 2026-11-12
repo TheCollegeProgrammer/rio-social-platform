@@ -56,7 +56,7 @@ const toggleFollow = async (req, res, next) => {
                     if (err.code !== 11000) throw err;
                 }
             }
-            createNotification({
+            await createNotification({
                 recipient: id,
                 sender: userId,
                 type: "follow_request"
@@ -73,7 +73,7 @@ const toggleFollow = async (req, res, next) => {
             targetUser.followers.addToSet(userId);
             // A direct follow supersedes any earlier request record.
             FollowRequest.deleteOne({ requester: userId, target: id }).catch(() => {});
-            createNotification({
+            await createNotification({
                 recipient: id,
                 sender: userId,
                 type: "follow"

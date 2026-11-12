@@ -73,7 +73,7 @@ const toggleCommentLike = async (req, res, next) => {
         );
 
         if (!alreadyLiked) {
-            createNotification({
+            await createNotification({
                 recipient: comment.author,
                 sender: userId,
                 type: "like",

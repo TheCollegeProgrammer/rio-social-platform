@@ -1,7 +1,7 @@
 const Post = require("../models/post");
 const { normalizeCategory } = require("../config/categories");
 const { buildPostVisibility } = require("../utils/visibility");
-const { blockedIdsFor } = require("../utils/socialGraph");
+const { blockedIdsFor, mutedIdsFor } = require("../utils/socialGraph");
 const { decodeCursor, encodeCursor, cursorFilter } = require("../utils/cursor");
 const { postImages } = require("../utils/postShape");
 
@@ -18,11 +18,16 @@ const getPosts = async (req, res, next) => {
         if (imageOnly) base.image = { $ne: null };
         const category = normalizeCategory(req.query.category);
         if (category) base.category = category;
-        // 6.1: blocked authors are excluded at the query level so pages,
-        // cursors and totals all agree (mutes join this in 6.2).
+        // 6.1/6.2: blocked (either direction) and muted (viewer's own list)
+        // authors are excluded at the query level so pages, cursors and
+        // totals all agree.
         const userId = req.user ? req.user.id : null;
-        const blocked = await blockedIdsFor(userId);
-        if (blocked.length) base.author = { $nin: blocked };
+        const [blocked, muted] = await Promise.all([
+            blockedIdsFor(userId),
+            mutedIdsFor(userId)
+        ]);
+        const hiddenAuthors = [...new Set([...blocked, ...muted])];
+        if (hiddenAuthors.length) base.author = { $nin: hiddenAuthors };
 
         // Cursor mode when a valid cursor is present; invalid cursors fall
         // back to page mode so consumers never hard-fail on stale links.

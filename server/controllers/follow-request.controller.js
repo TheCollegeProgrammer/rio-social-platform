@@ -70,7 +70,7 @@ const approveFollowRequest = async (req, res, next) => {
         requester.following.addToSet(me._id);
         me.followers.addToSet(requester._id);
         await Promise.all([requester.save(), me.save()]);
-        createNotification({
+        await createNotification({
             recipient: fr.requester,
             sender: me._id,
             type: "follow_approved"
@@ -99,7 +99,7 @@ const rejectFollowRequest = async (req, res, next) => {
             return res.status(404).json({ errors: ["Follow request not found"] });
         }
         const fr = await FollowRequest.findById(req.params.id);
-        createNotification({
+        await createNotification({
             recipient: fr.requester,
             sender: req.user.id,
             type: "follow_rejected"

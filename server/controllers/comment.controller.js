@@ -48,7 +48,7 @@ const createComment = async (req, res, next) => {
         const totalComments = await Comment.countDocuments({ post: postId });
 
         if (parent) {
-            createNotification({
+            await createNotification({
                 recipient: parent.author,
                 sender: req.user.id,
                 type: "reply",
@@ -56,7 +56,7 @@ const createComment = async (req, res, next) => {
                 comment: comment._id
             });
         } else {
-            createNotification({
+            await createNotification({
                 recipient: post.author,
                 sender: req.user.id,
                 type: "comment",

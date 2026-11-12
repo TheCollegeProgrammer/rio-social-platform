@@ -56,6 +56,8 @@ export const getFollowers = (id) => apiRequest(`/users/${id}/followers`);
 export const getFollowing = (id) => apiRequest(`/users/${id}/following`);
 export const blockUser = (id) => apiRequest(`/users/${id}/block`, { method: "POST" });
 export const unblockUser = (id) => apiRequest(`/users/${id}/block`, { method: "DELETE" });
+export const muteUser = (id) => apiRequest(`/users/${id}/mute`, { method: "POST" });
+export const unmuteUser = (id) => apiRequest(`/users/${id}/mute`, { method: "DELETE" });
 export const getFollowRequests = () => apiRequest("/users/follow-requests");
 export const getSentFollowRequests = () => apiRequest("/users/follow-requests/sent");
 export const approveFollowRequest = (id) =>
