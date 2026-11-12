@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import { ImagePlus, X } from "lucide-react";
 import { createPostWithImages } from "../services/api";
 import { useToast } from "../context/useToast.js";
+import VisibilityToggle from "./VisibilityToggle";
 import "../styles/Media.css";
 
 const MAX = 500;
@@ -14,6 +15,7 @@ export default function CreatePostForm({ onCreated, category = null }) {
     const [posting, setPosting] = useState(false);
     const [error, setError] = useState("");
     const [images, setImages] = useState([]);
+    const [visibility, setVisibility] = useState("public");
 
     const pickImages = (e) => {
         const picked = Array.from(e.target.files || []);
@@ -45,11 +47,13 @@ export default function CreatePostForm({ onCreated, category = null }) {
             const post = await createPostWithImages(
                 content.trim() || "(no text)",
                 images.map((im) => im.file),
-                category
+                category,
+                visibility
             );
             onCreated(post);
             setContent("");
             clearImages();
+            setVisibility("public");
             toast.success("Post published");
         } catch (err) {
             setError(err.message);
@@ -87,6 +91,7 @@ export default function CreatePostForm({ onCreated, category = null }) {
                         <ImagePlus size={15} /> Photos
                         {images.length > 0 ? ` (${images.length})` : ""}
                     </button>
+                    <VisibilityToggle value={visibility} onChange={setVisibility} />
                     <span className="char-count">{content.length}/{MAX}</span>
                 </div>
                 <button type="submit" className="btn btn-sm" disabled={posting || (!content.trim() && images.length === 0)}>

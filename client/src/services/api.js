@@ -32,10 +32,10 @@ export const getFeed = ({ cursor, page = 1, limit = 10, imageOnly = false, categ
 export const getSuggestions = (limit = 5, offset = 0) =>
     apiRequest(`/users/suggestions?limit=${limit}&offset=${offset}`);
 export const getPost = (id) => apiRequest(`/posts/${id}`);
-export const createPost = (content, category = null) =>
-    apiRequest("/posts", { method: "POST", body: JSON.stringify({ content, category }) }).then((d) => d.post);
-export const editPost = (id, content) =>
-    apiRequest(`/posts/${id}`, { method: "PUT", body: JSON.stringify({ content }) });
+export const createPost = (content, category = null, visibility = "public") =>
+    apiRequest("/posts", { method: "POST", body: JSON.stringify({ content, category, visibility }) }).then((d) => d.post);
+export const editPost = (id, content, visibility) =>
+    apiRequest(`/posts/${id}`, { method: "PUT", body: JSON.stringify(visibility ? { content, visibility } : { content }) });
 export const deletePost = (id) => apiRequest(`/posts/${id}`, { method: "DELETE" });
 export const toggleLike = (id) => apiRequest(`/posts/${id}/like`, { method: "POST" });
 export const toggleBookmark = (id) => apiRequest(`/posts/${id}/bookmark`, { method: "POST" });
@@ -82,10 +82,11 @@ export const deleteComment = (postId, id) =>
 export const toggleCommentLike = (postId, id) =>
     apiRequest(`/posts/${postId}/comments/${id}/like`, { method: "POST" });
 
-export const createPostWithImages = (content, files = [], category = null) => {
+export const createPostWithImages = (content, files = [], category = null, visibility = "public") => {
     const fd = new FormData();
     fd.append("content", content);
     if (category) fd.append("category", category);
+    fd.append("visibility", visibility);
     (files || []).forEach((f) => fd.append("image", f));
     return uploadRequest("/posts/image", fd).then((d) => d.post);
 };

@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { ImagePlus, X } from "lucide-react";
 import { useToast } from "../context/useToast.js";
 import { getPost, editPost, addPostImages, removePostImage, mediaUrl } from "../services/api";
+import VisibilityToggle from "../components/VisibilityToggle";
 import "../styles/Home.css";
 import "../styles/Media.css";
 
@@ -17,6 +18,7 @@ function PostEdit() {
     const fileRef = useRef(null);
     const [content, setContent] = useState("");
     const [images, setImages] = useState([]);
+    const [visibility, setVisibility] = useState("public");
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState("");
@@ -28,6 +30,7 @@ function PostEdit() {
                 if (!cancelled) {
                     setContent(data.post.content);
                     setImages(listImages(data.post));
+                    setVisibility(data.post.visibility || "public");
                 }
             })
             .catch((err) => { if (!cancelled) setError(err.message); })
@@ -36,7 +39,6 @@ function PostEdit() {
     }, [id]);
 
     const trimmed = content.trim();
-
     const handleAdd = async (files) => {
         try {
             const post = await addPostImages(id, files);
@@ -63,7 +65,7 @@ function PostEdit() {
         if (!trimmed || trimmed.length > MAX) return;
         try {
             setSaving(true);
-            await editPost(id, trimmed);
+            await editPost(id, trimmed, visibility);
             toast.success("Post updated");
             navigate(`/posts/${id}`);
         } catch (err) {
@@ -126,10 +128,9 @@ function PostEdit() {
                     />
                 </div>
                 <div className="post-actions">
-                    <span className={content.length > MAX ? "error-message" : "char-count"}>
-                        {content.length}/{MAX}
-                    </span>
+                    <span className={content.length > MAX ? "error-message" : "char-count"}>{content.length}/{MAX}</span>
                     <div style={{ display: "flex", gap: 8 }}>
+                        <VisibilityToggle value={visibility} onChange={setVisibility} />
                         <button type="button" className="btn btn-ghost btn-sm" onClick={() => navigate(`/posts/${id}`)}>
                             <X size={14} /> Cancel
                         </button>

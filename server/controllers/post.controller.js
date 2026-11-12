@@ -1,6 +1,6 @@
 const Post = require("../models/post");
 const { normalizeCategory } = require("../config/categories");
-const { buildPostVisibility } = require("../utils/visibility");
+const { buildPostVisibility, parseVisibility } = require("../utils/visibility");
 const { blockedEither } = require("../utils/socialGraph");
 
 const extractHashtags = (content) => {
@@ -20,12 +20,17 @@ const createPost = async (req, res, next) => {
         if (content.length > 5000) {
             return res.status(400).json({ errors: ["Post must be under 5000 characters"] });
         }
+        const vis = parseVisibility(req.body.visibility);
+        if (!vis.ok) {
+            return res.status(400).json({ errors: ["visibility must be public or followers"] });
+        }
 
         const post = await Post.create({
             content: content.trim(),
             author: req.user.id,
             hashtags: extractHashtags(content),
-            category: normalizeCategory(req.body.category)
+            category: normalizeCategory(req.body.category),
+            visibility: vis.value
         });
 
         await post.populate("author", "username name avatar");
@@ -65,6 +70,7 @@ const getPostById = async (req, res, next) => {
                 image: post.image,
                 images: postImages(post),
                 category: post.category,
+                visibility: post.visibility,
                 editedAt: post.editedAt,
                 createdAt: post.createdAt
             }

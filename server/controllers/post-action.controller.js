@@ -3,7 +3,7 @@ const User = require("../models/User");
 const { extractHashtags } = require("./post.controller");
 const { createNotification } = require("./notification.controller");
 const { blockedEither } = require("../utils/socialGraph");
-const { canViewPost } = require("../utils/visibility");
+const { canViewPost, parseVisibility } = require("../utils/visibility");
 
 const canModerate = async (post, userId) => {
     if (post.author.toString() === userId) return true;
@@ -30,6 +30,13 @@ const editPost = async (req, res, next) => {
 
         post.content = content.trim();
         post.hashtags = extractHashtags(content);
+        if (req.body.visibility !== undefined) {
+            const vis = parseVisibility(req.body.visibility);
+            if (!vis.ok) {
+                return res.status(400).json({ errors: ["visibility must be public or followers"] });
+            }
+            post.visibility = vis.value;
+        }
         post.editedAt = new Date();
         await post.save();
         await post.populate("author", "username name avatar");

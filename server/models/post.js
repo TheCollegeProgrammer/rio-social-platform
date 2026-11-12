@@ -45,6 +45,13 @@ const postSchema = new mongoose.Schema(
             default: null
         },
 
+        // 6.5: per-post audience; "followers" = the author's followers only.
+        visibility: {
+            type: String,
+            enum: ["public", "followers"],
+            default: "public"
+        },
+
         editedAt: {
             type: Date,
             default: null

@@ -2,6 +2,7 @@ const Post = require("../models/post");
 const { extractHashtags } = require("./post.controller");
 const { normalizeCategory } = require("../config/categories");
 const { deleteMedia } = require("../utils/media");
+const { parseVisibility } = require("../utils/visibility");
 
 const MAX_IMAGES = 8;
 
@@ -31,12 +32,18 @@ const createPostWithImage = async (req, res, next) => {
             deleteFiles(images);
             return res.status(400).json({ errors: [`Post can have at most ${MAX_IMAGES} images`] });
         }
+        const vis = parseVisibility(req.body.visibility);
+        if (!vis.ok) {
+            deleteFiles(images);
+            return res.status(400).json({ errors: ["visibility must be public or followers"] });
+        }
 
         const post = await Post.create({
             content: content.trim(),
             author: req.user.id,
             hashtags: extractHashtags(content),
             category: normalizeCategory(req.body.category),
+            visibility: vis.value,
             images,
             image: images[0] || null
         });

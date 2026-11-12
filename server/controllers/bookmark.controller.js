@@ -93,6 +93,7 @@ const searchPosts = async (req, res, next) => {
             hashtags: post.hashtags,
             image: post.image,
             images: postImages(post),
+            visibility: post.visibility,
             createdAt: post.createdAt
         }));
 

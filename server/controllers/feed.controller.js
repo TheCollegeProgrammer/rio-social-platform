@@ -58,6 +58,7 @@ const getPosts = async (req, res, next) => {
             image: post.image,
             images: postImages(post),
             category: post.category,
+            visibility: post.visibility,
             editedAt: post.editedAt,
             createdAt: post.createdAt
         }));

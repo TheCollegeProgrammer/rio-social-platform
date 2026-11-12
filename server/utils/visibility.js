@@ -21,9 +21,13 @@ const buildPostVisibility = async (viewerId) => {
         // post => true when it must be hidden from this viewer
         hidden: (post) => {
             const author = post && post.author;
-            if (!author || author.isPrivate !== true) return false;
+            if (!author) return false;
             const aid = String(author._id ?? author);
             if (isMod || aid === self) return false;
+            // 6.5: per-post followers-only audience
+            if (post.visibility === "followers" && !following.has(aid)) return true;
+            // account-level private
+            if (author.isPrivate !== true) return false;
             return !following.has(aid);
         },
         // gate for the profile owner's follower/following lists
@@ -49,9 +53,20 @@ const canViewPost = async (viewerId, post) => {
         if (!author) return false;
     }
     const vis = await buildPostVisibility(viewerId);
-    if (vis.hidden({ author })) return false;
+    if (vis.hidden({ author, visibility: post.visibility })) return false;
     if (viewerId && await blockedEither(viewerId, author._id)) return false;
     return true;
 };
 
-module.exports = { buildPostVisibility, canViewPost };
+// 6.5: accepted per-post audiences. `undefined`/null means "default";
+// anything else must be a supported level or the caller rejects it.
+const VISIBILITIES = ["public", "followers"];
+const parseVisibility = (value) => {
+    if (value === undefined || value === null || value === "") {
+        return { ok: true, value: "public" };
+    }
+    if (VISIBILITIES.includes(value)) return { ok: true, value };
+    return { ok: false };
+};
+
+module.exports = { buildPostVisibility, canViewPost, parseVisibility };

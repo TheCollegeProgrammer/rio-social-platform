@@ -1,6 +1,6 @@
 import { memo, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Heart, MessageCircle, Bookmark, Hash, Pencil, Trash2 } from "lucide-react";
+import { Heart, MessageCircle, Bookmark, Hash, Lock, Pencil, Trash2 } from "lucide-react";
 import gsap from "gsap";
 import { useAuth } from "../context/useAuth";
 import { useToast } from "../context/useToast";
@@ -73,11 +73,14 @@ function PostCard({ post, onLike }) {
 
     if (hidden) return null;
 
+    const badge = [post.visibility === "followers" && "Followers", post.editedAt && "Edited"]
+        .filter(Boolean).join(" · ");
+
     return (
         <article className="post-card" data-post-id={post._id}>
             <PostAuthor post={post} />
 
-            {post.editedAt && <span className="edited-badge">Edited</span>}
+            {badge && <span className="edited-badge">{post.visibility === "followers" && <Lock size={10} style={{ verticalAlign: -1 }} />} {badge}</span>}
 
             <Link to={`/posts/${post._id}`} className="post-content-link">
                 <p className="post-content">{post.content}</p>
