@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/useAuth";
 import { useToast } from "../context/useToast.js";
-import { getProfile, toggleFollow, getOrCreateConversation, mediaUrl } from "../services/api";
+import { getProfile, getOrCreateConversation, mediaUrl } from "../services/api";
+import { useFollowToggle } from "../lib/useFollowToggle";
 import PostCard from "../components/PostCard";
 import FollowListPopover from "../components/FollowListPopover";
 import "../styles/Home.css";
@@ -18,7 +19,9 @@ function UserProfile() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const [following, setFollowing] = useState(false);
+    const [followBusy, setFollowBusy] = useState(false);
     const [messaging, setMessaging] = useState(false);
+    const { toggle: followToggle } = useFollowToggle();
 
     useEffect(() => {
         let cancelled = false;
@@ -35,17 +38,31 @@ function UserProfile() {
         return () => { cancelled = true; };
     }, [id]);
 
+    // 4.4: flip button + counts immediately, reconcile with the server
+    // response, roll back and toast on failure.
     const handleFollow = async () => {
-        try {
-            const data = await toggleFollow(id);
-            setFollowing(data.following);
-            if (data.following) toast.success(`Following ${profile?.name || "user"}`);
-            setProfile((p) => ({
-                ...p,
-                followersCount: data.followersCount,
-                followingCount: data.followingCount ?? p.followingCount
-            }));
-        } catch (err) { setError(err.message); }
+        const next = !following;
+        setFollowBusy(true);
+        await followToggle(id, next, {
+            optimistic: (n) => {
+                setFollowing(n);
+                setProfile((p) => (p ? { ...p, followersCount: (p.followersCount || 0) + (n ? 1 : -1) } : p));
+            },
+            reconcile: (d) => {
+                setFollowing(d.following);
+                setProfile((p) => ({
+                    ...p,
+                    followersCount: d.followersCount,
+                    followingCount: d.followingCount ?? p.followingCount
+                }));
+                if (d.following) toast.success(`Following ${profile?.name || "user"}`);
+            },
+            rollback: (n) => {
+                setFollowing(!n);
+                setProfile((p) => (p ? { ...p, followersCount: (p.followersCount || 0) + (n ? -1 : 1) } : p));
+            }
+        });
+        setFollowBusy(false);
     };
 
     const handleMessage = async () => {
@@ -94,7 +111,7 @@ function UserProfile() {
                             </button>
                         ) : (
                             <>
-                                <button className={following ? "btn btn-ghost" : "btn"} onClick={handleFollow}>
+                                <button className={following ? "btn btn-ghost" : "btn"} onClick={handleFollow} disabled={followBusy}>
                                     {following ? "Unfollow" : "Follow"}
                                 </button>
                                 <button className="btn btn-ghost" onClick={handleMessage} disabled={messaging}>

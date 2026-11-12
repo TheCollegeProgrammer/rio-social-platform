@@ -11,7 +11,7 @@
 - [x] **4.1 Feed Refresh** — ✅ `lib/useFeed.js` (cursor + `_id` dedupe + pending buffer), `useFeedRefresh.js`, `feed.controller.js` keyset cursor, dual-shape fallback.
 - [x] **4.2 Suggestions API** — ✅ `suggestion.controller.js` + `GET /users/suggestions` (excludes self/following, bounded, mutuals signal).
 - [x] **4.3 Messages Preview API** — ✅ `GET /messages` bounded conversations + Home `MessagesCard` (empty/loading/error states).
-- [ ] **4.4 Optimistic Follow** — ❌ `UserProfile` awaits server before UI flips; no in-flight guard/rollback. → plan: optimistic `following` state + disable during request + rollback + count reconcile.
+- [x] **4.4 Optimistic Follow** — ✅ shared `lib/useFollowToggle.js` (instant flip, in-flight dedupe per id, rollback + toast, server-response reconcile); wired into `UserProfile` (counts too), `PostAuthor`, `SuggestionsCard`; server `addToSet` idempotency (no duplicate edges); toggle-integrity tests in `test_phase1.js`.
 - [ ] **4.5 Server-State Optimization** — 🔶 custom hooks exist (`useFeed`, `useUnreadCounts`), no TanStack Query. Decision: **keep custom hooks** (dep constraint #8; no cache-layer need at current scale), document; add request dedupe guard only if gaps found.
 - [x] **4.6 MongoDB Feed Indexes** — ✅ `post {createdAt:-1,_id:-1}`, `user {followers:1}`; feed uses sort+hint-able keyset.
 - [x] **4.7 Lazy Loading** — ✅ `React.lazy` all routes; `loading="lazy"` in `PostMedia`, `ExploreGrid`.

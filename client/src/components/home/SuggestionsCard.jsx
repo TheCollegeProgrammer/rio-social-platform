@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../context/useAuth";
-import { useToast } from "../../context/useToast";
-import { getSuggestions, toggleFollow, mediaUrl } from "../../services/api";
+import { useFollowToggle } from "../../lib/useFollowToggle";
+import { getSuggestions, mediaUrl } from "../../services/api";
 import "./SideCards.css";
 
 const PAGE = 5;
@@ -41,8 +41,8 @@ function SuggestionRow({ u, busy, onFollow }) {
 }
 
 function SuggestionsCard() {
-    const { user, setUser } = useAuth();
-    const { error: toastError } = useToast();
+    const { user } = useAuth();
+    const { toggle: followToggle } = useFollowToggle();
     const [users, setUsers] = useState([]);
     const [loaded, setLoaded] = useState(false);
     const [error, setError] = useState("");
@@ -67,17 +67,10 @@ function SuggestionsCard() {
     const onFollow = async (u) => {
         if (busyId) return;
         setBusyId(u._id);
+        const ids = user?.following || [];
+        const isF = ids.some((f) => (f?._id || f) === u._id);
         try {
-            const d = await toggleFollow(u._id);
-            const following = user?.following || [];
-            setUser({
-                ...user,
-                following: d.following
-                    ? [...following, u._id]
-                    : following.filter((f) => (f?._id || f) !== u._id)
-            });
-        } catch (e) {
-            toastError(e.message || "Could not update follow");
+            await followToggle(u._id, !isF);
         } finally {
             setBusyId(null);
         }

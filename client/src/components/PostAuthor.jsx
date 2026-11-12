@@ -1,14 +1,13 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { toggleFollow } from "../services/api";
 import { useAuth } from "../context/useAuth";
-import { useToast } from "../context/useToast";
+import { useFollowToggle } from "../lib/useFollowToggle";
 import AuthorAvatar from "./AuthorAvatar";
 import { timeAgo } from "../lib/time";
 
 function PostAuthor({ post }) {
-    const { user, setUser } = useAuth();
-    const { error: toastError } = useToast();
+    const { user } = useAuth();
+    const { toggle: followToggle } = useFollowToggle();
     const [busy, setBusy] = useState(false);
     const authorId = post.author?._id;
     const isOwner = !!authorId && user?._id === authorId;
@@ -18,19 +17,8 @@ function PostAuthor({ post }) {
     const handleFollow = async () => {
         if (busy || !authorId || !user) return;
         setBusy(true);
-        try {
-            const d = await toggleFollow(authorId);
-            setUser({
-                ...user,
-                following: d.following
-                    ? [...following, authorId]
-                    : following.filter((f) => (f?._id || f) !== authorId)
-            });
-        } catch (err) {
-            toastError(err.message || "Could not update follow");
-        } finally {
-            setBusy(false);
-        }
+        await followToggle(authorId, !isFollowing);
+        setBusy(false);
     };
 
     return (

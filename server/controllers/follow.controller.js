@@ -25,8 +25,9 @@ const toggleFollow = async (req, res, next) => {
             currentUser.following.pull(id);
             targetUser.followers.pull(userId);
         } else {
-            currentUser.following.push(id);
-            targetUser.followers.push(userId);
+            // addToSet: retried/duplicate requests can never create dup edges.
+            currentUser.following.addToSet(id);
+            targetUser.followers.addToSet(userId);
             createNotification({
                 recipient: id,
                 sender: userId,
