@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import { ImagePlus, X } from "lucide-react";
 import { createPostWithImages } from "../services/api";
+import { filterImages } from "../lib/fileValidation";
 import { useToast } from "../context/useToast.js";
 import VisibilityToggle from "./VisibilityToggle";
 import "../styles/Media.css";
@@ -16,13 +17,33 @@ export default function CreatePostForm({ onCreated, category = null }) {
     const [error, setError] = useState("");
     const [images, setImages] = useState([]);
     const [visibility, setVisibility] = useState("public");
+    const [dragging, setDragging] = useState(false);
+
+    // 7.1: one validation path shared by the file picker and drag-and-drop.
+    const addFiles = (fileList) => {
+        const { take, problems } = filterImages(fileList, MAX_IMAGES - images.length, MAX_IMAGES);
+        if (take.length) {
+            setImages((prev) => [...prev, ...take.map((f) => ({ file: f, url: URL.createObjectURL(f) }))]);
+        }
+        setError(problems.join(" · "));
+    };
 
     const pickImages = (e) => {
-        const picked = Array.from(e.target.files || []);
-        if (!picked.length) return;
-        const added = picked.map((f) => ({ file: f, url: URL.createObjectURL(f) }));
-        setImages((prev) => [...prev, ...added].slice(0, MAX_IMAGES));
+        addFiles(e.target.files);
         e.target.value = "";
+    };
+
+    const onDragOver = (e) => {
+        e.preventDefault();
+        setDragging(true);
+    };
+    const onDragLeave = (e) => {
+        if (!e.currentTarget.contains(e.relatedTarget)) setDragging(false);
+    };
+    const onDrop = (e) => {
+        e.preventDefault();
+        setDragging(false);
+        addFiles(e.dataTransfer?.files);
     };
 
     const removeImage = (i) => {
@@ -64,21 +85,34 @@ export default function CreatePostForm({ onCreated, category = null }) {
     };
 
     return (
-        <form className="create-post" onSubmit={handleSubmit}>
+        <form
+            className={dragging ? "create-post drag-over" : "create-post"}
+            onSubmit={handleSubmit}
+            onDragOver={onDragOver}
+            onDragLeave={onDragLeave}
+            onDrop={onDrop}
+            aria-busy={posting}
+        >
             <textarea
                 placeholder="What's on your mind?"
+                aria-label="Post caption"
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 rows={3}
                 maxLength={MAX}
             />
+            {!content && images.length === 0 && (
+                <p className="muted composer-hint">
+                    Drag images here or use Photos to attach. Up to 8 images, 5 MB each.
+                </p>
+            )}
             {error && <p className="error-message">{error}</p>}
             {images.length > 0 && (
-                <div className="preview-grid">
+                <div className="preview-grid" aria-label="Selected images">
                     {images.map((im, i) => (
                         <div className="preview-cell" key={im.url}>
-                            <img src={im.url} alt="" />
-                            <button type="button" className="preview-x" onClick={() => removeImage(i)} aria-label="Remove image">
+                            <img src={im.url} alt={im.file.name || "Selected image"} />
+                            <button type="button" className="preview-x" onClick={() => removeImage(i)} aria-label={`Remove ${im.file.name || "image"}`}>
                                 <X size={13} />
                             </button>
                         </div>
@@ -89,10 +123,13 @@ export default function CreatePostForm({ onCreated, category = null }) {
                 <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
                     <button type="button" className="btn btn-ghost btn-sm" onClick={() => fileRef.current?.click()}>
                         <ImagePlus size={15} /> Photos
-                        {images.length > 0 ? ` (${images.length})` : ""}
+                        {images.length > 0 ? ` (${images.length}/${MAX_IMAGES})` : ""}
                     </button>
                     <VisibilityToggle value={visibility} onChange={setVisibility} />
-                    <span className="char-count">{content.length}/{MAX}</span>
+                    {images.length > 0 && (
+                        <button type="button" className="btn btn-ghost btn-sm" onClick={clearImages}>Clear</button>
+                    )}
+                    <span className={content.length > MAX - 50 ? "char-count warn" : "char-count"}>{content.length}/{MAX}</span>
                 </div>
                 <button type="submit" className="btn btn-sm" disabled={posting || (!content.trim() && images.length === 0)}>
                     {posting ? "Posting..." : "Post"}

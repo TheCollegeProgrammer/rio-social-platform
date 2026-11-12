@@ -49,7 +49,7 @@
 
 ## Phase 4 — Media & Content Creation
 
-- [ ] **7.1 Rich Post Composer** — 🔶 `CreatePostForm` multi-image + category + draft-in-memory. Gap: richer media preview/validation feedback, a11y pass.
+- [x] **7.1 Rich Post Composer** — ✅ composition flow in `CreatePostForm`: drag-and-drop upload + file picker sharing one validation path (`lib/fileValidation.js` — type/size/count checks mirroring server limits, inline feedback messages), per-image previews with file-name alts + removable cells + Clear-all, `n/8` capacity counter, near-limit char-count warning, empty-state hint, `aria-label`s + `aria-busy` (a11y), mobile unchanged (Photos button path). `PostEdit` reuses the same validation (no duplicate logic) — existing `createPostWithImages`/upload pipeline untouched (no backend changes).
 - [ ] **7.2 Post Drafts** — ❌ no server draft model/endpoints (client-only category retention).
 - [ ] **7.3 Draft Autosave** — ❌ depends on 7.2.
 - [ ] **7.4 Image Drag-and-Drop Reordering** — ❌ carousel order = upload order.

@@ -139,3 +139,8 @@
     0% { background-position: 200% 0; }
     100% { background-position: -200% 0; }
 }
+
+/* 7.1: composer composition feedback. */
+.char-count.warn { color: var(--danger); }
+.composer-hint { font-size: 13px; margin: 2px 0 0; }
+.create-post.drag-over { outline: 2px dashed var(--accent); outline-offset: -6px; }

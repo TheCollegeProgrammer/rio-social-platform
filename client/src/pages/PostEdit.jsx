@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { ImagePlus, X } from "lucide-react";
 import { useToast } from "../context/useToast.js";
 import { getPost, editPost, addPostImages, removePostImage, mediaUrl } from "../services/api";
+import { filterImages } from "../lib/fileValidation";
 import VisibilityToggle from "../components/VisibilityToggle";
 import "../styles/Home.css";
 import "../styles/Media.css";
@@ -39,18 +40,18 @@ function PostEdit() {
     }, [id]);
 
     const trimmed = content.trim();
-    const handleAdd = async (files) => {
-        try {
-            const post = await addPostImages(id, files);
-            setImages(listImages(post));
-            toast.success(files.length > 1 ? "Images added" : "Image added");
-        } catch (err) { toast.error(err.message); }
-    };
-
-    const handleFiles = (e) => {
+    // 7.1: same client-side media checks as the composer.
+    const handleFiles = async (e) => {
         const picked = Array.from(e.target.files || []);
         e.target.value = "";
-        if (picked.length) handleAdd(picked.slice(0, MAX_IMAGES - images.length));
+        const { take, problems } = filterImages(picked, MAX_IMAGES - images.length, MAX_IMAGES);
+        if (problems.length) toast.error(problems.join(" · "));
+        if (!take.length) return;
+        try {
+            const post = await addPostImages(id, take);
+            setImages(listImages(post));
+            toast.success(take.length > 1 ? "Images added" : "Image added");
+        } catch (err) { toast.error(err.message); }
     };
 
     const handleRemove = async (index) => {
@@ -109,11 +110,7 @@ function PostEdit() {
                             </div>
                         ))}
                         {images.length < MAX_IMAGES && (
-                            <button
-                                type="button"
-                                className="edit-image edit-image-add"
-                                onClick={() => fileRef.current?.click()}
-                            >
+                            <button type="button" className="edit-image edit-image-add" onClick={() => fileRef.current?.click()}>
                                 <ImagePlus size={18} /> Add
                             </button>
                         )}
