@@ -1,5 +1,8 @@
 const Comment = require("../models/Comment");
+const Post = require("../models/post");
 const { createNotification } = require("./notification.controller");
+const { blockedEither } = require("../utils/socialGraph");
+const { canViewPost } = require("../utils/visibility");
 
 const editComment = async (req, res, next) => {
     try {
@@ -64,6 +67,14 @@ const toggleCommentLike = async (req, res, next) => {
         if (!comment) return res.status(404).json({ errors: ["Comment not found"] });
 
         const userId = req.user.id;
+        // 6.1/6.3: comment likes obey the same gates as the parent post.
+        if (await blockedEither(userId, comment.author)) {
+            return res.status(403).json({ errors: ["Cannot interact with this user"] });
+        }
+        const post = await Post.findById(comment.post);
+        if (!(await canViewPost(userId, post))) {
+            return res.status(404).json({ errors: ["Post not found"] });
+        }
         const alreadyLiked = comment.likes.some((id) => id.toString() === userId);
 
         const updated = await Comment.findByIdAndUpdate(

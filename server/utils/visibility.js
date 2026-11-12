@@ -1,4 +1,5 @@
 const User = require("../models/User");
+const { blockedEither } = require("./socialGraph");
 
 // F-13 (isPrivate enforcement): posts of a private account are visible only
 // to the author, admins, and confirmed followers; follower/following lists
@@ -35,4 +36,22 @@ const buildPostVisibility = async (viewerId) => {
     };
 };
 
-module.exports = { buildPostVisibility };
+// 6.3: shared gate for endpoints that address a post by direct URL
+// (comments, likes, bookmarks). Mirrors getPostById: private authors need
+// the follow relationship and blocks hide the post in both directions, so
+// a direct request must look like a 404 - existence itself must not leak.
+// `post.author` may be an id or a partially populated doc.
+const canViewPost = async (viewerId, post) => {
+    if (!post) return false;
+    let author = post.author;
+    if (author && typeof author.isPrivate !== "boolean") {
+        author = await User.findById(author).select("isPrivate");
+        if (!author) return false;
+    }
+    const vis = await buildPostVisibility(viewerId);
+    if (vis.hidden({ author })) return false;
+    if (viewerId && await blockedEither(viewerId, author._id)) return false;
+    return true;
+};
+
+module.exports = { buildPostVisibility, canViewPost };

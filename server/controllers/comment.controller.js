@@ -2,6 +2,7 @@ const Comment = require("../models/Comment");
 const Post = require("../models/post");
 const { createNotification } = require("./notification.controller");
 const { blockedEither } = require("../utils/socialGraph");
+const { canViewPost } = require("../utils/visibility");
 
 const createComment = async (req, res, next) => {
     try {
@@ -20,6 +21,10 @@ const createComment = async (req, res, next) => {
         // 6.1: commenting is an interaction - blocked pairs cannot do it.
         if (await blockedEither(req.user.id, post.author)) {
             return res.status(403).json({ errors: ["Cannot interact with this user"] });
+        }
+        // 6.3: a private author's post is invisible to non-followers -> 404.
+        if (!(await canViewPost(req.user.id, post))) {
+            return res.status(404).json({ errors: ["Post not found"] });
         }
 
         let depth = 0;
@@ -80,6 +85,11 @@ const getComments = async (req, res, next) => {
 
         const post = await Post.findById(postId);
         if (!post) return res.status(404).json({ errors: ["Post not found"] });
+        // 6.3: direct comment-list requests obey the same visibility rule
+        // as the post itself (private/blocked -> looks nonexistent).
+        if (!(await canViewPost(req.user ? req.user.id : null, post))) {
+            return res.status(404).json({ errors: ["Post not found"] });
+        }
 
         const comments = await Comment.find({ post: postId, parentComment: null })
             .populate("author", "username name avatar")

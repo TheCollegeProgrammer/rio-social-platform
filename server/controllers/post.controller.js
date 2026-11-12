@@ -85,7 +85,13 @@ const getTrendingHashtags = async (req, res, next) => {
             return res.json({ hashtags: trendingCache.tags });
         }
 
+        // 6.3: private authors' tags never surface in the global trending
+        // list - it is cached per-app, so the exclusion must be viewer
+        // independent (blocks/mutes are per-viewer and stay out of scope
+        // here; tags are shared strings, not author-attributed content).
         const rows = await Post.aggregate([
+            { $lookup: { from: "users", localField: "author", foreignField: "_id", as: "author" } },
+            { $match: { "author.isPrivate": { $ne: true } } },
             { $project: { hashtags: 1 } },
             { $unwind: "$hashtags" },
             { $group: { _id: "$hashtags", count: { $sum: 1 } } },

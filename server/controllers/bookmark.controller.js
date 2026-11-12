@@ -3,6 +3,7 @@ const User = require("../models/User");
 const { postImages } = require("./post.controller");
 const { buildPostVisibility } = require("../utils/visibility");
 const { blockedIdsFor } = require("../utils/socialGraph");
+const { canViewPost } = require("../utils/visibility");
 
 // F-11: user-supplied search text is interpolated into Mongo $regex - it
 // must be escaped so `(`/`.*` etc. are matched literally (ReDoS/regex
@@ -13,6 +14,11 @@ const toggleBookmark = async (req, res, next) => {
     try {
         const post = await Post.findById(req.params.id);
         if (!post) return res.status(404).json({ errors: ["Post not found"] });
+        // 6.3: bookmarking is per-user storage, but you cannot bookmark a
+        // post you are not allowed to see (private/blocked -> 404).
+        if (!(await canViewPost(req.user.id, post))) {
+            return res.status(404).json({ errors: ["Post not found"] });
+        }
 
         const user = await User.findById(req.user.id);
         const isBookmarked = user.bookmarks.some(

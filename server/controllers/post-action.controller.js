@@ -3,6 +3,7 @@ const User = require("../models/User");
 const { extractHashtags } = require("./post.controller");
 const { createNotification } = require("./notification.controller");
 const { blockedEither } = require("../utils/socialGraph");
+const { canViewPost } = require("../utils/visibility");
 
 const canModerate = async (post, userId) => {
     if (post.author.toString() === userId) return true;
@@ -94,6 +95,10 @@ const toggleLike = async (req, res, next) => {
         // 6.1: likes are an interaction - blocked pairs cannot create them.
         if (await blockedEither(userId, post.author)) {
             return res.status(403).json({ errors: ["Cannot interact with this user"] });
+        }
+        // 6.3: you cannot like what you are not allowed to see.
+        if (!(await canViewPost(userId, post))) {
+            return res.status(404).json({ errors: ["Post not found"] });
         }
         const alreadyLiked = post.likes.some((id) => id.toString() === userId);
 
