@@ -110,3 +110,8 @@
     color: var(--text);
     border-color: var(--border-strong);
 }
+
+/* 7.6: truthful upload progress with cancel. */
+.upload-progress-row { display: flex; align-items: center; gap: 10px; margin: 8px 0 0; }
+.upload-progress { flex: 1; height: 6px; background: var(--bg-raised); border: 1px solid var(--border); border-radius: 999px; overflow: hidden; }
+.upload-progress-bar { height: 100%; background: var(--accent); transition: width 0.15s ease; }

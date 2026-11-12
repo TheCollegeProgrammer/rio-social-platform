@@ -1,4 +1,4 @@
-import { apiRequest, uploadRequest, MEDIA_URL } from "./http";
+import { apiRequest, uploadRequest, uploadWithProgress, MEDIA_URL } from "./http";
 
 export { MEDIA_URL };
 
@@ -82,13 +82,13 @@ export const deleteComment = (postId, id) =>
 export const toggleCommentLike = (postId, id) =>
     apiRequest(`/posts/${postId}/comments/${id}/like`, { method: "POST" });
 
-export const createPostWithImages = (content, files = [], category = null, visibility = "public") => {
+export const createPostWithImages = (content, files = [], category = null, visibility = "public", opts = {}) => {
     const fd = new FormData();
     fd.append("content", content);
     if (category) fd.append("category", category);
     fd.append("visibility", visibility);
     (files || []).forEach((f) => fd.append("image", f));
-    return uploadRequest("/posts/image", fd).then((d) => d.post);
+    return uploadWithProgress("/posts/image", fd, opts).then((d) => d.post);
 };
 export const removePostImage = (id, index = null) =>
     apiRequest(`/posts/${id}/image${index === null ? "" : `?index=${index}`}`, { method: "DELETE" });

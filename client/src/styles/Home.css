@@ -144,3 +144,5 @@
 .char-count.warn { color: var(--danger); }
 .composer-hint { font-size: 13px; margin: 2px 0 0; }
 .create-post.drag-over { outline: 2px dashed var(--accent); outline-offset: -6px; }
+
+

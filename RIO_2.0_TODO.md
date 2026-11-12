@@ -54,7 +54,7 @@
 - [ ] **7.3 Draft Autosave** — ❌ depends on 7.2.
 - [ ] **7.4 Image Drag-and-Drop Reordering** — ❌ carousel order = upload order.
 - [ ] **7.5 Image Cropping & Editing** — ❌ no crop UI/pipeline.
-- [ ] **7.6 Upload Progress & Retry** — ❌ no per-file progress/cancel/retry (XHR/fetch progress needed).
+- [x] **7.6 Upload Progress & Retry** — ✅ `uploadWithProgress` in `http.js` (XHR upload variant: truthful `upload.onprogress` percent, AbortSignal cancel, same trust chain — cookies/CSRF/single-flight 401 refresh, identical error shapes); `usePostUpload` hook owns the publish flow (progress state, cancel → toast, failure → `failed` flag with **Retry** button — retry only fires after a failed attempt, and the server only creates a post on completed body, so no duplicate posts/media); `UploadProgress` bar with `role="progressbar"` + Cancel; composer submits show live `Uploading N%`. Abandoned temp uploads: aborted multipart requests never reach the controller (multer discards partial body) → no Cloudinary asset to clean. Per-file progress not applicable — single-request pipeline (truthful request-level progress accepted); avatar/cover uploads unchanged (fetch path, toasts). Orphan reconciliation stays with 7.10.
 - [ ] **7.7 Public Post Sharing URLs** — 🔶 `/post/:id` route + `optionalAuth` works; gap: link-preview metadata (og tags), graceful deleted-post page.
 - [ ] **7.8 Stories** — ❌ no story model/flows/expiry.
 - [ ] **7.9 Video Upload & Playback** — ❌ `validateImages` = images only; no video field/validation/playback.

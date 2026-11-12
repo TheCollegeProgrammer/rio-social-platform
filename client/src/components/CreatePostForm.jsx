@@ -1,20 +1,17 @@
 import { useRef, useState } from "react";
 import { ImagePlus, X } from "lucide-react";
-import { createPostWithImages } from "../services/api";
 import { filterImages } from "../lib/fileValidation";
-import { useToast } from "../context/useToast.js";
+import { usePostUpload } from "../lib/usePostUpload";
 import VisibilityToggle from "./VisibilityToggle";
+import UploadProgress from "./UploadProgress";
 import "../styles/Media.css";
 
 const MAX = 500;
 const MAX_IMAGES = 8;
 
 export default function CreatePostForm({ onCreated, category = null }) {
-    const toast = useToast();
     const fileRef = useRef(null);
     const [content, setContent] = useState("");
-    const [posting, setPosting] = useState(false);
-    const [error, setError] = useState("");
     const [images, setImages] = useState([]);
     const [visibility, setVisibility] = useState("public");
     const [dragging, setDragging] = useState(false);
@@ -59,29 +56,14 @@ export default function CreatePostForm({ onCreated, category = null }) {
         if (fileRef.current) fileRef.current.value = "";
     };
 
+    // 7.6: publish flow owns progress/cancel/retry; resets on success.
+    const { posting, progress, failed, error, setError, publish, cancelUpload } =
+        usePostUpload({ category, onCreated, onDone: () => { setContent(""); clearImages(); setVisibility("public"); } });
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!content.trim() && images.length === 0) return;
-        try {
-            setPosting(true);
-            setError("");
-            const post = await createPostWithImages(
-                content.trim() || "(no text)",
-                images.map((im) => im.file),
-                category,
-                visibility
-            );
-            onCreated(post);
-            setContent("");
-            clearImages();
-            setVisibility("public");
-            toast.success("Post published");
-        } catch (err) {
-            setError(err.message);
-            toast.error(err.message);
-        } finally {
-            setPosting(false);
-        }
+        await publish(content.trim() || "(no text)", images.map((im) => im.file), visibility);
     };
 
     return (
@@ -119,6 +101,7 @@ export default function CreatePostForm({ onCreated, category = null }) {
                     ))}
                 </div>
             )}
+            <UploadProgress progress={progress} onCancel={cancelUpload} />
             <div className="post-actions">
                 <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
                     <button type="button" className="btn btn-ghost btn-sm" onClick={() => fileRef.current?.click()}>
@@ -132,7 +115,7 @@ export default function CreatePostForm({ onCreated, category = null }) {
                     <span className={content.length > MAX - 50 ? "char-count warn" : "char-count"}>{content.length}/{MAX}</span>
                 </div>
                 <button type="submit" className="btn btn-sm" disabled={posting || (!content.trim() && images.length === 0)}>
-                    {posting ? "Posting..." : "Post"}
+                    {posting ? `Uploading ${progress}%` : failed ? "Retry" : "Post"}
                 </button>
             </div>
             <input

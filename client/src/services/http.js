@@ -99,3 +99,47 @@ export const uploadRequest = (path, formData) =>
     withNetworkFallback(() =>
         request(path, { method: "POST", body: formData }, false)
     );
+
+// 7.6: XHR upload variant - fetch exposes no upload progress events.
+// Same trust chain as `request`: cookies, CSRF header, single 401 refresh.
+export const uploadWithProgress = (path, formData, { onProgress, signal } = {}) =>
+    withNetworkFallback(() =>
+        new Promise((resolve, reject) => {
+            if (signal?.aborted) {
+                const err = new Error("Upload cancelled");
+                err.name = "AbortError";
+                return reject(err);
+            }
+            const send = (isRetry) => {
+                const xhr = new XMLHttpRequest();
+                xhr.open("POST", `${API_URL}${path}`);
+                xhr.withCredentials = true;
+                const csrf = readCsrf();
+                if (csrf) xhr.setRequestHeader("X-CSRF-Token", csrf);
+                xhr.upload.onprogress = (e) => {
+                    if (e.lengthComputable && onProgress) onProgress(Math.round((e.loaded / e.total) * 100));
+                };
+                xhr.onload = () => {
+                    let data = {};
+                    try { data = JSON.parse(xhr.responseText || "{}"); } catch { /* empty body */ }
+                    if (xhr.status >= 200 && xhr.status < 300) return resolve(data);
+                    const fail = () => {
+                        try { handleError(data); } catch (e) { reject(e); }
+                    };
+                    if (xhr.status === 401 && !isRetry && needsRefresh(path)) {
+                        return refreshSession().then(() => send(true)).catch(fail);
+                    }
+                    return fail();
+                };
+                xhr.onerror = () => reject(new Error("Cannot connect to server"));
+                xhr.onabort = () => {
+                    const err = new Error("Upload cancelled");
+                    err.name = "AbortError";
+                    reject(err);
+                };
+                signal?.addEventListener("abort", () => xhr.abort(), { once: true });
+                xhr.send(formData);
+            };
+            send(false);
+        })
+    );
