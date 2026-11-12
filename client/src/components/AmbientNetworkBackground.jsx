@@ -39,7 +39,23 @@ function AmbientNetworkBackground() {
 
         const attach = () => { if (!attached) { gsap.ticker.add(tick); attached = true; } };
         const detach = () => { if (attached) { gsap.ticker.remove(tick); attached = false; } };
-        const onVis = () => (document.hidden ? detach() : attach());
+        const scheduleNext = () => {
+            schedule = gsap.delayedCall(rand(C.signalEvery[0], C.signalEvery[1]), () => {
+                scene.spawnSignal();
+                scheduleNext();
+            });
+        };
+
+        // 4.10: pause BOTH drawing and signal scheduling while hidden.
+        const onVis = () => {
+            if (document.hidden) {
+                detach();
+                if (schedule) { schedule.kill(); schedule = null; }
+            } else {
+                attach();
+                if (!reduced && !schedule) scheduleNext();
+            }
+        };
 
         let resizeTimer = null;
         const onResize = () => {
@@ -55,12 +71,6 @@ function AmbientNetworkBackground() {
             drawScene(ctx, w, h, scene, 0, 0, true);
         } else {
             attach();
-            const scheduleNext = () => {
-                schedule = gsap.delayedCall(rand(C.signalEvery[0], C.signalEvery[1]), () => {
-                    scene.spawnSignal();
-                    scheduleNext();
-                });
-            };
             scheduleNext();
             document.addEventListener("visibilitychange", onVis);
         }
