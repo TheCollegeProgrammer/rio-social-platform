@@ -25,9 +25,9 @@
 
 - [x] **5.1 Socket.IO Integration** — ✅ `socket.io` + `socket.io-client` installed; `server/socket/index.js` (initSocket, personal rooms, `emitToUser`); `client/src/lib/socket.js` + `SocketContext.jsx` (single shared socket, connect/disconnect by session); `server/config/origins.js` shared by Express + Socket.IO; REST retained for history/fallback.
 - [x] **5.2 Authenticated Sockets** — ✅ `server/socket/auth.js` mirrors REST trust chain (`verifyAccess` + `isSessionActive`); `io.use` middleware rejects unauthenticated/garbage/revoked handshakes with `unauthorized`; `server/test_socket.js` covers no-cookie/garbage/authenticated/revoked + REST coexistence + unknown-event resilience (11 checks).
-- [ ] **5.3 Real-Time Messaging** — ❌ persist-then-emit message events, dedupe vs REST.
-- [ ] **5.4 Typing Indicators** — ❌ ephemeral, rate-limited, auto-clear.
-- [ ] **5.5 Online/Offline Presence** — ❌ in-memory socket-count presence, multi-device correct, no DB writes per heartbeat.
+- [x] **5.3 Real-Time Messaging** — ✅ persist-then-emit: `sendMessage` controller emits `message:new` (conversation id + populated message) to every participant's personal room after `save()`; client `useChatSocket` hook appends with `_id` dedupe vs REST; `Messages.jsx` live-updates inbox preview/unread and auto-marks read when the chat is open; REST remains source of truth for history/fallback.
+- [x] **5.4 Typing Indicators** — ✅ `server/socket/typing.js`: ephemeral `typing:start/stop` → `typing:update` to participants' rooms; membership re-checked per event (outsiders blocked), 1.5s broadcast rate limit, 5s server-side auto-clear, never persisted; client throttles at 1.2s and shows "…is typing" indicator.
+- [x] **5.5 Online/Offline Presence** — ✅ server: in-memory multi-device socket count (done in WP-A) + `presence:get` → `presence:state` reply; client `usePresence` hook (asks on connect, follows `presence:update`) renders lime presence dot on viewed profiles (`Presence.css`). No DB writes per heartbeat.
 - [ ] **5.6 Message Delivery Status** — 🔶 read receipts exist via REST (`PATCH /:id/read`); gap: sent/delivered states + socket sync.
 - [ ] **5.7 Multi-Device Sync** — ❌ broadcast read/message events to all user sockets.
 - [ ] **5.8 Real-Time Notifications** — 🔶 polling exists (`useUnreadCounts`); gap: emit-after-persist socket events.

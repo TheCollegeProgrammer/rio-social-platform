@@ -1,0 +1,10 @@
+/* 5.5: online/offline presence dot shown next to a viewed profile handle. */
+.presence-dot {
+    display: inline-block;
+    width: 9px;
+    height: 9px;
+    margin-left: 6px;
+    border-radius: 50%;
+    background: var(--lime, #a3e635);
+    vertical-align: middle;
+}

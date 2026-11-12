@@ -2,6 +2,7 @@ const { Server } = require("socket.io");
 const { allowedOrigins } = require("../config/origins");
 const { authenticate } = require("./auth");
 const presence = require("./presence");
+const { registerTyping } = require("./typing");
 
 // 5.1/5.2: Socket.IO transport layered beside the existing REST APIs
 // (history, initial state and fallback stay on REST). Handshakes must
@@ -31,6 +32,14 @@ const initSocket = (httpServer) => {
         // Tell the user's other devices this connection came online.
         socket.to(room).emit("presence:update", { userId: id, online: true });
 
+        // 5.5: reply with current online state for any profile being viewed.
+        socket.on("presence:get", ({ userId } = {}) => {
+            if (!userId || typeof userId !== "string") return;
+            socket.emit("presence:state", { userId, online: presence.isOnline(userId) });
+        });
+
+        registerTyping(socket, io);
+
         socket.on("disconnect", () => {
             // Only broadcast offline when the LAST device disconnects.
             if (presence.remove(id, socket.id)) {
@@ -49,4 +58,10 @@ const emitToUser = (userId, event, payload) => {
     if (io) io.to(`user:${String(userId)}`).emit(event, payload);
 };
 
-module.exports = { initSocket, getIO, emitToUser };
+// Emit to every participant of a conversation (all their devices).
+const emitToConversation = (participants, event, payload) => {
+    if (!io) return;
+    for (const p of participants) io.to(`user:${p}`).emit(event, payload);
+};
+
+module.exports = { initSocket, getIO, emitToUser, emitToConversation };

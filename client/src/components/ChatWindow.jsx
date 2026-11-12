@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { ArrowLeft, Send, Mail } from "lucide-react";
 import { useAuth } from "../context/useAuth";
 import { getMessages, sendMessage, markConversationRead } from "../services/api";
+import { useChatSocket } from "../lib/useChatSocket";
 import Avatar from "./Avatar";
 import "../pages/MessagesChat.css";
 
@@ -13,6 +14,11 @@ function ChatWindow({ conversation, onBack, onRead }) {
     const [error, setError] = useState("");
     const [sending, setSending] = useState(false);
     const bottomRef = useRef(null);
+    const { peerTyping, notifyTyping, stopTyping } = useChatSocket({
+        conversationId: conversation?._id,
+        currentUserId: user?._id,
+        setMessages
+    });
 
     const other = conversation?.participants?.find((p) => p._id !== user?._id);
     const loading = !!conversation?._id && loadedFor !== conversation._id;
@@ -35,7 +41,7 @@ function ChatWindow({ conversation, onBack, onRead }) {
 
     useEffect(() => {
         bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, [messages.length]);
+    }, [messages.length, peerTyping]);
 
     const submit = async (e) => {
         e.preventDefault();
@@ -44,8 +50,9 @@ function ChatWindow({ conversation, onBack, onRead }) {
             setSending(true);
             setError("");
             const msg = await sendMessage(conversation._id, text.trim());
-            setMessages((prev) => [...prev, msg]);
+            setMessages((prev) => (prev.some((m) => m._id === msg._id) ? prev : [...prev, msg]));
             setText("");
+            stopTyping();
         } catch (err) {
             setError(err.message);
         } finally {
@@ -97,13 +104,21 @@ function ChatWindow({ conversation, onBack, onRead }) {
                 <div ref={bottomRef} />
             </div>
 
+            {peerTyping && (
+                <p className="typing-indicator">{other?.name || "Someone"} is typing…</p>
+            )}
+
             <form className="chat-input" onSubmit={submit}>
                 <input
                     type="text"
                     placeholder="Type a message..."
                     value={text}
-                    onChange={(e) => setText(e.target.value)}
                     maxLength={2000}
+                    onChange={(e) => {
+                        setText(e.target.value);
+                        if (e.target.value) notifyTyping();
+                        else stopTyping();
+                    }}
                 />
                 <button type="submit" className="btn btn-sm" disabled={sending || !text.trim()}>
                     {sending ? "..." : <><Send size={14} /> Send</>}

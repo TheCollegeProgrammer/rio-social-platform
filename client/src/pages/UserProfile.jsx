@@ -4,10 +4,12 @@ import { useAuth } from "../context/useAuth";
 import { useToast } from "../context/useToast.js";
 import { getProfile, getOrCreateConversation, mediaUrl } from "../services/api";
 import { useFollowToggle } from "../lib/useFollowToggle";
+import { usePresence } from "../lib/usePresence";
 import PostCard from "../components/PostCard";
 import FollowListPopover from "../components/FollowListPopover";
 import "../styles/Home.css";
 import "../styles/Profile.css";
+import "../styles/Presence.css";
 
 function UserProfile() {
     const { id } = useParams();
@@ -22,6 +24,8 @@ function UserProfile() {
     const [followBusy, setFollowBusy] = useState(false);
     const [messaging, setMessaging] = useState(false);
     const { toggle: followToggle } = useFollowToggle();
+    // 5.5: live presence for other users' profiles (null for your own).
+    const { online } = usePresence(user?._id === id ? null : id);
 
     useEffect(() => {
         let cancelled = false;
@@ -96,7 +100,12 @@ function UserProfile() {
                     </div>
                     <div className="profile-info">
                         <h1>{profile.name}</h1>
-                        <span className="profile-handle">@{profile.username}</span>
+                        <span className="profile-handle">
+                            @{profile.username}
+                            {online && (
+                                <span className="presence-dot" title="Online" aria-label="Online" role="img" />
+                            )}
+                        </span>
                         {profile.bio && <p className="bio">{profile.bio}</p>}
                         <div className="profile-stats">
                             <span><strong>{profile.postsCount}</strong> posts</span>

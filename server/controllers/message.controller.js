@@ -1,6 +1,7 @@
 const Conversation = require("../models/Conversation");
 const Message = require("../models/Message");
 const User = require("../models/User");
+const { emitToConversation } = require("../socket");
 
 const findOrCreateConversation = async (userId, otherId) => {
     let convo = await Conversation.findOne({
@@ -117,6 +118,9 @@ const sendMessage = async (req, res, next) => {
         }
         await convo.save();
         await message.populate("sender", "username name avatar");
+
+        // 5.3: persist-then-emit — REST stays the source of truth; sockets get a push.
+        emitToConversation(convo.participants, "message:new", { conversationId: convo._id.toString(), message });
 
         res.status(201).json({ message: "Message sent", data: message });
     } catch (error) {
