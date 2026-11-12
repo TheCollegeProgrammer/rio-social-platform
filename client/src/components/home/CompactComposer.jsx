@@ -2,6 +2,7 @@ import { useState } from "react";
 import { ImagePlus, Layers } from "lucide-react";
 import { useAuth } from "../../context/useAuth";
 import CreatePostForm from "../CreatePostForm";
+import DraftsList from "./DraftsList";
 import { mediaUrl } from "../../services/api";
 import "./Composer.css";
 
@@ -19,18 +20,35 @@ function CompactComposer({ onCreated }) {
     const { user } = useAuth();
     const [open, setOpen] = useState(false);
     const [category, setCategory] = useState("");
+    const [loadDraft, setLoadDraft] = useState(null);
+    const [draftsVersion, setDraftsVersion] = useState(0);
     const src = user ? mediaUrl(user.avatar) : null;
+    const bumpDrafts = () => setDraftsVersion((v) => v + 1);
 
     if (open) {
         return (
-            <CreatePostForm category={category || null} onCreated={onCreated} />
+            <>
+                <DraftsList
+                    refreshToken={draftsVersion}
+                    onPick={(d) => setLoadDraft(d)}
+                />
+                <CreatePostForm
+                    category={category || null}
+                    onCreated={onCreated}
+                    initialDraft={loadDraft}
+                    onDraftConsumed={() => setLoadDraft(null)}
+                    onDraftChanged={bumpDrafts}
+                />
+            </>
         );
     }
 
     const openForm = () => setOpen(true);
 
     return (
-        <div className="composer-compact">
+        <>
+            <DraftsList refreshToken={draftsVersion} onPick={(d) => { setLoadDraft(d); setOpen(true); }} />
+            <div className="composer-compact">
             <span className="composer-avatar">
                 {src ? <img src={src} alt="" /> : user?.name?.charAt(0).toUpperCase() || "?"}
             </span>
@@ -60,7 +78,8 @@ function CompactComposer({ onCreated }) {
                 </label>
                 <button className="btn btn-sm" onClick={openForm}>Post</button>
             </div>
-        </div>
+            </div>
+        </>
     );
 }
 

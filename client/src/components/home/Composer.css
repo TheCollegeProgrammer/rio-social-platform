@@ -87,3 +87,15 @@
     .composer-category { display: none; }
     .composer-compact { gap: 8px; padding: 10px; }
 }
+
+/* 7.2: draft list toggle, panel rows, and inline save-status chip. */
+.drafts-list { margin-top: 14px; display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
+.drafts-panel { list-style: none; margin: 0; padding: 6px; width: 100%; background: var(--bg-raised); border: 1px solid var(--border); border-radius: var(--radius-lg); display: flex; flex-direction: column; gap: 2px; }
+.drafts-panel li { display: flex; align-items: center; gap: 6px; }
+.draft-item { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 2px; text-align: left; padding: 8px 10px; background: none; border: none; border-radius: 8px; cursor: pointer; color: inherit; }
+.draft-item:hover { background: var(--bg-hover); }
+.draft-excerpt { font-size: 13px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
+.draft-date { font-size: 11px; }
+.draft-delete { flex-shrink: 0; display: flex; align-items: center; padding: 6px; background: none; border: none; border-radius: 6px; color: var(--muted); cursor: pointer; }
+.draft-delete:hover { color: var(--danger, #e5484d); background: var(--bg-hover); }
+.draft-status { font-size: 12px; }

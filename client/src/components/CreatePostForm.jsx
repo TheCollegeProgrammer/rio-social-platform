@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import { ImagePlus } from "lucide-react";
 import { filterImages } from "../lib/fileValidation";
 import { usePostUpload } from "../lib/usePostUpload";
+import { useDrafts } from "../lib/useDrafts";
 import VisibilityToggle from "./VisibilityToggle";
 import UploadProgress from "./UploadProgress";
 import MediaPreviewGrid from "./MediaPreviewGrid";
@@ -10,7 +11,7 @@ import "../styles/Media.css";
 const MAX = 500;
 const MAX_IMAGES = 8;
 
-export default function CreatePostForm({ onCreated, category = null }) {
+export default function CreatePostForm({ onCreated, category = null, initialDraft = null, onDraftConsumed, onDraftChanged }) {
     const fileRef = useRef(null);
     const [content, setContent] = useState("");
     const [images, setImages] = useState([]);
@@ -72,9 +73,18 @@ export default function CreatePostForm({ onCreated, category = null }) {
     const { posting, progress, failed, error, setError, publish, cancelUpload } =
         usePostUpload({ category, onCreated, onDone: () => { setContent(""); clearImages(); setVisibility("public"); } });
 
+    // 7.2: owner-private draft save/load; publish from a draft is explicit only.
+    const { draftId, saveStatus, saveStatusText, saveDraft, publishFromDraft } = useDrafts({
+        initialDraft, category, setContent, setVisibility, setImages, onDraftConsumed, onDraftChanged,
+        onPublished: onCreated, reset: () => { setContent(""); clearImages(); setVisibility("public"); }
+    });
+
+    const hasDraftable = Boolean(content.trim() || images.length);
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!content.trim() && images.length === 0) return;
+        if (!hasDraftable) return;
+        if (draftId) return publishFromDraft({ content, images, visibility });
         await publish(content.trim() || "(no text)", images.map((im) => im.file), visibility);
     };
 
@@ -96,9 +106,7 @@ export default function CreatePostForm({ onCreated, category = null }) {
                 maxLength={MAX}
             />
             {!content && images.length === 0 && (
-                <p className="muted composer-hint">
-                    Drag images here or use Photos to attach. Up to 8 images, 5 MB each.
-                </p>
+                <p className="muted composer-hint">Drag images here or use Photos to attach. Up to 8 images, 5 MB each.</p>
             )}
             {error && <p className="error-message">{error}</p>}
             {images.length > 0 && (
@@ -116,10 +124,16 @@ export default function CreatePostForm({ onCreated, category = null }) {
                         <button type="button" className="btn btn-ghost btn-sm" onClick={clearImages}>Clear</button>
                     )}
                     <span className={content.length > MAX - 50 ? "char-count warn" : "char-count"}>{content.length}/{MAX}</span>
+                    {saveStatus && <span className="muted draft-status">{saveStatusText}</span>}
                 </div>
-                <button type="submit" className="btn btn-sm" disabled={posting || (!content.trim() && images.length === 0)}>
-                    {posting ? `Uploading ${progress}%` : failed ? "Retry" : "Post"}
-                </button>
+                <div style={{ display: "flex", gap: 8 }}>
+                    <button type="button" className="btn btn-ghost btn-sm" onClick={() => saveDraft({ content, images, visibility })} disabled={!hasDraftable || saveStatus === "saving"}>
+                        {saveStatus === "saving" ? "Saving…" : "Save draft"}
+                    </button>
+                    <button type="submit" className="btn btn-sm" disabled={posting || !hasDraftable}>
+                        {posting ? `Uploading ${progress}%` : failed ? "Retry" : "Post"}
+                    </button>
+                </div>
             </div>
             <input
                 ref={fileRef}
