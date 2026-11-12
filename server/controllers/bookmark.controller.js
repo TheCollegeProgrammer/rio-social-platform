@@ -2,6 +2,7 @@ const Post = require("../models/post");
 const User = require("../models/User");
 const { postImages } = require("./post.controller");
 const { buildPostVisibility } = require("../utils/visibility");
+const { blockedIdsFor } = require("../utils/socialGraph");
 
 // F-11: user-supplied search text is interpolated into Mongo $regex - it
 // must be escaped so `(`/`.*` etc. are matched literally (ReDoS/regex
@@ -42,7 +43,13 @@ const getBookmarks = async (req, res, next) => {
             });
 
         const vis = await buildPostVisibility(req.user.id);
-        res.json({ posts: user.bookmarks.filter((p) => !vis.hidden(p)) });
+        // 6.1: bookmarked posts of blocked accounts disappear too.
+        const blocked = new Set(await blockedIdsFor(req.user.id));
+        res.json({
+            posts: user.bookmarks.filter(
+                (p) => !vis.hidden(p) && !blocked.has(String(p.author?._id ?? p.author))
+            )
+        });
     } catch (error) {
         return next(error);
     }
@@ -59,13 +66,16 @@ const searchPosts = async (req, res, next) => {
         const filter = hashtag
             ? { hashtags: hashtag }
             : { content: { $regex: escapeRegex(query), $options: "i" } };
+        const userId = req.user ? req.user.id : null;
+        // 6.1: blocked authors cannot surface in content search.
+        const blocked = await blockedIdsFor(userId);
+        if (blocked.length) filter.author = { $nin: blocked };
 
         const posts = await Post.find(filter)
             .populate("author", "username name avatar isPrivate")
             .sort({ createdAt: -1 })
             .limit(20);
 
-        const userId = req.user ? req.user.id : null;
         const vis = await buildPostVisibility(userId);
         const visible = posts.filter((post) => !vis.hidden(post));
         const enriched = visible.map((post) => ({
@@ -91,11 +101,14 @@ const searchUsers = async (req, res, next) => {
         const query = (req.query.q || "").trim();
         if (!query) return res.json({ users: [] });
 
+        // 6.1: blocked accounts never appear in people search (either side).
+        const blocked = await blockedIdsFor(req.user.id);
         const users = await User.find({
             $or: [
                 { username: { $regex: escapeRegex(query), $options: "i" } },
                 { name: { $regex: escapeRegex(query), $options: "i" } }
-            ]
+            ],
+            ...(blocked.length ? { _id: { $nin: blocked } } : {})
         })
             .select("username name avatar bio isPrivate")
             .limit(20);

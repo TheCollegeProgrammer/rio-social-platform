@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/useAuth";
 import { getProfile, getOrCreateConversation, mediaUrl } from "../services/api";
 import { useProfileFollow } from "../lib/useProfileFollow";
+import { useProfileBlock } from "../lib/useProfileBlock";
 import { usePresence } from "../lib/usePresence";
 import PostCard from "../components/PostCard";
 import FollowListPopover from "../components/FollowListPopover";
@@ -23,6 +24,10 @@ function UserProfile() {
     const {
         following, followRequested, followBusy, sync, handleFollow
     } = useProfileFollow(setProfile);
+    // 6.1: block/unblock clears follow state when the edge is severed.
+    const { busy: blockBusy, toggle: toggleBlock } = useProfileBlock(
+        profile, setProfile, () => sync({ isFollowing: false, followRequested: false })
+    );
     // 5.5: live presence for other users' profiles (null for your own).
     const { online } = usePresence(user?._id === id ? null : id);
 
@@ -90,6 +95,14 @@ function UserProfile() {
                             <button className="btn btn-ghost" onClick={() => navigate("/settings")}>
                                 Edit profile
                             </button>
+                        ) : profile.blockedByYou ? (
+                            <button
+                                className="btn btn-ghost"
+                                onClick={() => toggleBlock(id)}
+                                disabled={blockBusy}
+                            >
+                                Unblock
+                            </button>
                         ) : (
                             <>
                                 <button
@@ -101,6 +114,13 @@ function UserProfile() {
                                 </button>
                                 <button className="btn btn-ghost" onClick={handleMessage} disabled={messaging}>
                                     {messaging ? "Opening..." : "Message"}
+                                </button>
+                                <button
+                                    className="btn btn-ghost"
+                                    onClick={() => toggleBlock(id)}
+                                    disabled={blockBusy}
+                                >
+                                    Block
                                 </button>
                             </>
                         )}

@@ -2,6 +2,7 @@ const Post = require("../models/post");
 const User = require("../models/User");
 const { extractHashtags } = require("./post.controller");
 const { createNotification } = require("./notification.controller");
+const { blockedEither } = require("../utils/socialGraph");
 
 const canModerate = async (post, userId) => {
     if (post.author.toString() === userId) return true;
@@ -90,6 +91,10 @@ const toggleLike = async (req, res, next) => {
         if (!post) return res.status(404).json({ errors: ["Post not found"] });
 
         const userId = req.user.id;
+        // 6.1: likes are an interaction - blocked pairs cannot create them.
+        if (await blockedEither(userId, post.author)) {
+            return res.status(403).json({ errors: ["Cannot interact with this user"] });
+        }
         const alreadyLiked = post.likes.some((id) => id.toString() === userId);
 
         const updated = await Post.findByIdAndUpdate(

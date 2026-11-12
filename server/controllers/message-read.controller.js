@@ -55,4 +55,22 @@ const getUnreadCount = async (req, res, next) => {
     }
 };
 
-module.exports = { markConversationRead, getUnreadCount };
+// F-12: GET must never create resources (prefetchers/CSRF-less GETs were
+// spawning orphan conversations). Creation lives in message.controller POST;
+// GET is find-only.
+const findConversation = async (req, res, next) => {
+    try {
+        const { userId } = req.params;
+        if (userId === req.user.id) return res.status(400).json({ errors: ["Cannot message yourself"] });
+        const convo = await Conversation.findOne({
+            participants: { $all: [req.user.id, userId], $size: 2 }
+        }).populate("participants", "username name avatar");
+        if (!convo) return res.status(404).json({ errors: ["Conversation not found"] });
+        res.json({ conversation: convo });
+    } catch (error) {
+        if (error.name === "CastError") return res.status(400).json({ errors: ["Invalid user ID"] });
+        return next(error);
+    }
+};
+
+module.exports = { markConversationRead, getUnreadCount, findConversation };

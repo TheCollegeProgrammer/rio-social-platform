@@ -1,4 +1,5 @@
 const Conversation = require("../models/Conversation");
+const { blockedEither } = require("../utils/socialGraph");
 
 // 5.4: ephemeral typing signals — never persisted, rate-limited per
 // user+conversation, and auto-cleared server-side if the client never
@@ -23,6 +24,9 @@ const findOwned = async (conversationId, userId) => {
     if (!conversationId || typeof conversationId !== "string") return null;
     const convo = await Conversation.findById(conversationId).select("participants");
     if (!convo || !convo.participants.some((p) => p.toString() === userId)) return null;
+    // 6.1: blocked pairs may not signal typing into a shared thread either.
+    const other = convo.participants.find((p) => p.toString() !== userId);
+    if (other && await blockedEither(userId, other.toString())) return null;
     return convo;
 };
 

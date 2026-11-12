@@ -1,9 +1,13 @@
 const Notification = require("../models/Notification");
 const { emitToUser } = require("../socket");
+const { blockedEither } = require("../utils/socialGraph");
 
 const createNotification = async (data) => {
     try {
         if (String(data.recipient) === String(data.sender)) return null;
+        // 6.1: a block silences every notification crossing it (belt and
+        // braces - most paths are already refused at their endpoint).
+        if (await blockedEither(data.recipient, data.sender)) return null;
         const notification = await Notification.create(data);
         // 5.8: emit only after the notification is persisted; populate so
         // the push payload matches the REST list shape. Recipient room =

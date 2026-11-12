@@ -1,4 +1,5 @@
 const User = require("../models/User");
+const { blockedIdsFor } = require("../utils/socialGraph");
 
 const DAY_MS = 86400000;
 const MAX_LIMIT = 10;
@@ -32,7 +33,9 @@ const getSuggestions = async (req, res, next) => {
 
         const me = await User.findById(req.user.id).select("following");
         const following = (me?.following || []).map(String);
-        const exclude = new Set([...following, req.user.id]);
+        // 6.1: blocked accounts are never suggested in either direction.
+        const blocked = await blockedIdsFor(req.user.id);
+        const exclude = new Set([...following, req.user.id, ...blocked]);
         const mySet = new Set(following);
 
         // Bucket 1 — mutual connections: discovered via the first

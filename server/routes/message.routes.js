@@ -4,13 +4,13 @@ const { messageLimiter } = require("../middleware/ratelimit");
 const {
     getConversations,
     getOrCreateConversation,
-    findConversation,
     getMessages,
     sendMessage
 } = require("../controllers/message.controller");
 const {
     markConversationRead,
-    getUnreadCount
+    getUnreadCount,
+    findConversation
 } = require("../controllers/message-read.controller");
 const { getNewChatUsers } = require("../controllers/message-users.controller");
 

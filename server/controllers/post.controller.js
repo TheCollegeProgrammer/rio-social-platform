@@ -1,6 +1,7 @@
 const Post = require("../models/post");
 const { normalizeCategory } = require("../config/categories");
 const { buildPostVisibility } = require("../utils/visibility");
+const { blockedEither } = require("../utils/socialGraph");
 
 const extractHashtags = (content) => {
     const matches = content.match(/#\w+/g);
@@ -42,6 +43,10 @@ const getPostById = async (req, res, next) => {
         if (!post) return res.status(404).json({ errors: ["Post not found"] });
 
         const userId = req.user ? req.user.id : null;
+        // 6.1: a blocked author's post is as invisible as a private one.
+        if (userId && await blockedEither(userId, post.author._id ?? post.author)) {
+            return res.status(404).json({ errors: ["Post not found"] });
+        }
         // F-13: a private author's post is invisible to non-followers -> 404
         // (existence itself must not leak).
         const vis = await buildPostVisibility(userId);

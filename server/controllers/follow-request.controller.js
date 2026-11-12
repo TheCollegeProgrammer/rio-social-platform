@@ -1,6 +1,7 @@
 const FollowRequest = require("../models/FollowRequest");
 const User = require("../models/User");
 const { createNotification } = require("./notification.controller");
+const { blockedEither } = require("../utils/socialGraph");
 
 // 6.4: incoming pending requests for the signed-in account owner.
 const getFollowRequests = async (req, res, next) => {
@@ -36,6 +37,19 @@ const getSentFollowRequests = async (req, res, next) => {
 // and only while it is still pending (double-approve / wrong owner -> 404).
 const approveFollowRequest = async (req, res, next) => {
     try {
+        // 6.1: race guard - blocks purge pending requests, but re-check before
+        // converting one into a live follow edge.
+        const pending = await FollowRequest.findOne({
+            _id: req.params.id,
+            target: req.user.id,
+            status: "pending"
+        });
+        if (!pending) {
+            return res.status(404).json({ errors: ["Follow request not found"] });
+        }
+        if (await blockedEither(req.user.id, pending.requester)) {
+            return res.status(403).json({ errors: ["Cannot interact with this user"] });
+        }
         const flipped = await FollowRequest.updateOne(
             { _id: req.params.id, target: req.user.id, status: "pending" },
             { $set: { status: "approved" } }
@@ -43,7 +57,7 @@ const approveFollowRequest = async (req, res, next) => {
         if (!flipped.matchedCount) {
             return res.status(404).json({ errors: ["Follow request not found"] });
         }
-        const fr = await FollowRequest.findById(req.params.id);
+        const fr = pending;
         const [me, requester] = await Promise.all([
             User.findById(req.user.id),
             User.findById(fr.requester)

@@ -1,6 +1,7 @@
 const User = require("../models/User");
 const Post = require("../models/post");
 const FollowRequest = require("../models/FollowRequest");
+const Block = require("../models/Block");
 const { buildPostVisibility } = require("../utils/visibility");
 
 const getProfile = async (req, res, next) => {
@@ -11,6 +12,23 @@ const getProfile = async (req, res, next) => {
             .populate("following", "username name avatar");
 
         if (!user) return res.status(404).json({ errors: ["User not found"] });
+
+        const viewerId = req.user ? req.user.id : null;
+        // 6.1: if the target blocked the viewer the profile is unavailable;
+        // the reverse direction stays visible so the blocker can unblock.
+        let blockedByYou = false;
+        if (viewerId && String(viewerId) !== String(user._id)) {
+            const edge = await Block.findOne({
+                $or: [
+                    { blocker: viewerId, blocked: user._id },
+                    { blocker: user._id, blocked: viewerId }
+                ]
+            });
+            if (edge && String(edge.blocker) === String(user._id)) {
+                return res.status(403).json({ errors: ["This account is unavailable"] });
+            }
+            blockedByYou = !!edge;
+        }
 
         const posts = await Post.find({ author: user._id })
             .populate("author", "username name avatar isPrivate")
@@ -23,7 +41,6 @@ const getProfile = async (req, res, next) => {
         const postsCount = await Post.countDocuments({ author: user._id });
         const followersCount = user.followers.length;
         const followingCount = user.following.length;
-        const viewerId = req.user ? req.user.id : null;
         const isFollowing = user.followers.some((f) => f && String(f._id) === viewerId);
         // 6.4: let the profile button render "Requested" for a pending ask.
         let followRequested = false;
@@ -47,6 +64,7 @@ const getProfile = async (req, res, next) => {
                 isPrivate: user.isPrivate,
                 isFollowing,
                 followRequested,
+                blockedByYou,
                 followersCount,
                 followingCount,
                 postsCount,

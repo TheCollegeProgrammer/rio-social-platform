@@ -2,6 +2,7 @@ const Conversation = require("../models/Conversation");
 const Message = require("../models/Message");
 const User = require("../models/User");
 const { emitToConversation } = require("../socket");
+const { blockedEither } = require("../utils/socialGraph");
 
 const findOrCreateConversation = async (userId, otherId) => {
     let convo = await Conversation.findOne({
@@ -38,6 +39,10 @@ const getOrCreateConversation = async (req, res, next) => {
         }
         const user = await User.findById(userId);
         if (!user) return res.status(404).json({ errors: ["User not found"] });
+        // 6.1: blocks cut both message directions, even for existing threads.
+        if (await blockedEither(req.user.id, userId)) {
+            return res.status(403).json({ errors: ["Cannot interact with this user"] });
+        }
         const convo = await findOrCreateConversation(req.user.id, userId);
         res.json({ conversation: convo });
     } catch (error) {
@@ -94,6 +99,11 @@ const sendMessage = async (req, res, next) => {
         if (!convo.participants.some((p) => p.toString() === req.user.id)) {
             return res.status(403).json({ errors: ["Not authorized"] });
         }
+        // 6.1: history stays readable, but a block stops new sends.
+        const other = convo.participants.find((p) => p.toString() !== req.user.id);
+        if (other && await blockedEither(req.user.id, other.toString())) {
+            return res.status(403).json({ errors: ["Cannot send messages to this user"] });
+        }
 
         const message = await Message.create({
             conversation: convo._id,
@@ -128,21 +138,6 @@ const sendMessage = async (req, res, next) => {
     }
 };
 
-// F-12: GET must never create resources (prefetchers/CSRF-less GETs were
-// spawning orphan conversations). Creation moved to POST; GET is find-only.
-const findConversation = async (req, res, next) => {
-    try {
-        const { userId } = req.params;
-        if (userId === req.user.id) return res.status(400).json({ errors: ["Cannot message yourself"] });
-        const convo = await Conversation.findOne({
-            participants: { $all: [req.user.id, userId], $size: 2 }
-        }).populate("participants", "username name avatar");
-        if (!convo) return res.status(404).json({ errors: ["Conversation not found"] });
-        res.json({ conversation: convo });
-    } catch (error) {
-        if (error.name === "CastError") return res.status(400).json({ errors: ["Invalid user ID"] });
-        return next(error);
-    }
-};
+// F-12: find-only GET lives in message-read.controller.js (creation is POST).
 
-module.exports = { getConversations, getOrCreateConversation, findConversation, getMessages, sendMessage };
+module.exports = { getConversations, getOrCreateConversation, getMessages, sendMessage };

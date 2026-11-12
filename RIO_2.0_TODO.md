@@ -36,7 +36,7 @@
 
 ## Phase 3 — Social Interactions & Moderation
 
-- [ ] **6.1 Block Users** — ❌ no Block model/enforcement. Plan: `Block` model, enforce in feed/profile/search/follow/messages.
+- [x] **6.1 Block Users** — ✅ `Block` model (unique pair); `POST/DELETE /users/:id/block`; block severs mutual follows + purges follow requests; enforced across follow, profile (asymmetric: blocker still sees blocked to unblock), follower lists, feed (query-level `$nin`), post view/like/comment, messaging (history readable, sends blocked, typing muted), people/content search, suggestions, bookmarks, notifications (`createNotification` guard); UI Block/Unblock on profile (`useProfileBlock`).
 - [ ] **6.2 Mute Users** — ❌ no Mute model/feed filtering.
 - [ ] **6.3 Private Accounts** — 🔶 `isPrivate` + `utils/visibility.js` enforce posts & lists; gap: full surface sweep (search/suggestions/media) once follow-requests (6.4) land.
 - [x] **6.4 Follow Requests** — ✅ `FollowRequest` model (unique requester+target, pending/approved/rejected); private `POST /:id/follow` becomes a request toggle (create/cancel, duplicate-safe via unique index + 11000 catch); `GET /follow-requests` (+`/sent`), atomic approve/reject by target only; approved converts to follow edges (`addToSet`) + `follow_request`/`follow_approved`/`follow_rejected` notifications; profile exposes `followRequested` for the "Requested" button (`useProfileFollow`); pending-request section with Approve/Reject on Notifications page (`FollowRequests`).

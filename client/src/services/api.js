@@ -54,6 +54,8 @@ export const searchUsers = (q) => apiRequest(`/profile/search?q=${encodeURICompo
 export const toggleFollow = (id) => apiRequest(`/users/${id}/follow`, { method: "POST" });
 export const getFollowers = (id) => apiRequest(`/users/${id}/followers`);
 export const getFollowing = (id) => apiRequest(`/users/${id}/following`);
+export const blockUser = (id) => apiRequest(`/users/${id}/block`, { method: "POST" });
+export const unblockUser = (id) => apiRequest(`/users/${id}/block`, { method: "DELETE" });
 export const getFollowRequests = () => apiRequest("/users/follow-requests");
 export const getSentFollowRequests = () => apiRequest("/users/follow-requests/sent");
 export const approveFollowRequest = (id) =>

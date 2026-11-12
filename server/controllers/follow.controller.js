@@ -1,7 +1,7 @@
 const User = require("../models/User");
 const FollowRequest = require("../models/FollowRequest");
 const { createNotification } = require("./notification.controller");
-const { buildPostVisibility } = require("../utils/visibility");
+const { blockedEither } = require("../utils/socialGraph");
 
 const toggleFollow = async (req, res, next) => {
     try {
@@ -10,6 +10,10 @@ const toggleFollow = async (req, res, next) => {
 
         if (id === userId) {
             return res.status(400).json({ errors: ["Cannot follow yourself"] });
+        }
+        // 6.1: no follow edge may cross a block in either direction.
+        if (await blockedEither(userId, id)) {
+            return res.status(403).json({ errors: ["Cannot interact with this user"] });
         }
 
         const targetUser = await User.findById(id);
@@ -93,53 +97,4 @@ const toggleFollow = async (req, res, next) => {
     }
 };
 
-const getFollowers = async (req, res, next) => {
-    try {
-        const user = await User.findById(req.params.id)
-            .select("followers isPrivate")
-            .populate("followers", "username name avatar bio");
-
-        if (!user) return res.status(404).json({ errors: ["User not found"] });
-
-        // F-13: private accounts hide their social graph from non-followers.
-        if (user.isPrivate === true) {
-            const vis = await buildPostVisibility(req.user.id);
-            if (!vis.canSeeLists(user._id, true)) {
-                return res.status(403).json({ errors: ["This account is private"] });
-            }
-        }
-
-        res.json({ followers: user.followers });
-    } catch (error) {
-        if (error.name === "CastError") {
-            return res.status(400).json({ errors: ["Invalid user ID"] });
-        }
-        return next(error);
-    }
-};
-
-const getFollowing = async (req, res, next) => {
-    try {
-        const user = await User.findById(req.params.id)
-            .select("following isPrivate")
-            .populate("following", "username name avatar bio");
-
-        if (!user) return res.status(404).json({ errors: ["User not found"] });
-
-        if (user.isPrivate === true) {
-            const vis = await buildPostVisibility(req.user.id);
-            if (!vis.canSeeLists(user._id, true)) {
-                return res.status(403).json({ errors: ["This account is private"] });
-            }
-        }
-
-        res.json({ following: user.following });
-    } catch (error) {
-        if (error.name === "CastError") {
-            return res.status(400).json({ errors: ["Invalid user ID"] });
-        }
-        return next(error);
-    }
-};
-
-module.exports = { toggleFollow, getFollowers, getFollowing };
+module.exports = { toggleFollow };

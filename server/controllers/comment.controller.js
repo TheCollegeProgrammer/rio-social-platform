@@ -1,6 +1,7 @@
 const Comment = require("../models/Comment");
 const Post = require("../models/post");
 const { createNotification } = require("./notification.controller");
+const { blockedEither } = require("../utils/socialGraph");
 
 const createComment = async (req, res, next) => {
     try {
@@ -16,6 +17,10 @@ const createComment = async (req, res, next) => {
 
         const post = await Post.findById(postId);
         if (!post) return res.status(404).json({ errors: ["Post not found"] });
+        // 6.1: commenting is an interaction - blocked pairs cannot do it.
+        if (await blockedEither(req.user.id, post.author)) {
+            return res.status(403).json({ errors: ["Cannot interact with this user"] });
+        }
 
         let depth = 0;
         let parent = null;

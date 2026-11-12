@@ -1,6 +1,7 @@
 const Post = require("../models/post");
 const { normalizeCategory } = require("../config/categories");
 const { buildPostVisibility } = require("../utils/visibility");
+const { blockedIdsFor } = require("../utils/socialGraph");
 const { decodeCursor, encodeCursor, cursorFilter } = require("../utils/cursor");
 const { postImages } = require("../utils/postShape");
 
@@ -17,6 +18,11 @@ const getPosts = async (req, res, next) => {
         if (imageOnly) base.image = { $ne: null };
         const category = normalizeCategory(req.query.category);
         if (category) base.category = category;
+        // 6.1: blocked authors are excluded at the query level so pages,
+        // cursors and totals all agree (mutes join this in 6.2).
+        const userId = req.user ? req.user.id : null;
+        const blocked = await blockedIdsFor(userId);
+        if (blocked.length) base.author = { $nin: blocked };
 
         // Cursor mode when a valid cursor is present; invalid cursors fall
         // back to page mode so consumers never hard-fail on stale links.
@@ -33,7 +39,6 @@ const getPosts = async (req, res, next) => {
         const hasMore = docs.length > limit;
         const pageDocs = hasMore ? docs.slice(0, limit) : docs;
         const total = await Post.countDocuments(base);
-        const userId = req.user ? req.user.id : null;
         // F-13: hide posts of private accounts from non-followers.
         const vis = await buildPostVisibility(userId);
         const visible = pageDocs.filter((post) => !vis.hidden(post));
