@@ -61,6 +61,7 @@ const getPosts = async (req, res, next) => {
             category: post.category,
             visibility: post.visibility,
             mentions: post.mentions,
+            pinnedAt: post.pinnedAt,
             editedAt: post.editedAt,
             createdAt: post.createdAt
         }));

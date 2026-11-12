@@ -99,6 +99,7 @@ const searchPosts = async (req, res, next) => {
             images: postImages(post),
             visibility: post.visibility,
             mentions: post.mentions,
+            pinnedAt: post.pinnedAt,
             createdAt: post.createdAt
         }));
 

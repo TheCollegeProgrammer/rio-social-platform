@@ -60,6 +60,12 @@ const postSchema = new mongoose.Schema(
             }
         ],
 
+        // 6.9: profile pinning - null = not pinned, a date orders pins.
+        pinnedAt: {
+            type: Date,
+            default: null
+        },
+
         editedAt: {
             type: Date,
             default: null

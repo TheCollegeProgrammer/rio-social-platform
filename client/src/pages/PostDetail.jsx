@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Heart, Bookmark, Trash2, Pencil, Hash } from "lucide-react";
+import { Heart, Bookmark, Trash2, Pencil, Hash, Pin, PinOff } from "lucide-react";
 import { useAuth } from "../context/useAuth";
-import { getPost, toggleLike, toggleBookmark, deletePost } from "../services/api";
+import { getPost, toggleLike, toggleBookmark, deletePost, togglePin } from "../services/api";
 import PostComments from "../components/PostComments";
 import ShareMenu from "../components/ShareMenu";
 import PostAuthor from "../components/PostAuthor";
@@ -20,12 +20,13 @@ function PostDetail() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const [bookmarked, setBookmarked] = useState(false);
+    const [pinned, setPinned] = useState(false);
 
     useEffect(() => {
         let cancelled = false;
         setLoading(true);
         getPost(id)
-            .then((d) => { if (!cancelled) setPost(d.post); })
+            .then((d) => { if (!cancelled) { setPost(d.post); setPinned(Boolean(d.post.pinnedAt)); } })
             .catch((err) => { if (!cancelled) setError(err.message); })
             .finally(() => { if (!cancelled) setLoading(false); });
         return () => { cancelled = true; };
@@ -49,6 +50,11 @@ function PostDetail() {
         if (!window.confirm("Delete this post?")) return;
         await deletePost(id);
         navigate("/");
+    });
+
+    const handlePin = () => act(async () => {
+        const d = await togglePin(id);
+        setPinned(d.pinned);
     });
 
     if (loading) return <div className="page"><p className="muted">Loading post...</p></div>;
@@ -92,6 +98,7 @@ function PostDetail() {
                     <ShareMenu postId={id} title={post.content.slice(0, 80)} />
                     {canManage && (
                         <>
+                            <button className="action-btn" onClick={handlePin}>{pinned ? <PinOff size={16} /> : <Pin size={16} />}{pinned ? "Unpin" : "Pin"}</button>
                             <button className="action-btn" onClick={() => navigate(`/posts/${id}/edit`)}><Pencil size={16} />Edit</button>
                             <button className="action-btn danger" onClick={handleDelete}><Trash2 size={16} />Delete</button>
                         </>

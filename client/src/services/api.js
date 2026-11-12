@@ -38,14 +38,14 @@ export const editPost = (id, content, visibility) => apiRequest(`/posts/${id}`, 
 export const deletePost = (id) => apiRequest(`/posts/${id}`, { method: "DELETE" });
 export const toggleLike = (id) => apiRequest(`/posts/${id}/like`, { method: "POST" });
 export const toggleBookmark = (id) => apiRequest(`/posts/${id}/bookmark`, { method: "POST" });
+export const togglePin = (id) => apiRequest(`/posts/${id}/pin`, { method: "POST" });
 export const getBookmarks = () => apiRequest("/posts/bookmarks");
 export const searchPosts = (q) => apiRequest(`/posts/search?q=${encodeURIComponent(q)}`);
 export const searchHashtag = (hashtag) => apiRequest(`/posts/search?hashtag=${encodeURIComponent(hashtag)}`);
 export const getTrendingHashtags = () => apiRequest("/posts/trending");
 
 export const getProfile = (id) => apiRequest(`/profile/${id}`);
-export const updateProfile = (data) =>
-    apiRequest("/profile", { method: "PUT", body: JSON.stringify(data) });
+export const updateProfile = (data) => apiRequest("/profile", { method: "PUT", body: JSON.stringify(data) });
 export const updatePrivacy = (data) => apiRequest("/profile/privacy", { method: "PUT", body: JSON.stringify(data) });
 export const deleteAccount = (password) =>
     apiRequest("/profile", { method: "DELETE", body: JSON.stringify({ password }) });

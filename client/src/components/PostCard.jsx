@@ -74,7 +74,7 @@ function PostCard({ post, onLike }) {
 
     if (hidden) return null;
 
-    const badge = [post.visibility === "followers" && "Followers", post.editedAt && "Edited"]
+    const badge = [post.visibility === "followers" && "Followers", post.pinnedAt && "Pinned", post.editedAt && "Edited"]
         .filter(Boolean).join(" · ");
 
     return (

@@ -40,7 +40,9 @@ const getProfile = async (req, res, next) => {
         const posts = await Post.find({ author: user._id })
             .populate("author", "username name avatar isPrivate")
             .populate("mentions", "username name avatar")
-            .sort({ createdAt: -1 })
+            // 6.9: pinned posts first (date desc), then newest. Nulls sort
+            // after dates in a descending order, so unpinned keep recency.
+            .sort({ pinnedAt: -1, createdAt: -1 })
             .limit(50);
         // F-13: private accounts show posts only to self/admin/followers.
         const vis = await buildPostVisibility(req.user ? req.user.id : null);
