@@ -11,7 +11,7 @@ import "../styles/Media.css";
 const MAX = 500;
 const MAX_IMAGES = 8;
 
-export default function CreatePostForm({ onCreated, category = null, initialDraft = null, onDraftConsumed, onDraftChanged }) {
+export default function CreatePostForm({ onCreated, category = null, setCategory, initialDraft = null, onDraftConsumed, onDraftChanged }) {
     const fileRef = useRef(null);
     const [content, setContent] = useState("");
     const [images, setImages] = useState([]);
@@ -75,8 +75,9 @@ export default function CreatePostForm({ onCreated, category = null, initialDraf
 
     // 7.2: owner-private draft save/load; publish from a draft is explicit only.
     const { draftId, saveStatus, saveStatusText, saveDraft, publishFromDraft } = useDrafts({
-        initialDraft, category, setContent, setVisibility, setImages, onDraftConsumed, onDraftChanged,
-        onPublished: onCreated, reset: () => { setContent(""); clearImages(); setVisibility("public"); }
+        initialDraft, category, content, setContent, setCategory, setVisibility, setImages,
+        onDraftConsumed, onDraftChanged, onPublished: onCreated,
+        reset: () => { setContent(""); clearImages(); setVisibility("public"); }
     });
 
     const hasDraftable = Boolean(content.trim() || images.length);

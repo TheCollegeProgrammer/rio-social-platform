@@ -34,6 +34,7 @@ function CompactComposer({ onCreated }) {
                 />
                 <CreatePostForm
                     category={category || null}
+                    setCategory={setCategory}
                     onCreated={onCreated}
                     initialDraft={loadDraft}
                     onDraftConsumed={() => setLoadDraft(null)}

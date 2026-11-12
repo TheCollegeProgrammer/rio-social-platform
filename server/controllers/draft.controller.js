@@ -21,19 +21,10 @@ const createDraft = async (req, res, next) => {
             deleteMedia(files);
             return bad(res, "Draft needs content or images");
         }
-        if (content.length > 5000) {
-            deleteMedia(files);
-            return bad(res, "Draft must be under 5000 characters");
-        }
-        if (files.length > MAX_IMAGES) {
-            deleteMedia(files);
-            return bad(res, `Draft can have at most ${MAX_IMAGES} images`);
-        }
+        if (content.length > 5000) { deleteMedia(files); return bad(res, "Draft must be under 5000 characters"); }
+        if (files.length > MAX_IMAGES) { deleteMedia(files); return bad(res, `Draft can have at most ${MAX_IMAGES} images`); }
         const vis = parseVisibility(req.body.visibility);
-        if (!vis.ok) {
-            deleteMedia(files);
-            return bad(res, "visibility must be public or followers");
-        }
+        if (!vis.ok) { deleteMedia(files); return bad(res, "visibility must be public or followers"); }
         const draft = await Draft.create({
             author: req.user.id,
             content,
@@ -77,11 +68,13 @@ const updateDraft = async (req, res, next) => {
         const draft = await ownDraft(req.params.id, req.user.id);
         if (!draft) return notFound(res);
 
+        // Extract paths first so every early return can clean up multer files.
+        const newFiles = toPaths(req.files);
         if (req.body.version !== undefined && Number(req.body.version) !== draft.version) {
+            deleteMedia(newFiles);
             return res.status(409).json({ errors: ["Draft was updated elsewhere"], draft });
         }
 
-        const newFiles = toPaths(req.files);
         if (draft.images.length + newFiles.length > MAX_IMAGES) {
             deleteMedia(newFiles);
             return bad(res, `Draft can have at most ${MAX_IMAGES} images`);
@@ -120,6 +113,8 @@ const updateDraft = async (req, res, next) => {
                 deleteMedia(newFiles);
                 return bad(res, "Invalid images list");
             }
+            // Dropping a retained path is a delete: clean up its file too.
+            deleteMedia(draft.images.filter((p) => !keep.includes(p)));
             draft.images = [...keep, ...newFiles];
         } else if (newFiles.length) {
             draft.images = [...draft.images, ...newFiles];
