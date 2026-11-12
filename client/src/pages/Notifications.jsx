@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
-import { Heart, MessageCircle, Reply, UserPlus, Bell, X, CheckCheck } from "lucide-react";
+import { Bell, X, CheckCheck } from "lucide-react";
 import {
     getNotifications,
     markNotificationRead,
@@ -9,33 +9,9 @@ import {
     mediaUrl
 } from "../services/api";
 import { useNotificationSync } from "../lib/useNotificationSync";
+import { ICONS, PROFILE_LINK_TYPES, timeAgo, notificationText } from "../lib/notificationMeta";
+import FollowRequests from "../components/FollowRequests";
 import "./Notifications.css";
-
-const ICONS = {
-    like: Heart,
-    comment: MessageCircle,
-    reply: Reply,
-    follow: UserPlus
-};
-
-function timeAgo(date) {
-    const s = Math.floor((Date.now() - new Date(date)) / 1000);
-    if (s < 60) return "just now";
-    if (s < 3600) return `${Math.floor(s / 60)}m ago`;
-    if (s < 86400) return `${Math.floor(s / 3600)}h ago`;
-    return `${Math.floor(s / 86400)}d ago`;
-}
-
-function notificationText(n) {
-    const name = n.sender?.name || "Someone";
-    switch (n.type) {
-        case "like": return `${name} liked your post`;
-        case "comment": return `${name} commented: "${n.comment?.content?.slice(0, 60)}"`;
-        case "reply": return `${name} replied: "${n.comment?.content?.slice(0, 60)}"`;
-        case "follow": return `${name} started following you`;
-        default: return `${n.type} notification`;
-    }
-}
 
 function Notifications() {
     const [items, setItems] = useState([]);
@@ -96,6 +72,8 @@ function Notifications() {
 
             {error && <p className="error-message">{error}</p>}
 
+            <FollowRequests onChange={load} />
+
             {items.length === 0 ? (
                 <div className="empty-state">
                     <div className="empty-icon"><Bell size={44} strokeWidth={1.3} /></div>
@@ -106,7 +84,7 @@ function Notifications() {
                     {items.map((n) => {
                         const IconComp = ICONS[n.type] || Bell;
                         const link = n.post ? `/posts/${n.post._id}`
-                            : n.type === "follow" && n.sender ? `/users/${n.sender._id}` : null;
+                            : PROFILE_LINK_TYPES.includes(n.type) && n.sender ? `/users/${n.sender._id}` : null;
                         const inner = (
                             <div className={`notif-item ${n.read ? "" : "unread"}`}>
                                 <div className={`notif-icon ${n.type}`}>

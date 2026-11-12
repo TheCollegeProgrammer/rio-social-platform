@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/useAuth";
-import { useToast } from "../context/useToast.js";
 import { getProfile, getOrCreateConversation, mediaUrl } from "../services/api";
-import { useFollowToggle } from "../lib/useFollowToggle";
+import { useProfileFollow } from "../lib/useProfileFollow";
 import { usePresence } from "../lib/usePresence";
 import PostCard from "../components/PostCard";
 import FollowListPopover from "../components/FollowListPopover";
@@ -15,15 +14,15 @@ function UserProfile() {
     const { id } = useParams();
     const navigate = useNavigate();
     const { user } = useAuth();
-    const toast = useToast();
     const [profile, setProfile] = useState(null);
     const [posts, setPosts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
-    const [following, setFollowing] = useState(false);
-    const [followBusy, setFollowBusy] = useState(false);
     const [messaging, setMessaging] = useState(false);
-    const { toggle: followToggle } = useFollowToggle();
+    // 4.4 + 6.4: optimistic follow/request state with server reconcile.
+    const {
+        following, followRequested, followBusy, sync, handleFollow
+    } = useProfileFollow(setProfile);
     // 5.5: live presence for other users' profiles (null for your own).
     const { online } = usePresence(user?._id === id ? null : id);
 
@@ -33,7 +32,7 @@ function UserProfile() {
             .then((data) => {
                 if (!cancelled) {
                     setProfile(data.profile);
-                    setFollowing(data.profile?.isFollowing || false);
+                    sync(data.profile);
                     setPosts(data.posts || []);
                 }
             })
@@ -41,33 +40,6 @@ function UserProfile() {
             .finally(() => { if (!cancelled) setLoading(false); });
         return () => { cancelled = true; };
     }, [id]);
-
-    // 4.4: flip button + counts immediately, reconcile with the server
-    // response, roll back and toast on failure.
-    const handleFollow = async () => {
-        const next = !following;
-        setFollowBusy(true);
-        await followToggle(id, next, {
-            optimistic: (n) => {
-                setFollowing(n);
-                setProfile((p) => (p ? { ...p, followersCount: (p.followersCount || 0) + (n ? 1 : -1) } : p));
-            },
-            reconcile: (d) => {
-                setFollowing(d.following);
-                setProfile((p) => ({
-                    ...p,
-                    followersCount: d.followersCount,
-                    followingCount: d.followingCount ?? p.followingCount
-                }));
-                if (d.following) toast.success(`Following ${profile?.name || "user"}`);
-            },
-            rollback: (n) => {
-                setFollowing(!n);
-                setProfile((p) => (p ? { ...p, followersCount: (p.followersCount || 0) + (n ? -1 : 1) } : p));
-            }
-        });
-        setFollowBusy(false);
-    };
 
     const handleMessage = async () => {
         try {
@@ -120,8 +92,12 @@ function UserProfile() {
                             </button>
                         ) : (
                             <>
-                                <button className={following ? "btn btn-ghost" : "btn"} onClick={handleFollow} disabled={followBusy}>
-                                    {following ? "Unfollow" : "Follow"}
+                                <button
+                                    className={following || followRequested ? "btn btn-ghost" : "btn"}
+                                    onClick={() => handleFollow(id, profile.name)}
+                                    disabled={followBusy}
+                                >
+                                    {following ? "Unfollow" : followRequested ? "Requested" : "Follow"}
                                 </button>
                                 <button className="btn btn-ghost" onClick={handleMessage} disabled={messaging}>
                                     {messaging ? "Opening..." : "Message"}

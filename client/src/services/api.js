@@ -54,6 +54,12 @@ export const searchUsers = (q) => apiRequest(`/profile/search?q=${encodeURICompo
 export const toggleFollow = (id) => apiRequest(`/users/${id}/follow`, { method: "POST" });
 export const getFollowers = (id) => apiRequest(`/users/${id}/followers`);
 export const getFollowing = (id) => apiRequest(`/users/${id}/following`);
+export const getFollowRequests = () => apiRequest("/users/follow-requests");
+export const getSentFollowRequests = () => apiRequest("/users/follow-requests/sent");
+export const approveFollowRequest = (id) =>
+    apiRequest(`/users/follow-requests/${id}/approve`, { method: "POST" });
+export const rejectFollowRequest = (id) =>
+    apiRequest(`/users/follow-requests/${id}/reject`, { method: "POST" });
 
 export const getComments = (postId, page = 1) =>
     apiRequest(`/posts/${postId}/comments?page=${page}`);

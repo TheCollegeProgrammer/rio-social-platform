@@ -1,4 +1,5 @@
 const User = require("../models/User");
+const FollowRequest = require("../models/FollowRequest");
 const { createNotification } = require("./notification.controller");
 const { buildPostVisibility } = require("../utils/visibility");
 
@@ -24,10 +25,50 @@ const toggleFollow = async (req, res, next) => {
         if (isFollowing) {
             currentUser.following.pull(id);
             targetUser.followers.pull(userId);
+        } else if (targetUser.isPrivate === true) {
+            // 6.4: private accounts turn the follow button into a request
+            // toggle - a second click cancels the pending request.
+            const existing = await FollowRequest.findOne({
+                requester: userId,
+                target: id
+            });
+            if (existing && existing.status === "pending") {
+                await existing.deleteOne();
+                return res.json({
+                    following: false,
+                    pending: false,
+                    followersCount: targetUser.followers.length,
+                    followingCount: currentUser.following.length
+                });
+            }
+            if (existing) {
+                existing.status = "pending";
+                await existing.save();
+            } else {
+                try {
+                    await FollowRequest.create({ requester: userId, target: id });
+                } catch (err) {
+                    // Unique index: a concurrent double-click already created it.
+                    if (err.code !== 11000) throw err;
+                }
+            }
+            createNotification({
+                recipient: id,
+                sender: userId,
+                type: "follow_request"
+            });
+            return res.json({
+                following: false,
+                pending: true,
+                followersCount: targetUser.followers.length,
+                followingCount: currentUser.following.length
+            });
         } else {
             // addToSet: retried/duplicate requests can never create dup edges.
             currentUser.following.addToSet(id);
             targetUser.followers.addToSet(userId);
+            // A direct follow supersedes any earlier request record.
+            FollowRequest.deleteOne({ requester: userId, target: id }).catch(() => {});
             createNotification({
                 recipient: id,
                 sender: userId,
@@ -40,6 +81,7 @@ const toggleFollow = async (req, res, next) => {
 
         res.json({
             following: !isFollowing,
+            pending: false,
             followersCount: targetUser.followers.length,
             followingCount: currentUser.following.length
         });

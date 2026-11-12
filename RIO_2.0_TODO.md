@@ -39,7 +39,7 @@
 - [ ] **6.1 Block Users** — ❌ no Block model/enforcement. Plan: `Block` model, enforce in feed/profile/search/follow/messages.
 - [ ] **6.2 Mute Users** — ❌ no Mute model/feed filtering.
 - [ ] **6.3 Private Accounts** — 🔶 `isPrivate` + `utils/visibility.js` enforce posts & lists; gap: full surface sweep (search/suggestions/media) once follow-requests (6.4) land.
-- [ ] **6.4 Follow Requests** — ❌ no pending-request state; `toggleFollow` on private accounts needs audit → plan: `FollowRequest` model, approve/reject/cancel, notify.
+- [x] **6.4 Follow Requests** — ✅ `FollowRequest` model (unique requester+target, pending/approved/rejected); private `POST /:id/follow` becomes a request toggle (create/cancel, duplicate-safe via unique index + 11000 catch); `GET /follow-requests` (+`/sent`), atomic approve/reject by target only; approved converts to follow edges (`addToSet`) + `follow_request`/`follow_approved`/`follow_rejected` notifications; profile exposes `followRequested` for the "Requested" button (`useProfileFollow`); pending-request section with Approve/Reject on Notifications page (`FollowRequests`).
 - [ ] **6.5 Post Visibility Controls** — ❌ posts have no per-post visibility field (only account-level). Plan: `visibility: public|followers` + feed/URL/media enforcement.
 - [ ] **6.6 User Mentions** — ❌ no `@username` parsing/notification.
 - [ ] **6.7 Moderation Dashboard** — 🔶 admin has suspend/restore, audit-log view, post removal w/ audit (`admin.routes.js`). Gap: report intake, queue UI, context view, status/pagination.

@@ -8,7 +8,7 @@ import { useToast } from "../context/useToast";
 // repeated clicks can never fire duplicate toggle requests.
 export function useFollowToggle() {
     const { setUser } = useAuth();
-    const { error: toastError } = useToast();
+    const { error: toastError, success: toastSuccess } = useToast();
     const inFlight = useRef(new Set());
 
     // Keep the auth-context following list in sync (PostAuthor and
@@ -39,6 +39,10 @@ export function useFollowToggle() {
             const d = await toggleFollow(id);
             setInList(id, d.following);
             reconcile?.(d);
+            // 6.4: surfaces without their own reconcile (cards, suggestions)
+            // still need feedback when the server turned the click into a
+            // pending request instead of a follow.
+            if (d.pending && !reconcile) toastSuccess("Follow request sent");
             return d;
         } catch (err) {
             rollback?.(next);

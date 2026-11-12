@@ -53,6 +53,9 @@
 .notif-icon.comment,
 .notif-icon.reply { background: rgba(96, 165, 250, 0.15); color: var(--accent); }
 .notif-icon.follow { background: rgba(74, 222, 128, 0.15); color: var(--success); }
+.notif-icon.follow_request { background: rgba(251, 191, 36, 0.15); color: #f59e0b; }
+.notif-icon.follow_approved { background: rgba(74, 222, 128, 0.15); color: var(--success); }
+.notif-icon.follow_rejected { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
 
 .notif-avatar {
     width: 36px;

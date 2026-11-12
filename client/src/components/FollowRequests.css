@@ -1,0 +1,73 @@
+/* 6.4: pending follow requests shown above the notification feed. */
+.follow-requests {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.follow-requests h2 {
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.follow-request {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 16px;
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+
+.follow-request-user {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    color: inherit;
+    min-width: 0;
+}
+
+.follow-request-user img,
+.follow-request-user > span {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: var(--bg-hover);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 14px;
+    flex-shrink: 0;
+}
+
+.follow-request-meta {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.follow-request-meta strong {
+    font-size: 15px;
+    color: var(--text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.follow-request-meta em {
+    font-style: normal;
+    font-size: 13px;
+    color: var(--text-faint);
+}
+
+.follow-request-actions {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+}

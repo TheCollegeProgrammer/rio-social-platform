@@ -1,5 +1,6 @@
 const User = require("../models/User");
 const Post = require("../models/post");
+const FollowRequest = require("../models/FollowRequest");
 const { buildPostVisibility } = require("../utils/visibility");
 
 const getProfile = async (req, res, next) => {
@@ -24,6 +25,15 @@ const getProfile = async (req, res, next) => {
         const followingCount = user.following.length;
         const viewerId = req.user ? req.user.id : null;
         const isFollowing = user.followers.some((f) => f && String(f._id) === viewerId);
+        // 6.4: let the profile button render "Requested" for a pending ask.
+        let followRequested = false;
+        if (viewerId && !isFollowing && user.isPrivate === true) {
+            followRequested = !!(await FollowRequest.exists({
+                requester: viewerId,
+                target: user._id,
+                status: "pending"
+            }));
+        }
 
         res.json({
             profile: {
@@ -36,6 +46,7 @@ const getProfile = async (req, res, next) => {
                 coverImage: user.coverImage,
                 isPrivate: user.isPrivate,
                 isFollowing,
+                followRequested,
                 followersCount,
                 followingCount,
                 postsCount,
