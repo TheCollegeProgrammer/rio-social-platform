@@ -3,6 +3,7 @@ import { Heart, MessageSquareReply, Pencil, Trash2 } from "lucide-react";
 import { useAuth } from "../context/useAuth";
 import { editComment, deleteComment, toggleCommentLike, createComment } from "../services/api";
 import { AuthorAvatar } from "./PostCard";
+import MentionText from "./MentionText";
 
 function CommentItem({ postId, comment, onDeleted, onUpdated, depth = 0 }) {
     const { user } = useAuth();
@@ -74,7 +75,7 @@ function CommentItem({ postId, comment, onDeleted, onUpdated, depth = 0 }) {
                     </div>
                 </div>
             ) : (
-                <p className="comment-content">{comment.content}</p>
+                <p className="comment-content"><MentionText text={comment.content} mentions={comment.mentions} /></p>
             )}
 
             <div className="comment-actions">

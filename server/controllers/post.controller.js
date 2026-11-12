@@ -1,6 +1,7 @@
 const Post = require("../models/post");
 const { normalizeCategory } = require("../config/categories");
 const { buildPostVisibility, parseVisibility } = require("../utils/visibility");
+const { resolveMentions, notifyMentions } = require("../utils/mentions");
 const { blockedEither } = require("../utils/socialGraph");
 
 const extractHashtags = (content) => {
@@ -25,13 +26,16 @@ const createPost = async (req, res, next) => {
             return res.status(400).json({ errors: ["visibility must be public or followers"] });
         }
 
+        const mentions = await resolveMentions(content);
         const post = await Post.create({
             content: content.trim(),
             author: req.user.id,
             hashtags: extractHashtags(content),
             category: normalizeCategory(req.body.category),
-            visibility: vis.value
+            visibility: vis.value,
+            mentions
         });
+        await notifyMentions(mentions, req.user.id, { post: post._id });
 
         await post.populate("author", "username name avatar");
         res.status(201).json({ message: "Post created", post });
@@ -43,7 +47,8 @@ const createPost = async (req, res, next) => {
 const getPostById = async (req, res, next) => {
     try {
         const post = await Post.findById(req.params.id)
-            .populate("author", "username name avatar isPrivate");
+            .populate("author", "username name avatar isPrivate")
+            .populate("mentions", "username name avatar");
 
         if (!post) return res.status(404).json({ errors: ["Post not found"] });
 
@@ -71,6 +76,7 @@ const getPostById = async (req, res, next) => {
                 images: postImages(post),
                 category: post.category,
                 visibility: post.visibility,
+                mentions: post.mentions,
                 editedAt: post.editedAt,
                 createdAt: post.createdAt
             }

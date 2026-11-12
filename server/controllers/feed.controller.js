@@ -37,6 +37,7 @@ const getPosts = async (req, res, next) => {
 
         const docs = await Post.find(filter)
             .populate("author", "username name avatar isPrivate")
+            .populate("mentions", "username name avatar")
             .sort({ createdAt: -1, _id: -1 })
             .skip(skip)
             .limit(limit + 1);
@@ -59,6 +60,7 @@ const getPosts = async (req, res, next) => {
             images: postImages(post),
             category: post.category,
             visibility: post.visibility,
+            mentions: post.mentions,
             editedAt: post.editedAt,
             createdAt: post.createdAt
         }));

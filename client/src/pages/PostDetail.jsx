@@ -7,6 +7,7 @@ import PostComments from "../components/PostComments";
 import ShareMenu from "../components/ShareMenu";
 import PostAuthor from "../components/PostAuthor";
 import PostMedia from "../components/PostMedia";
+import MentionText from "../components/MentionText";
 import "../styles/Home.css";
 import "../styles/Post.css";
 import "../styles/Comments.css";
@@ -66,7 +67,7 @@ function PostDetail() {
 
                 {post.editedAt && <span className="edited-badge">Edited</span>}
 
-                <p className="post-content">{post.content}</p>
+                <p className="post-content"><MentionText text={post.content} mentions={post.mentions} /></p>
 
                 <PostMedia post={post} />
 

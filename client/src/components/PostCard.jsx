@@ -8,6 +8,7 @@ import { reducedMotion } from "../lib/utils";
 import ShareMenu from "./ShareMenu";
 import PostAuthor from "./PostAuthor";
 import PostMedia from "./PostMedia";
+import MentionText from "./MentionText";
 import { AuthorAvatar } from "./AuthorAvatar";
 import { deletePost, toggleBookmark } from "../services/api";
 import "../styles/Post.css";
@@ -83,7 +84,7 @@ function PostCard({ post, onLike }) {
             {badge && <span className="edited-badge">{post.visibility === "followers" && <Lock size={10} style={{ verticalAlign: -1 }} />} {badge}</span>}
 
             <Link to={`/posts/${post._id}`} className="post-content-link">
-                <p className="post-content">{post.content}</p>
+                <p className="post-content"><MentionText text={post.content} mentions={post.mentions} /></p>
             </Link>
 
             <PostMedia post={post} />

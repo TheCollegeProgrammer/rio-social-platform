@@ -4,6 +4,7 @@ const { extractHashtags } = require("./post.controller");
 const { createNotification } = require("./notification.controller");
 const { blockedEither } = require("../utils/socialGraph");
 const { canViewPost, parseVisibility } = require("../utils/visibility");
+const { resolveMentions, notifyMentions } = require("../utils/mentions");
 
 const canModerate = async (post, userId) => {
     if (post.author.toString() === userId) return true;
@@ -30,6 +31,7 @@ const editPost = async (req, res, next) => {
 
         post.content = content.trim();
         post.hashtags = extractHashtags(content);
+        post.mentions = await resolveMentions(content);
         if (req.body.visibility !== undefined) {
             const vis = parseVisibility(req.body.visibility);
             if (!vis.ok) {
@@ -39,6 +41,8 @@ const editPost = async (req, res, next) => {
         }
         post.editedAt = new Date();
         await post.save();
+        // 6.6: re-mention notifications are deduped inside createNotification.
+        await notifyMentions(post.mentions, req.user.id, { post: post._id });
         await post.populate("author", "username name avatar");
 
         res.json({ message: "Post updated", post });

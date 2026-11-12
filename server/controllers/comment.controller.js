@@ -4,6 +4,7 @@ const { createNotification } = require("./notification.controller");
 const { blockedEither } = require("../utils/socialGraph");
 const { canViewPost } = require("../utils/visibility");
 const { audienceError } = require("../utils/interactionPolicy");
+const { resolveMentions, notifyMentions } = require("../utils/mentions");
 
 const createComment = async (req, res, next) => {
     try {
@@ -45,15 +46,21 @@ const createComment = async (req, res, next) => {
             }
         }
 
+        const mentions = await resolveMentions(content);
         const comment = await Comment.create({
             content: content.trim(),
             author: req.user.id,
             post: postId,
             parentComment: parentComment || null,
+            mentions,
             depth
         });
+        await notifyMentions(mentions, req.user.id, { post: postId, comment: comment._id });
 
-        await comment.populate("author", "username name avatar");
+        await comment.populate([
+            { path: "author", select: "username name avatar" },
+            { path: "mentions", select: "username name avatar" }
+        ]);
         const totalComments = await Comment.countDocuments({ post: postId });
 
         if (parent) {
@@ -97,6 +104,7 @@ const getComments = async (req, res, next) => {
 
         const comments = await Comment.find({ post: postId, parentComment: null })
             .populate("author", "username name avatar")
+            .populate("mentions", "username name avatar")
             .sort({ createdAt: -1 })
             .skip(skip)
             .limit(limit);
@@ -104,6 +112,7 @@ const getComments = async (req, res, next) => {
         const commentIds = comments.map((c) => c._id);
         const replies = await Comment.find({ parentComment: { $in: commentIds } })
             .populate("author", "username name avatar")
+            .populate("mentions", "username name avatar")
             .sort({ createdAt: 1 });
 
         const total = await Comment.countDocuments({ post: postId });

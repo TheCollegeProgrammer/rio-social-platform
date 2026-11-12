@@ -3,6 +3,7 @@ const { extractHashtags } = require("./post.controller");
 const { normalizeCategory } = require("../config/categories");
 const { deleteMedia } = require("../utils/media");
 const { parseVisibility } = require("../utils/visibility");
+const { resolveMentions, notifyMentions } = require("../utils/mentions");
 
 const MAX_IMAGES = 8;
 
@@ -38,15 +39,18 @@ const createPostWithImage = async (req, res, next) => {
             return res.status(400).json({ errors: ["visibility must be public or followers"] });
         }
 
+        const mentions = await resolveMentions(content);
         const post = await Post.create({
             content: content.trim(),
             author: req.user.id,
             hashtags: extractHashtags(content),
             category: normalizeCategory(req.body.category),
             visibility: vis.value,
+            mentions,
             images,
             image: images[0] || null
         });
+        await notifyMentions(mentions, req.user.id, { post: post._id });
 
         await post.populate("author", "username name avatar");
         res.status(201).json({ message: "Post created", post });

@@ -10,6 +10,17 @@ const createNotification = async (data) => {
         // would still leak activity through the badge).
         if (await blockedEither(data.recipient, data.sender)) return null;
         if (await mutedBy(data.recipient, data.sender)) return null;
+        // 6.6: a re-mention from an edit or a retry must not double-notify.
+        if (data.type === "mention") {
+            const dup = await Notification.exists({
+                recipient: data.recipient,
+                sender: data.sender,
+                type: "mention",
+                ...(data.post ? { post: data.post } : {}),
+                ...(data.comment ? { comment: data.comment } : {})
+            });
+            if (dup) return null;
+        }
         const notification = await Notification.create(data);
         // 5.8: emit only after the notification is persisted; populate so
         // the push payload matches the REST list shape. Recipient room =

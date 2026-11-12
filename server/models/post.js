@@ -52,6 +52,14 @@ const postSchema = new mongoose.Schema(
             default: "public"
         },
 
+        // 6.6: resolved @usernames (stable ids for links + notifications).
+        mentions: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "User"
+            }
+        ],
+
         editedAt: {
             type: Date,
             default: null

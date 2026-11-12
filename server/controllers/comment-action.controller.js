@@ -3,6 +3,7 @@ const Post = require("../models/post");
 const { createNotification } = require("./notification.controller");
 const { blockedEither } = require("../utils/socialGraph");
 const { canViewPost } = require("../utils/visibility");
+const { resolveMentions, notifyMentions } = require("../utils/mentions");
 
 const editComment = async (req, res, next) => {
     try {
@@ -22,8 +23,10 @@ const editComment = async (req, res, next) => {
         }
 
         comment.content = content.trim();
+        comment.mentions = await resolveMentions(content);
         comment.editedAt = new Date();
         await comment.save();
+        await notifyMentions(comment.mentions, req.user.id, { post: comment.post, comment: comment._id });
         await comment.populate("author", "username name avatar");
 
         res.json({ message: "Comment updated", comment });

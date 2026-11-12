@@ -40,6 +40,14 @@ const commentSchema = new mongoose.Schema(
             }
         ],
 
+        // 6.6: resolved @usernames.
+        mentions: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "User"
+            }
+        ],
+
         editedAt: {
             type: Date,
             default: null

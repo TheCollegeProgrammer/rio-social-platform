@@ -44,7 +44,10 @@ const getBookmarks = async (req, res, next) => {
             .select("bookmarks")
             .populate({
                 path: "bookmarks",
-                populate: { path: "author", select: "username name avatar isPrivate" },
+                populate: [
+                    { path: "author", select: "username name avatar isPrivate" },
+                    { path: "mentions", select: "username name avatar" }
+                ],
                 options: { sort: { createdAt: -1 } }
             });
 
@@ -79,6 +82,7 @@ const searchPosts = async (req, res, next) => {
 
         const posts = await Post.find(filter)
             .populate("author", "username name avatar isPrivate")
+            .populate("mentions", "username name avatar")
             .sort({ createdAt: -1 })
             .limit(20);
 
@@ -94,6 +98,7 @@ const searchPosts = async (req, res, next) => {
             image: post.image,
             images: postImages(post),
             visibility: post.visibility,
+            mentions: post.mentions,
             createdAt: post.createdAt
         }));
 
